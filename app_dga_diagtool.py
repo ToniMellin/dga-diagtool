@@ -368,7 +368,8 @@ app.layout = html.Div([
 
     ], style={
             'display': 'inline-block',
-            'vertical-align': 'top'
+            'vertical-align': 'top',
+            'padding': 20
         }),
 
     html.Div([
@@ -394,7 +395,8 @@ app.layout = html.Div([
     ], style={
             'display': 'inline-block',
             'vertical-align': 'top',
-            'margin-left': '100px'
+            'margin-left': '50px',
+            'padding': 20
         }),
 
     html.Br(),
@@ -444,10 +446,28 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                                 })
 
 
-    return html.Div([generate_table(df_ratio),
-                    generate_table(df_diag),
-                    generate_table(df_typicals),
+    return html.Div([
+                    html.Div([
+                        generate_table(df_ratio)], style={
+                                                        'display': 'inline-block',
+                                                        'vertical-align': 'top',
+                                                        'padding': 20
+                                                        }),
+                    html.Div([
+                        generate_table(df_diag)], style={
+                                                        'display': 'inline-block',
+                                                        'vertical-align': 'top',
+                                                        'margin-left': '100px',
+                                                        'padding': 20
+                                                        }),
+
+                    html.Br(),
+                    html.Div([
+                    generate_table(df_typicals)], style={'padding': 20}),
+
+                    html.Div([
                     dcc.Graph(figure=duval_triangle_1.create_duval1_result_graph(ch4_val, c2h2_val, c2h4_val))
+                    ])
                     ])
 
 
