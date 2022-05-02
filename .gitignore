@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# vscode
+.vscode/
+
+#venv
+dga_diagtool_env/
