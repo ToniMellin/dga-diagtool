@@ -25,9 +25,10 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
     R4: C2H6/C2H2
     R5: C2H4/C2H6
     R6: CO2/CO
+    R7: O2/N2
     '''
     # TODO handle zerodivision errors individually to allow zero values
-    #TODO add O2/N2 ratio
+    #TODO add O2/N2 ratio with o2_val and n2_val as args or kwargs
     try:
         r1_val = ch4_val / h2_val
         r2_val = c2h2_val / c2h4_val
@@ -35,6 +36,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         r4_val = c2h6_val / c2h2_val
         r5_val = c2h4_val / c2h6_val
         r6_val =  co2_val / co_val
+        #r7_val = o2_val / n2_val
     except ZeroDivisionError:
         print('Ratio ZeroDivisionError')
         r1_val = np.nan
@@ -309,6 +311,12 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 
     return ieee_typical_results
 
+#TODO add IEEE C57.104-2019 typical values, requires O2/N2 ratio and optional transformer age
+
+#TODO add duval 4 and conditions to use
+
+#TODO add duval 5 and conditions to use
+
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     typical_result_list = []
     
@@ -334,7 +342,6 @@ def generate_table(dataframe):
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-#TODO add O2, N2 and transformer age input
 app.layout = html.Div([
     
     html.H2('DGA diagtool\n'), #, style={'color': 'white', 'backgroundColor':'#003366'}
@@ -406,7 +413,6 @@ app.layout = html.Div([
             'vertical-align': 'top'
         })
 
-#TODO add O2, N2 and transformer age callbacks
 @app.callback(Output('output-state', 'children'),
               [Input('submit-button-state', 'n_clicks')],
               [State('h2-state', 'value'),
