@@ -1,6 +1,7 @@
 # %%
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import numpy as np
+from pandas import isna
 
 def create_duval_1_colorized():
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
@@ -270,26 +271,29 @@ def calculate_duval1_coordinates(ch4, c2h2, c2h4):
 
 def calculate_duval1_result(ch4, c2h2, c2h4):
     try:
-        if (np.isnan(ch4) is True) or (np.isnan(c2h2) is True) or (np.isnan(c2h4) is True):
+        if (isna(ch4) is True) or (isna(c2h2) is True) or (isna(c2h4) is True):
             return 'N/A'
-        x, y, z = calculate_duval1_coordinates(ch4, c2h2, c2h4)
-        if x >= 98:
-            return 'PD'
-        elif y < 4 and z < 20 and x < 98:
-            return 'T1'
-        elif y < 4 and z >= 20 and z < 50:
-            return 'T2'
-        elif y < 15 and z >= 50:
-            return 'T3'
-        elif (z < 50 and y >= 4 and y < 13 ) or (z >= 40 and z < 50 and y >= 13 and y < 29) or (z >= 50 and y >= 15 and y < 29):
-            return 'DT'
-        elif z < 23 and y >= 13:
-            return 'D1'
-        elif (z >= 23 and y >= 29) or (z < 40 and z >= 23 and y < 29 and y >=13):
-            return 'D2'
         else:
-            return 'ND'
+            x, y, z = calculate_duval1_coordinates(ch4, c2h2, c2h4)
+            if x >= 98:
+                return 'PD'
+            elif y < 4 and z < 20 and x < 98:
+                return 'T1'
+            elif y < 4 and z >= 20 and z < 50:
+                return 'T2'
+            elif y < 15 and z >= 50:
+                return 'T3'
+            elif (z < 50 and y >= 4 and y < 13 ) or (z >= 40 and z < 50 and y >= 13 and y < 29) or (z >= 50 and y >= 15 and y < 29):
+                return 'DT'
+            elif z < 23 and y >= 13:
+                return 'D1'
+            elif (z >= 23 and y >= 29) or (z < 40 and z >= 23 and y < 29 and y >=13):
+                return 'D2'
+            else:
+                return 'ND'
     except TypeError:
+        print('Duval result calculation error!')
+        print('{ch4}, {c2h2}, {c2h4}')
         return 'N/A'
     
 def create_duval1_marker(ch4, c2h2, c2h4, marker_name):

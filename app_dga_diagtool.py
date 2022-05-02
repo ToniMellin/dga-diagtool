@@ -6,8 +6,16 @@ from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
 import duval_triangle_1
+import webbrowser # autobrowser opening
+from threading import Timer # autobrowser opening
+import os # autobrowser opening
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+def open_browser():
+    # function to open browser if not already running
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):
+        webbrowser.open_new('http://127.0.0.1:8050/')
 
 def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     '''
@@ -19,6 +27,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
     R6: CO2/CO
     '''
     # TODO handle zerodivision errors individually to allow zero values
+    #TODO add O2/N2 ratio
     try:
         r1_val = ch4_val / h2_val
         r2_val = c2h2_val / c2h4_val
@@ -27,7 +36,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         r5_val = c2h4_val / c2h6_val
         r6_val =  co2_val / co_val
     except ZeroDivisionError:
-        print('ZeroDivisionError')
+        print('Ratio ZeroDivisionError')
         r1_val = np.nan
         r2_val = np.nan
         r3_val = np.nan
@@ -35,7 +44,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         r5_val = np.nan
         r6_val = np.nan
     except TypeError:
-        print('TypeError')
+        print('Ratio TypeError')
         r1_val = np.nan
         r2_val = np.nan
         r3_val = np.nan
@@ -49,9 +58,9 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
 
 def rogers_ratio_calculation(ratio2, ratio1, ratio5):
     try:
-        if (np.isnan(ratio2) is True) or (np.isnan(ratio1) is True) or (np.isnan(ratio5) is True):
+        if (pd.isna(ratio2) is True) or (pd.isna(ratio1) is True) or (pd.isna(ratio5) is True):
             return 'N/A'
-        if ratio2 < 0.1 and ratio1 > 0.1 and ratio1 < 1 and ratio5 < 1:
+        elif ratio2 < 0.1 and ratio1 > 0.1 and ratio1 < 1 and ratio5 < 1:
             return 'Normal'
         elif ratio2 < 0.1 and ratio1 < 0.1 and ratio5 < 1:
             return 'PD'
@@ -66,6 +75,8 @@ def rogers_ratio_calculation(ratio2, ratio1, ratio5):
         else:
             return 'ND'
     except:
+        print('Rogers ratio calculation error!')
+        print(f'{ratio2}, {ratio1}, {ratio5}')
         return 'N/A'
 
 def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
@@ -87,9 +98,9 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     co_l1 = 350
 
     try:
-        if (np.isnan(ratio1) is True) or (np.isnan(ratio2) is True) or (np.isnan(ratio3) is True) or (np.isnan(ratio4) is True):
+        if (pd.isna(ratio1) is True) or (pd.isna(ratio2) is True) or (pd.isna(ratio3) is True) or (pd.isna(ratio4) is True):
             return 'N/A'
-        if (h2_val > h2_2l1 or ch4_val > ch4_2l1 or c2h2_val > c2h2_2l1 or c2h4_val > c2h4_2l1) and (c2h6_val > c2h6_l1 or co_val > co_l1):
+        elif (h2_val > h2_2l1 or ch4_val > ch4_2l1 or c2h2_val > c2h2_2l1 or c2h4_val > c2h4_2l1) and (c2h6_val > c2h6_l1 or co_val > co_l1):
             if (ch4_val > ch4_l1 or h2_val > h2_l1) and (c2h2_val > c2h2_l1 or c2h4_val > c2h4_l1) and (c2h2_val > c2h2_l1 or ch4_val > ch4_l1) and (c2h6_val > c2h6_l1 or c2h2_val > c2h2_l1):
                 if ratio1 > 1 and ratio2 < 0.75 and ratio3 < 0.3 and ratio4 > 0.4:
                     return 'T'
@@ -100,10 +111,12 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
                 else:
                     return 'ND'
             else:
-                return 'NA'
+                return 'N/A'
         else:
             return 'No fault'
     except:
+        print('Doernenburg ratio calculation error!')
+        print(f'{h2_val}, {ch4_val}, {c2h6_val}, {c2h4_val}, {c2h2_val}, {co_val}, {co2_val}')
         return 'N/A'
 
 def iec_ratio_calculation(ratio2, ratio1, ratio5):
@@ -123,6 +136,8 @@ def iec_ratio_calculation(ratio2, ratio1, ratio5):
         else:
             return "ND"
     except:
+        print('IEC ratio calculation error!')
+        print(f'{ratio2}, {ratio1}, {ratio5}')
         return 'N/A'
 
 def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
@@ -131,33 +146,36 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
     diag_result_list = []
 
     try:
-        if np.isnan([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
+        if pd.isna([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
             diag_result_list.append('N/A')
         else:
             rogers_result = rogers_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
             diag_result_list.append(rogers_result)
 
-        if np.isnan(ratio_list).any() is True:
+        if pd.isna(ratio_list).any() is True:
             diag_result_list.append('N/A')
         else:
             doernenburg_result = doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
             diag_result_list.append(doernenburg_result)
 
-        if np.isnan([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
+        if pd.isna([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
             diag_result_list.append('N/A')
         else:
             iec_result = iec_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
             diag_result_list.append(iec_result)
 
-        if np.isnan([ch4_val, c2h2_val, c2h4_val]).any() is True:
+        if pd.isna([ch4_val, c2h2_val, c2h4_val]).any() is True:
             diag_result_list.append('N/A')
         else:
             duval1_result = duval_triangle_1.calculate_duval1_result(ch4_val, c2h2_val, c2h4_val)
             diag_result_list.append(duval1_result)
+        
+        return diag_result_list
     except:
         print('diag result calculation error!! ')
+        print(diag_result_list)
 
-    return diag_result_list
+        return ['-', '-', '-', '-']
 
 def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     
@@ -316,6 +334,7 @@ def generate_table(dataframe):
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+#TODO add O2, N2 and transformer age input
 app.layout = html.Div([
     html.H2('DGA diagnostic dash\n'), #, style={'color': 'white', 'backgroundColor':'#003366'}
     
@@ -353,7 +372,7 @@ app.layout = html.Div([
     html.Div(id='output-state')
 ])
 
-
+#TODO add O2, N2 and transformer age callbacks
 @app.callback(Output('output-state', 'children'),
               [Input('submit-button-state', 'n_clicks')],
               [State('h2-state', 'value'),
@@ -399,4 +418,5 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
 
 
 if __name__ == '__main__':
+    Timer(1, open_browser).start()
     app.run_server(debug=True)
