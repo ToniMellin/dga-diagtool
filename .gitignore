@@ -5,5 +5,8 @@ __pycache__/
 # vscode
 .vscode/
 
-#venv
+# venv
 dga_diagtool_env/
+
+# development
+development/

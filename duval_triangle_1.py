@@ -270,6 +270,8 @@ def calculate_duval1_coordinates(ch4, c2h2, c2h4):
 
 def calculate_duval1_result(ch4, c2h2, c2h4):
     try:
+        if (np.isnan(ch4) is True) or (np.isnan(c2h2) is True) or (np.isnan(c2h4) is True):
+            return 'N/A'
         x, y, z = calculate_duval1_coordinates(ch4, c2h2, c2h4)
         if x >= 98:
             return 'PD'

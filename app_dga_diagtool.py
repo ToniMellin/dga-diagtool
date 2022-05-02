@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
@@ -18,6 +18,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
     R5: C2H4/C2H6
     R6: CO2/CO
     '''
+    # TODO handle zerodivision errors individually to allow zero values
     try:
         r1_val = ch4_val / h2_val
         r2_val = c2h2_val / c2h4_val
@@ -48,6 +49,8 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
 
 def rogers_ratio_calculation(ratio2, ratio1, ratio5):
     try:
+        if (np.isnan(ratio2) is True) or (np.isnan(ratio1) is True) or (np.isnan(ratio5) is True):
+            return 'N/A'
         if ratio2 < 0.1 and ratio1 > 0.1 and ratio1 < 1 and ratio5 < 1:
             return 'Normal'
         elif ratio2 < 0.1 and ratio1 < 0.1 and ratio5 < 1:
@@ -71,8 +74,6 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     ratio2 = ratio_list[1]
     ratio3 = ratio_list[2]
     ratio4 = ratio_list[3]
-    ratio5 = ratio_list[4]
-    ratio6 = ratio_list[5]
 
     h2_l1 = 100
     h2_2l1 = 100 * 2
@@ -86,6 +87,8 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     co_l1 = 350
 
     try:
+        if (np.isnan(ratio1) is True) or (np.isnan(ratio2) is True) or (np.isnan(ratio3) is True) or (np.isnan(ratio4) is True):
+            return 'N/A'
         if (h2_val > h2_2l1 or ch4_val > ch4_2l1 or c2h2_val > c2h2_2l1 or c2h4_val > c2h4_2l1) and (c2h6_val > c2h6_l1 or co_val > co_l1):
             if (ch4_val > ch4_l1 or h2_val > h2_l1) and (c2h2_val > c2h2_l1 or c2h4_val > c2h4_l1) and (c2h2_val > c2h2_l1 or ch4_val > ch4_l1) and (c2h6_val > c2h6_l1 or c2h2_val > c2h2_l1):
                 if ratio1 > 1 and ratio2 < 0.75 and ratio3 < 0.3 and ratio4 > 0.4:
@@ -127,159 +130,177 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
 
     diag_result_list = []
 
-    rogers_result = rogers_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
-    diag_result_list.append(rogers_result)
+    try:
+        if np.isnan([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
+            diag_result_list.append('N/A')
+        else:
+            rogers_result = rogers_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
+            diag_result_list.append(rogers_result)
 
-    doernenburg_result = doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    diag_result_list.append(doernenburg_result)
+        if np.isnan(ratio_list).any() is True:
+            diag_result_list.append('N/A')
+        else:
+            doernenburg_result = doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+            diag_result_list.append(doernenburg_result)
 
-    iec_result = iec_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
-    diag_result_list.append(iec_result)
+        if np.isnan([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
+            diag_result_list.append('N/A')
+        else:
+            iec_result = iec_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
+            diag_result_list.append(iec_result)
 
-    duval1_result = duval_triangle_1.calculate_duval1_result(ch4_val, c2h2_val, c2h4_val)
-    diag_result_list.append(duval1_result)
+        if np.isnan([ch4_val, c2h2_val, c2h4_val]).any() is True:
+            diag_result_list.append('N/A')
+        else:
+            duval1_result = duval_triangle_1.calculate_duval1_result(ch4_val, c2h2_val, c2h4_val)
+            diag_result_list.append(duval1_result)
+    except:
+        print('diag result calculation error!! ')
 
     return diag_result_list
 
-def iec_limit_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     
-    h2_lim = 132
-    ch4_lim = 120
-    c2h6_lim = 90
-    c2h4_lim = 146
-    c2h2_lim = 4
-    c2h2_oltc_lim = 37
-    co_lim = 1060
-    co2_lim = 10000
+    # iec 90th percentile typical values
+    h2_typ = 132
+    ch4_typ = 120
+    c2h6_typ = 90
+    c2h4_typ = 146
+    c2h2_typ = 4
+    c2h2_oltc_typ = 37
+    co_typ = 1060
+    co2_typ = 10000
 
-    iec_limit_results = []
+    iec_typical_results = []
     try:
-        if h2_val > h2_lim:
-            iec_limit_results.append('Limit exceeded!')
+        if h2_val > h2_typ:
+            iec_typical_results.append('Typical values exceeded!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
 
-        if ch4_val > ch4_lim:
-            iec_limit_results.append('Limit exceeded!')
+        if ch4_val > ch4_typ:
+            iec_typical_results.append('Typical values exceeded!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
 
-        if c2h6_val > c2h6_lim:
-            iec_limit_results.append('Limit exceeded!')
+        if c2h6_val > c2h6_typ:
+            iec_typical_results.append('Typical values exceeded!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
 
-        if c2h4_val > c2h4_lim:
-            iec_limit_results.append('Limit exceeded!')
+        if c2h4_val > c2h4_typ:
+            iec_typical_results.append('Typical values exceeded!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
 
-        if c2h2_val > c2h2_lim:
-            if c2h2_val > c2h2_oltc_lim:
-                iec_limit_results.append('Communicating OLTC limit exceeded!')
+        if c2h2_val > c2h2_typ:
+            if c2h2_val > c2h2_oltc_typ:
+                iec_typical_results.append('Communicating OLTC typical values exceeded!')
             else:
-                iec_limit_results.append('Limit exceeded unless communicating OLTC!')
+                iec_typical_results.append('Typical values exceeded unless communicating OLTC!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
 
-        if co_val > co_lim:
-            iec_limit_results.append('Limit exceeded!')
+        if co_val > co_typ:
+            iec_typical_results.append('Typical values exceeded!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
 
-        if co2_val > co2_lim:
-            iec_limit_results.append('Limit exceeded!')
+        if co2_val > co2_typ:
+            iec_typical_results.append('Typical values exceeded!')
         else:
-            iec_limit_results.append('Normal')
+            iec_typical_results.append('Normal')
         
         # TDCG not included in IEC
-        iec_limit_results.append('-')
+        iec_typical_results.append('-')
     except:
-        iec_limit_results = ['-', '-', '-', '-', '-', '-', '-', '-']
+        iec_typical_results = ['-', '-', '-', '-', '-', '-', '-', '-']
 
-    return iec_limit_results
+    return iec_typical_results
 
-def ieee_2008_limit_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     try:
         tdcg_val = h2_val + ch4_val + c2h6_val + c2h4_val + c2h2_val + co_val
     except:
         tdcg_val = 0
 
-    # limits for condition 1
-    h2_lim1 = 100
-    ch4_lim1 = 120
-    c2h6_lim1 = 65
-    c2h4_lim1 = 50
-    c2h2_lim1 = 1
-    co_lim1 = 350
-    co2_lim1 = 2500
-    tdcg_lim1 = 720
+    # typical values for condition 1
+    h2_typ1 = 100
+    ch4_typ1 = 120
+    c2h6_typ1 = 65
+    c2h4_typ1 = 50
+    c2h2_typ1 = 1
+    co_typ1 = 350
+    co2_typ1 = 2500
+    tdcg_typ1 = 720
 
-    #TODO add condition 2 and condition 3 limits and result calculations
+    # typical values for condition 2
+
+    #TODO add condition 2 and condition 3 typical values and result calculations
 
     
     try:
-        ieee_limit_results = []
-        if h2_val > h2_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        ieee_typical_results = []
+        if h2_val > h2_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if ch4_val > ch4_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if ch4_val > ch4_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if c2h6_val > c2h6_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if c2h6_val > c2h6_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if c2h4_val > c2h4_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if c2h4_val > c2h4_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if c2h2_val > c2h2_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if c2h2_val > c2h2_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if co_val > co_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if co_val > co_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if co2_val > co2_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if co2_val > co2_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
         
-        if co2_val > co2_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if co2_val > co2_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
 
-        if tdcg_val > tdcg_lim1:
-            ieee_limit_results.append('Limit exceeded! / Condition 2')
+        if tdcg_val > tdcg_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
-            ieee_limit_results.append('Normal / Condition 1')
+            ieee_typical_results.append('Normal / Condition 1')
         
     except:
-        ieee_limit_results = ['-', '-', '-', '-', '-', '-', '-', '-']
+        ieee_typical_results = ['-', '-', '-', '-', '-', '-', '-', '-']
 
-    return ieee_limit_results
+    return ieee_typical_results
 
-def calculate_limit_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
-    limit_result_list = []
+def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+    typical_result_list = []
     
-    iec_limit_list = iec_limit_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    limit_result_list.append(iec_limit_list)
+    iec_typical_list = iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+    typical_result_list.append(iec_typical_list)
 
-    ieee_2008_limit_list = ieee_2008_limit_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    limit_result_list.append(ieee_2008_limit_list)
+    ieee_2008_typical_list = ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+    typical_result_list.append(ieee_2008_typical_list)
 
-    return limit_result_list
+    return typical_result_list
 
 def generate_table(dataframe):
     return html.Table([
@@ -356,22 +377,22 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
         diag_results = ['N/A', 'N/A', 'N/A', 'N/A']
     df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:'], 'Result': diag_results})
     
-    limit_results = calculate_limit_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    df_limits = pd.DataFrame({'Value limits': ['IEC 60599 90%', 'IEEE C57.104-2008'], 
-                                'H2': [limit_results[0][0], limit_results[1][0]], 
-                                'CH4': [limit_results[0][1], limit_results[1][1]], 
-                                'C2H6': [limit_results[0][2], limit_results[1][2]], 
-                                'C2H4': [limit_results[0][3], limit_results[1][3]], 
-                                'C2H2': [limit_results[0][4], limit_results[1][4]], 
-                                'CO': [limit_results[0][5], limit_results[1][5]], 
-                                'CO2': [limit_results[0][6], limit_results[1][6]],
-                                'TDCG': [limit_results[0][7], limit_results[1][7]]
+    typical_results = calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, 90% typical values', 'IEEE C57.104-2008, typical values'], 
+                                'H2': [typical_results[0][0], typical_results[1][0]], 
+                                'CH4': [typical_results[0][1], typical_results[1][1]], 
+                                'C2H6': [typical_results[0][2], typical_results[1][2]], 
+                                'C2H4': [typical_results[0][3], typical_results[1][3]], 
+                                'C2H2': [typical_results[0][4], typical_results[1][4]], 
+                                'CO': [typical_results[0][5], typical_results[1][5]], 
+                                'CO2': [typical_results[0][6], typical_results[1][6]],
+                                'TDCG': [typical_results[0][7], typical_results[1][7]]
                                 })
 
 
     return html.Div([generate_table(df_ratio),
                     generate_table(df_diag),
-                    generate_table(df_limits),
+                    generate_table(df_typicals),
                     dcc.Graph(figure=duval_triangle_1.create_duval1_result_graph(ch4_val, c2h2_val, c2h4_val))
                     ])
 
