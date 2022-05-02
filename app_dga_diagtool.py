@@ -336,41 +336,73 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 #TODO add O2, N2 and transformer age input
 app.layout = html.Div([
-    html.H2('DGA diagnostic dash\n'), #, style={'color': 'white', 'backgroundColor':'#003366'}
     
-    html.Div(["H2:  ",    
-    dcc.Input(id='h2-state', type='number'),
-    ]),
-
-    html.Div(["CH4: ",
-    dcc.Input(id='ch4-state', type='number'),
-    ]),
+    html.H2('DGA diagtool\n'), #, style={'color': 'white', 'backgroundColor':'#003366'}
     
-    html.Div(["C2H6:",    
-    dcc.Input(id='c2h6-state', type='number'),
-    ]),
-
-    html.Div(["C2H4:",
-    dcc.Input(id='c2h4-state', type='number'),
-    ]),
-
-    html.Div(["C2H2:",    
-    dcc.Input(id='c2h2-state', type='number'),
-    ]),
-
-    html.Div(["CO:  ",
-    dcc.Input(id='co-state', type='number'),
-    ]),
-
-    html.Div(["CO2: ",
-    dcc.Input(id='co2-state', type='number'),
-    ]),
 
     html.Div([
-    html.Button(id='submit-button-state', n_clicks=0, children='Calculate'),
-    ]),
+    html.Br(),
+    html.Label('Hydrogen (H2)'),    
+    dcc.Input(id='h2-state', type='number'),
+
+    html.Br(),
+    html.Label('Methane (CH4)'),    
+    dcc.Input(id='ch4-state', type='number'),
+
+    html.Br(),
+    html.Label('Ethane (C2H6)'),    
+    dcc.Input(id='c2h6-state', type='number'),
+
+    html.Br(),
+    html.Label('Ethylene (C2H4)'),    
+    dcc.Input(id='c2h4-state', type='number'),
+
+    html.Br(),
+    html.Label('Acetylene (C2H2)'),    
+    dcc.Input(id='c2h2-state', type='number'),
+
+    html.Div([
+    html.Br(),
+    html.Button(id='submit-button-state', n_clicks=0, children='Calculate')
+    ], style={'padding': 10}),
+
+    ], style={
+            'display': 'inline-block',
+            'vertical-align': 'top'
+        }),
+
+    html.Div([
+    html.Br(),
+    html.Label('Carbon monoxide (CO)'),
+    dcc.Input(id='co-state', type='number'),
+
+    html.Br(),
+    html.Label('Carbon dioxide (CO2)'),
+    dcc.Input(id='co2-state', type='number'),
+
+    html.Br(),
+    html.Label('Oxygen (O2) - Optional'), 
+    dcc.Input(id='o2-state', type='number'),
+
+    html.Br(),
+    html.Label('Nitrogen (N2) - Optional'), 
+    dcc.Input(id='n2-state', type='number'),
+
+    html.Br(),
+    html.Label('Transformer age (years) - Optional'), 
+    dcc.Input(id='trafo-age-state', type='number')
+    ], style={
+            'display': 'inline-block',
+            'vertical-align': 'top',
+            'margin-left': '100px'
+        }),
+
+    html.Br(),
     html.Div(id='output-state')
-])
+    ], style={
+            'display': 'inline-block',
+            'vertical-align': 'top'
+        })
 
 #TODO add O2, N2 and transformer age callbacks
 @app.callback(Output('output-state', 'children'),
@@ -381,11 +413,14 @@ app.layout = html.Div([
                State('c2h4-state', 'value'),
                State('c2h2-state', 'value'),
                State('co-state', 'value'),
-               State('co2-state', 'value')]
+               State('co2-state', 'value'),
+               State('o2-state', 'value'),
+               State('n2-state', 'value'),
+               State('trafo-age-state', 'value')]
                )
 
 
-def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     r_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
     df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):'],
                             'Value': r_list}).round(2)
