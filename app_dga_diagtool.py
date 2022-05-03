@@ -231,7 +231,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
             diag_result_list.append(duval1_result)
         
     except Exception as e:
-        print(f'diag result calculation error!!:\n {e}')
+        print(f'diag result calculation error!!:\n{e}')
         print(f'Input: {h2_val}, {ch4_val}, {c2h6_val}, {c2h4_val}, {c2h2_val}, {co_val}, {co2_val}')
         print(f'Ratios isna: {pd.isna(ratio_list)}')
         print(diag_result_list)
@@ -242,7 +242,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
 
 def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     
-    # iec 90th percentile typical values
+    # IEC 90th percentile typical values
     h2_typ = 132
     ch4_typ = 120
     c2h6_typ = 90
@@ -254,27 +254,37 @@ def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
 
     iec_typical_results = []
     try:
-        if h2_val > h2_typ:
+        if pd.isna(h2_val) is True:
+            iec_typical_results.append('-')
+        elif h2_val > h2_typ:
             iec_typical_results.append('Typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
-        if ch4_val > ch4_typ:
+        if pd.isna(ch4_val) is True:
+            iec_typical_results.append('-')
+        elif ch4_val > ch4_typ:
             iec_typical_results.append('Typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
-        if c2h6_val > c2h6_typ:
+        if pd.isna(c2h6_val) is True:
+            iec_typical_results.append('-')
+        elif c2h6_val > c2h6_typ:
             iec_typical_results.append('Typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
-        if c2h4_val > c2h4_typ:
+        if pd.isna(c2h4_val) is True:
+            iec_typical_results.append('-')
+        elif c2h4_val > c2h4_typ:
             iec_typical_results.append('Typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
-        if c2h2_val > c2h2_typ:
+        if pd.isna(c2h2_val) is True:
+            iec_typical_results.append('-')
+        elif c2h2_val > c2h2_typ:
             if c2h2_val > c2h2_oltc_typ:
                 iec_typical_results.append('Communicating OLTC typical values exceeded!')
             else:
@@ -282,19 +292,24 @@ def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
         else:
             iec_typical_results.append('Normal')
 
-        if co_val > co_typ:
+        if pd.isna(co_val) is True:
+            iec_typical_results.append('-')
+        elif co_val > co_typ:
             iec_typical_results.append('Typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
-        if co2_val > co2_typ:
+        if pd.isna(co2_val) is True:
+            iec_typical_results.append('-')
+        elif co2_val > co2_typ:
             iec_typical_results.append('Typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
         
         # TDCG not included in IEC
         iec_typical_results.append('-')
-    except:
+    except Exception as e:
+        print(f'IEC typical value comparison issue!!\n{e}')
         iec_typical_results = ['-', '-', '-', '-', '-', '-', '-', '-']
 
     return iec_typical_results
@@ -381,11 +396,14 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     typical_result_list = []
     
-    iec_typical_list = iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    typical_result_list.append(iec_typical_list)
+    try:
+        iec_typical_list = iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+        typical_result_list.append(iec_typical_list)
 
-    ieee_2008_typical_list = ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    typical_result_list.append(ieee_2008_typical_list)
+        ieee_2008_typical_list = ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+        typical_result_list.append(ieee_2008_typical_list)
+    except Exception as e:
+        print(f'Typical value comparison issue!!\n{e}')
 
     return typical_result_list
 
