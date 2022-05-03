@@ -339,59 +339,77 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     #TODO add condition 2 and condition 3 typical values and result calculations
 
     #TODO individual typical value comparison handling
+    ieee_typical_results = []
+
     try:
-        ieee_typical_results = []
-        if h2_val > h2_typ1:
+        if pd.isna(h2_val) is True:
+            ieee_typical_results.append('-')
+        elif h2_val > h2_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
-        if ch4_val > ch4_typ1:
+        if pd.isna(ch4_val) is True:
+            ieee_typical_results.append('-')
+        elif ch4_val > ch4_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
-        if c2h6_val > c2h6_typ1:
+        if pd.isna(c2h6_val) is True:
+            ieee_typical_results.append('-')
+        elif c2h6_val > c2h6_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
-        if c2h4_val > c2h4_typ1:
+        if pd.isna(c2h4_val) is True:
+            ieee_typical_results.append('-')
+        elif c2h4_val > c2h4_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
-        if c2h2_val > c2h2_typ1:
+        if pd.isna(c2h2_val) is True:
+            ieee_typical_results.append('-')
+        elif c2h2_val > c2h2_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
-        if co_val > co_typ1:
+        if pd.isna(co_val) is True:
+            ieee_typical_results.append('-')
+        elif co_val > co_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
-        if co2_val > co2_typ1:
+        if pd.isna(co2_val) is True:
+            ieee_typical_results.append('')
+        elif co2_val > co2_typ1:
+            ieee_typical_results.append('Typical values exceeded! / Condition 2')
+        else:
+            ieee_typical_results.append('Normal / Condition 1')
+
+        if pd.isna(tdcg_val) is True:
+            ieee_typical_results.append('')
+        elif tdcg_val > tdcg_typ1:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
         
-        if co2_val > co2_typ1:
-            ieee_typical_results.append('Typical values exceeded! / Condition 2')
-        else:
-            ieee_typical_results.append('Normal / Condition 1')
-
-        if tdcg_val > tdcg_typ1:
-            ieee_typical_results.append('Typical values exceeded! / Condition 2')
-        else:
-            ieee_typical_results.append('Normal / Condition 1')
-        
-    except:
+    except Exception as e:
+        print(f'IEEE-2008 typical value comparison issue!!\n{e}')
         ieee_typical_results = ['-', '-', '-', '-', '-', '-', '-', '-']
 
     return ieee_typical_results
 
 #TODO add IEEE C57.104-2019 typical values, requires O2/N2 ratio and optional transformer age
+
+def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+    ieee_2019_typical_results = []
+
+    # 90th percentile typical values
 
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     typical_result_list = []
