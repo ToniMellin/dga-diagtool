@@ -17,7 +17,7 @@ def open_browser():
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         webbrowser.open_new('http://127.0.0.1:8050/')
 
-def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val):
     '''
     R1: CH4/H2
     R2: C2H2/C2H4
@@ -27,34 +27,92 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
     R6: CO2/CO
     R7: O2/N2
     '''
-    # TODO handle zerodivision errors individually to allow zero values
-    #TODO add O2/N2 ratio with o2_val and n2_val as args or kwargs
+
+    # Ratio 1: CH4/H2
     try:
-        r1_val = ch4_val / h2_val
-        r2_val = c2h2_val / c2h4_val
-        r3_val = c2h2_val / ch4_val
-        r4_val = c2h6_val / c2h2_val
-        r5_val = c2h4_val / c2h6_val
-        r6_val =  co2_val / co_val
-        #r7_val = o2_val / n2_val
-    except ZeroDivisionError:
-        print('Ratio ZeroDivisionError')
+        if h2_val == 0:
+            r1_val = 0
+        elif (pd.isna(ch4_val) is True) or (pd.isna(h2_val) is True):
+            r1_val = np.nan
+        else:
+            r1_val = ch4_val / h2_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
         r1_val = np.nan
-        r2_val = np.nan
-        r3_val = np.nan
-        r4_val = np.nan
-        r5_val = np.nan
-        r6_val = np.nan
-    except TypeError:
-        print('Ratio TypeError')
-        r1_val = np.nan
-        r2_val = np.nan
-        r3_val = np.nan
-        r4_val = np.nan
-        r5_val = np.nan
-        r6_val = np.nan
     
-    ratio_list = [r1_val, r2_val, r3_val, r4_val, r5_val, r6_val]
+    # Ratio 2: C2H2/C2H4
+    try:
+        if c2h4_val == 0:
+            r2_val = 0
+        elif (pd.isna(c2h2_val) is True) or (pd.isna(c2h4_val) is True):
+            r2_val = np.nan
+        else:
+            r2_val = c2h2_val / c2h4_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
+        r2_val = np.nan
+
+    # Ratio 3: C2H2/CH4
+    try:
+        if ch4_val == 0:
+            r3_val = 0
+        elif (pd.isna(c2h2_val) is True) or (pd.isna(ch4_val) is True):
+            r3_val = np.nan
+        else:
+            r3_val = c2h2_val / ch4_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
+        r3_val = np.nan
+
+    # Ratio 4: C2H6/C2H2
+    try:
+        if c2h2_val == 0:
+            r4_val = 0
+        elif (pd.isna(c2h6_val) is True) or (pd.isna(c2h2_val) is True):
+            r4_val = np.nan
+        else:
+            r4_val = c2h6_val / c2h2_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
+        r4_val = np.nan
+
+    # Ratio 5: C2H4/C2H6
+    try:
+        if c2h6_val == 0:
+            r5_val = 0
+        elif (pd.isna(c2h4_val) is True) or (pd.isna(c2h6_val) is True):
+            r5_val = np.nan
+        else:
+            r5_val = c2h4_val / c2h6_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
+        r5_val = np.nan
+
+    # Ratio 6: CO2/CO
+    try:
+        if co_val == 0:
+            r6_val = 0
+        elif (pd.isna(co2_val) is True) or (pd.isna(co_val) is True):
+            r6_val = np.nan
+        else:
+            r6_val =  co2_val / co_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
+        r6_val = np.nan
+
+    # Ratio 7: O2/N2
+    try:
+        if n2_val == 0:
+            r7_val = 0
+        elif (pd.isna(o2_val) is True) or (pd.isna(n2_val) is True):
+            r7_val = np.nan
+        else:
+            r7_val = o2_val / n2_val
+    except TypeError as e:
+        print(f'Ratio TypeError: {e}')
+        r7_val = np.nan
+
+    ratio_list = [r1_val, r2_val, r3_val, r4_val, r5_val, r6_val, r7_val]
     
     return ratio_list
 
@@ -143,7 +201,7 @@ def iec_ratio_calculation(ratio2, ratio1, ratio5):
         return 'N/A'
 
 def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
-    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, 0, 0)
 
     diag_result_list = []
 
@@ -317,7 +375,7 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 
 #TODO add duval 5 and conditions to use
 
-def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     typical_result_list = []
     
     iec_typical_list = iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
@@ -429,8 +487,8 @@ app.layout = html.Div([
 
 
 def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
-    r_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-    df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):'],
+    r_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val)
+    df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):', 'Ratio 7 (O2/N2):'],
                             'Value': r_list}).round(2)
     try:
         diag_results = calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
@@ -439,7 +497,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
         diag_results = ['N/A', 'N/A', 'N/A', 'N/A']
     df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:'], 'Result': diag_results})
     
-    typical_results = calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+    typical_results = calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
     df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, 90% typical values', 'IEEE C57.104-2008, typical values'], 
                                 'H2': [typical_results[0][0], typical_results[1][0]], 
                                 'CH4': [typical_results[0][1], typical_results[1][1]], 
