@@ -18,8 +18,9 @@ Run app_dga_diagtool.py with needed libraries installed and a browser should ope
 
 
 ## Features
-- When given all DGA gas values, the tool calculates ratios and provides diagnostic method analysis results (Rogers ratio, Doernenburg, IEC ratios, Duval triangle 1)
-- The tool will analyse gas values against standard typical values (IEC 60599 & IEEE C57.104) and indicate if they are exceeded 
+- The tool calculates ratios and provides diagnostic method analysis results with given values (Rogers ratio, Doernenburg, IEC ratios, Duval triangle 1)
+- If values are omitted, ratios or diagnostic method results that need the omitted values will not produce results, but any ratios or methods that have sufficient data to calculate will be provided
+- The tool will compare gas values against standard typical values (IEC 60599 & IEEE C57.104) and indicate if they are exceeded 
 - Duval triangle 1 sample plotting
 
 

@@ -229,6 +229,10 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
         else:
             duval1_result = duval_triangle_1.calculate_duval1_result(ch4_val, c2h2_val, c2h4_val)
             diag_result_list.append(duval1_result)
+
+        #TODO add duval 4 and conditions to use
+
+        #TODO add duval 5 and conditions to use
         
     except Exception as e:
         print(f'diag result calculation error!!:\n{e}')
@@ -334,7 +338,7 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 
     #TODO add condition 2 and condition 3 typical values and result calculations
 
-    
+    #TODO individual typical value comparison handling
     try:
         ieee_typical_results = []
         if h2_val > h2_typ1:
@@ -388,10 +392,6 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     return ieee_typical_results
 
 #TODO add IEEE C57.104-2019 typical values, requires O2/N2 ratio and optional transformer age
-
-#TODO add duval 4 and conditions to use
-
-#TODO add duval 5 and conditions to use
 
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     typical_result_list = []
@@ -550,6 +550,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                     html.Div([
                     generate_table(df_typicals)], style={'padding': 20}),
 
+                    #TODO triangle 4 & 5 +styling for parallel triangles
                     html.Div([
                     dcc.Graph(figure=duval_triangle_1.create_duval1_result_graph(ch4_val, c2h2_val, c2h4_val))
                     ])
