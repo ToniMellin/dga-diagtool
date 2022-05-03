@@ -140,7 +140,7 @@ def rogers_ratio_calculation(ratio2, ratio1, ratio5):
         return 'N/A'
 
 def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
-    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, np.nan, np.nan)
     ratio1 = ratio_list[0]
     ratio2 = ratio_list[1]
     ratio3 = ratio_list[2]
@@ -201,7 +201,7 @@ def iec_ratio_calculation(ratio2, ratio1, ratio5):
         return 'N/A'
 
 def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
-    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, 0, 0)
+    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, np.nan, np.nan)
 
     diag_result_list = []
 
@@ -212,7 +212,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
             rogers_result = rogers_ratio_calculation(ratio_list[1], ratio_list[0], ratio_list[4])
             diag_result_list.append(rogers_result)
 
-        if pd.isna(ratio_list).any() is True:
+        if pd.isna([ratio_list[0], ratio_list[1], ratio_list[2], ratio_list[3]]).any() is True:
             diag_result_list.append('N/A')
         else:
             doernenburg_result = doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
@@ -230,12 +230,15 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
             duval1_result = duval_triangle_1.calculate_duval1_result(ch4_val, c2h2_val, c2h4_val)
             diag_result_list.append(duval1_result)
         
-        return diag_result_list
-    except:
-        print('diag result calculation error!! ')
+    except Exception as e:
+        print(f'diag result calculation error!!:\n {e}')
+        print(f'Input: {h2_val}, {ch4_val}, {c2h6_val}, {c2h4_val}, {c2h2_val}, {co_val}, {co2_val}')
+        print(f'Ratios isna: {pd.isna(ratio_list)}')
         print(diag_result_list)
 
-        return ['-', '-', '-', '-']
+        diag_result_list = ['-', '-', '-', '-']
+
+    return diag_result_list
 
 def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     
