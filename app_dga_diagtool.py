@@ -247,14 +247,14 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
 def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     
     # IEC 90th percentile typical values
-    h2_typ = 132
-    ch4_typ = 120
+    h2_typ = 150
+    ch4_typ = 130
     c2h6_typ = 90
-    c2h4_typ = 146
-    c2h2_typ = 4
-    c2h2_oltc_typ = 37
-    co_typ = 1060
-    co2_typ = 10000
+    c2h4_typ = 280
+    c2h2_typ = 20
+    c2h2_oltc_typ = 280
+    co_typ = 600
+    co2_typ = 14000
 
     iec_typical_results = []
     try:
