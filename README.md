@@ -29,8 +29,13 @@ Run app_dga_diagtool.py using python with needed libraries installed and a brows
 - The tool will compare gas values against standard typical values (IEC 60599 & IEEE C57.104) and indicate if they are exceeded 
 - Duval triangle 1 sample plotting
 
-## TODO
+## TODO (Future feature ides)
 - Add IEEE C57.104-2008 typical value conditions 3 & 4
 - Add IEEE C57.104-2019 typical value comparison
 - Add duval triangle 4 analysis and plotting
 - Add duval triangle 5 analysis and plotting
+- Cigre typical values comparison
+- Multiple sample points
+- Online monitor data
+- Rate of change comparisons (IEC / IEEE / Cigre)
+- Analysis from trends
