@@ -214,7 +214,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
         if pd.isna([ch4_val, c2h2_val, c2h4_val]).any() is True:
             diag_result_list.append('N/A')
         else:
-            duval1_result = duval_triangle_1.calculate_duval1_result(ch4_val, c2h2_val, c2h4_val)
+            duval1_result = duval_triangle_1.calculate_duval_1_result(ch4_val, c2h2_val, c2h4_val)
             diag_result_list.append(duval1_result)
 
         #TODO add duval 4 and conditions to use

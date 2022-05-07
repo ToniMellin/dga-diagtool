@@ -256,7 +256,7 @@ def create_duval_1_nocolor():
     
     return fig
 
-def calculate_duval1_coordinates(ch4, c2h2, c2h4):
+def calculate_duval_1_coordinates(ch4, c2h2, c2h4):
 
     i = ch4
     j = c2h2
@@ -269,12 +269,12 @@ def calculate_duval1_coordinates(ch4, c2h2, c2h4):
 
     return coordinates
 
-def calculate_duval1_result(ch4, c2h2, c2h4):
+def calculate_duval_1_result(ch4, c2h2, c2h4):
     try:
         if (isna(ch4) is True) or (isna(c2h2) is True) or (isna(c2h4) is True):
             return 'N/A'
         else:
-            x, y, z = calculate_duval1_coordinates(ch4, c2h2, c2h4)
+            x, y, z = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
             if x >= 98:
                 return 'PD'
             elif y < 4 and z < 20 and x < 98:
@@ -296,8 +296,8 @@ def calculate_duval1_result(ch4, c2h2, c2h4):
         print('{ch4}, {c2h2}, {c2h4}')
         return 'N/A'
     
-def create_duval1_marker(ch4, c2h2, c2h4, marker_name):
-    mark_coordinates = calculate_duval1_coordinates(ch4, c2h2, c2h4)
+def create_duval_1_marker(ch4, c2h2, c2h4, marker_name):
+    mark_coordinates = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
     return go.Scatterternary(       a= [mark_coordinates[0]],
                                     b= [mark_coordinates[1]],
                                     c= [mark_coordinates[2]],
@@ -308,12 +308,12 @@ def create_duval1_marker(ch4, c2h2, c2h4, marker_name):
                                     marker_size=10
                                     )
 
-def create_duval1_result_graph(ch4, c2h2, c2h4):
+def create_duval_1_result_graph(ch4, c2h2, c2h4):
     fig = create_duval_1_colorized()
 
     try:
-        result_name = calculate_duval1_result(ch4, c2h2, c2h4)
-        fig.add_trace(create_duval1_marker(ch4, c2h2, c2h4, result_name))
+        result_name = calculate_duval_1_result(ch4, c2h2, c2h4)
+        fig.add_trace(create_duval_1_marker(ch4, c2h2, c2h4, result_name))
         return fig
     except:
         return fig
@@ -321,7 +321,7 @@ def create_duval1_result_graph(ch4, c2h2, c2h4):
 # %%
 if __name__ == "__main__":
     fig = create_duval_1_nocolor()
-    mark1 = calculate_duval1_coordinates(50, 50, 100)
+    mark1 = calculate_duval_1_coordinates(50, 50, 100)
     fig.add_trace(go.Scatterternary(a= [mark1[0]],
                                     b= [mark1[1]],
                                     c= [mark1[2]],
@@ -334,7 +334,7 @@ if __name__ == "__main__":
     fig.show()
 
     fig2 = create_duval_1_colorized()
-    mark1 = calculate_duval1_coordinates(50, 50, 100)
+    mark1 = calculate_duval_1_coordinates(50, 50, 100)
     fig2.add_trace(go.Scatterternary(a= [mark1[0]],
                                     b= [mark1[1]],
                                     c= [mark1[2]],
