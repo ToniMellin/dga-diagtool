@@ -122,7 +122,7 @@ def rogers_ratio_calculation(ratio2, ratio1, ratio5):
     except:
         print('Rogers ratio calculation error!')
         print(f'{ratio2}, {ratio1}, {ratio5}')
-        return 'N/A'
+        return '-'
 
 def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, np.nan, np.nan)
@@ -162,10 +162,12 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     except:
         print('Doernenburg ratio calculation error!')
         print(f'{h2_val}, {ch4_val}, {c2h6_val}, {c2h4_val}, {c2h2_val}, {co_val}, {co2_val}')
-        return 'N/A'
+        return '-'
 
 def iec_ratio_calculation(ratio2, ratio1, ratio5):
     try:
+        if (pd.isna(ratio2) is True) or (pd.isna(ratio1) is True) or (pd.isna(ratio5) is True):
+            return 'N/A'
         if ratio2 < 0.1 and ratio5 < 0.2:
             return 'PD'
         elif ratio2 > 1 and ratio1 >= 0.1 and ratio1 <= 0.5 and ratio5 >1:
@@ -183,7 +185,7 @@ def iec_ratio_calculation(ratio2, ratio1, ratio5):
     except:
         print('IEC ratio calculation error!')
         print(f'{ratio2}, {ratio1}, {ratio5}')
-        return 'N/A'
+        return '-'
 
 def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, np.nan, np.nan)
