@@ -5,9 +5,9 @@ from dash import html
 from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
-import duval_triangle_1
-import diagnostic_calculation
-import typical_value_comparison
+from diagnostic import duval_triangle_1
+from diagnostic import diagnostic_calculation
+from diagnostic import typical_value_comparison
 import webbrowser # autobrowser opening
 from threading import Timer # autobrowser opening
 import os # autobrowser opening

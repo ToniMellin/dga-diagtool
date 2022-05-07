@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import duval_triangle_1
+from diagnostic import duval_triangle_1
 
 def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val):
     '''
