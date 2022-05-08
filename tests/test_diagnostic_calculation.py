@@ -1,6 +1,7 @@
 from diagnostic import diagnostic_calculation
 from diagnostic import duval_triangle_1
 from diagnostic import duval_triangle_4
+from diagnostic import duval_triangle_5
 import numpy as np
 
 def test_ratio_calculation_nan():

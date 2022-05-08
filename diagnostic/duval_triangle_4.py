@@ -192,7 +192,6 @@ def calculate_duval_4_coordinates(h2, c2h6, ch4):
 
     return coordinates
 
-#TODO review duval result calculation with renewed excel
 def calculate_duval_4_result(h2, c2h6, ch4):
     try:
         if (isna(h2) is True) or (isna(c2h6) is True) or (isna(ch4) is True):
