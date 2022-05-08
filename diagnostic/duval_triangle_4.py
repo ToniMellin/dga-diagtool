@@ -9,8 +9,8 @@ def create_duval_4_colorized():
     fig = go.Figure(layout=dict(ternary_sum=100))
     #O
     fig.add_trace(go.Scatterternary(a= [0, 0, 9, 9, 0],
-                                    b= [100, 24, 24, 91, 100],
-                                    c= [0, 76, 67, 0, 0],
+                                    b= [100, 30, 30, 91, 100],
+                                    c= [0, 70, 61, 0, 0],
                                     name='O',
                                     showlegend=False,
                                     mode='lines',
@@ -20,9 +20,9 @@ def create_duval_4_colorized():
                                     fillcolor='rgba(178,244,255, 0.5)'
                                     ))
     #C
-    fig.add_trace(go.Scatterternary(a= [0, 0, 64, 40, 0],
-                                    b= [24, 0, 0, 24, 24],
-                                    c= [76, 100, 36, 36, 76],
+    fig.add_trace(go.Scatterternary(a= [0, 0, 64, 40, 15, 15, 0],
+                                    b= [30, 0, 0, 24, 24, 30, 30],
+                                    c= [70, 100, 36, 36, 61, 55, 70],
                                     name='C',
                                     showlegend=False,
                                     mode='lines',
@@ -44,9 +44,9 @@ def create_duval_4_colorized():
                                     fillcolor='rgba(178,255,228, 0.5)'
                                     ))
     #S
-    fig.add_trace(go.Scatterternary(a= [9, 9, 40, 64, 85, 84, 97, 98, 100, 56, 9],
-                                    b= [44, 24, 24, 0, 0, 1, 1, 0, 0, 44, 44],
-                                    c= [47, 67, 36, 36, 15, 15, 2, 2, 0, 0, 47],
+    fig.add_trace(go.Scatterternary(a= [9, 9, 15, 15, 40, 64, 85, 84, 97, 98, 100, 56, 9],
+                                    b= [44, 30, 30, 24, 24, 0, 0, 1, 1, 0, 0, 44, 44],
+                                    c= [47, 61, 55, 61,  36, 36, 15, 15, 2, 2, 0, 0, 47],
                                     name='S',
                                     showlegend=False,
                                     mode='lines',
@@ -112,8 +112,8 @@ def create_duval_4_nocolor():
     fig = go.Figure(layout=dict(ternary_sum=100))
     #O
     fig.add_trace(go.Scatterternary(a= [0, 0, 9, 9, 0],
-                                    b= [100, 24, 24, 91, 100],
-                                    c= [0, 76, 67, 0, 0],
+                                    b= [100, 30, 30, 91, 100],
+                                    c= [0, 70, 61, 0, 0],
                                     name='O',
                                     showlegend=False,
                                     mode='lines',
@@ -121,9 +121,9 @@ def create_duval_4_nocolor():
                                     line_width=0.5
                                     ))
     #C
-    fig.add_trace(go.Scatterternary(a= [0, 0, 64, 40, 0],
-                                    b= [24, 0, 0, 24, 24],
-                                    c= [76, 100, 36, 36, 76],
+    fig.add_trace(go.Scatterternary(a= [0, 0, 64, 40, 15, 15, 0],
+                                    b= [30, 0, 0, 24, 24, 30, 30],
+                                    c= [70, 100, 36, 36, 61, 55, 70],
                                     name='C',
                                     showlegend=False,
                                     mode='lines',
@@ -141,9 +141,9 @@ def create_duval_4_nocolor():
                                     line_width=0.5
                                     ))
     #S
-    fig.add_trace(go.Scatterternary(a= [9, 9, 40, 64, 85, 84, 97, 98, 100, 56, 9],
-                                    b= [44, 24, 24, 0, 0, 1, 1, 0, 0, 44, 44],
-                                    c= [47, 67, 36, 36, 15, 15, 2, 2, 0, 0, 47],
+    fig.add_trace(go.Scatterternary(a= [9, 9, 15, 15, 40, 64, 85, 84, 97, 98, 100, 56, 9],
+                                    b= [44, 30, 30, 24, 24, 0, 0, 1, 1, 0, 0, 44, 44],
+                                    c= [47, 61, 55, 61,  36, 36, 15, 15, 2, 2, 0, 0, 47],
                                     name='S',
                                     showlegend=False,
                                     mode='lines',
@@ -192,6 +192,7 @@ def calculate_duval_4_coordinates(h2, c2h6, ch4):
 
     return coordinates
 
+#TODO review duval result calculation with renewed excel
 def calculate_duval_4_result(h2, c2h6, ch4):
     try:
         if (isna(h2) is True) or (isna(c2h6) is True) or (isna(ch4) is True):
