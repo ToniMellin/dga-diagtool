@@ -283,11 +283,11 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
                 return 'T2'
             elif y < 15 and z >= 50:
                 return 'T3'
-            elif (z < 50 and y >= 4 and y < 13 ) or (z >= 40 and z < 50 and y >= 13 and y < 29) or (z >= 50 and y >= 15 and y < 29):
+            elif (z < 50 and y >= 4 and y < 13 ) and (z >= 40 and z < 50 and y >= 13 and y < 29) and (z >= 50 and y >= 15 and y < 29):
                 return 'DT'
             elif z < 23 and y >= 13:
                 return 'D1'
-            elif (z >= 23 and y >= 29) or (z < 40 and z >= 23 and y < 29 and y >=13):
+            elif (z >= 23 and y >= 29) and (z < 40 and z >= 23 and y < 29 and y >=13):
                 return 'D2'
             else:
                 return 'ND'

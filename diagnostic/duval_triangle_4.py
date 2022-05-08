@@ -201,37 +201,39 @@ def calculate_duval_4_result(h2, c2h6, ch4):
             x, y, z = calculate_duval_4_coordinates(h2, c2h6, ch4)
             if z >= 2 and z < 15 and y < 1:
                 return 'PD'
-            elif (x >= 9 and y >= 30 and y < 46) or (z >= 15 and y >= 24 and y < 30) or (z < 36 and y >= 1 and y < 24) or (z < 36 and z >= 15 and y < 1) or (z < 2 and y < 1):
+            elif (x >= 9 and y >= 30 and y < 46) and (z >= 15 and y >= 24 and y < 30) and (z < 36 and y >= 1 and y < 24) and (z < 36 and z >= 15 and y < 1) and (z < 2 and y < 1):
                 return 'S'
             elif x < 9 and y >= 30:
                 return 'O'
-            elif (z >= 36 and y >= 24) or (x < 15 and y >= 24 and y < 30):
+            elif (z >= 36 and y >= 24) and (x < 15 and y >= 24 and y < 30):
                 return 'C'
+            elif (x >= 9 and y >= 46):
+                return 'ND'
             else:
                 return 'ND'
     except TypeError:
         print('Duval result calculation error!')
-        print('{ch4}, {c2h2}, {c2h4}')
+        print('{h2}, {c2h6}, {ch4}')
         return 'N/A'
     
-def create_duval_4_marker(ch4, c2h2, c2h4, marker_name):
-    mark_coordinates = calculate_duval_4_coordinates(ch4, c2h2, c2h4)
+def create_duval_4_marker(h2, c2h6, ch4, marker_name):
+    mark_coordinates = calculate_duval_4_coordinates(h2, c2h6, ch4)
     return go.Scatterternary(       a= [mark_coordinates[0]],
                                     b= [mark_coordinates[1]],
                                     c= [mark_coordinates[2]],
                                     name= marker_name,
-                                    hovertemplate='CH4: %{a:.2f}<br>C2H2: %{b:.2f}<br>C2H4: %{c:.2f}<extra></extra>',
+                                    hovertemplate='H2: %{a:.2f}<br>C2H6: %{b:.2f}<br>CH4: %{c:.2f}<extra></extra>',
                                     mode='markers',
                                     marker_color='red',
                                     marker_size=10
                                     )
 
-def create_duval4_result_graph(ch4, c2h2, c2h4):
+def create_duval4_result_graph(h2, c2h6, ch4):
     fig = create_duval_4_colorized()
 
     try:
-        result_name = calculate_duval_4_result(ch4, c2h2, c2h4)
-        fig.add_trace(create_duval_4_marker(ch4, c2h2, c2h4, result_name))
+        result_name = calculate_duval_4_result(h2, c2h6, ch4)
+        fig.add_trace(create_duval_4_marker(h2, c2h6, ch4, result_name))
         return fig
     except:
         return fig
@@ -239,28 +241,12 @@ def create_duval4_result_graph(ch4, c2h2, c2h4):
 # %%
 if __name__ == "__main__":
     fig = create_duval_4_nocolor()
-    mark1 = calculate_duval_4_coordinates(50, 50, 100)
-    fig.add_trace(go.Scatterternary(a= [mark1[0]],
-                                    b= [mark1[1]],
-                                    c= [mark1[2]],
-                                    name='marker1',
-                                    hovertemplate='H2: %{a:.2f}<br>C2H6: %{b:.2f}<br>CH4: %{c:.2f}<extra></extra>',
-                                    mode='markers',
-                                    marker_color='red',
-                                    marker_size=8
-                                    ))
+    marker_name = calculate_duval_4_result(10, 26, 64)
+    fig.add_trace(create_duval_4_marker(10, 26, 64, marker_name))
     fig.show()
 
     fig2 = create_duval_4_colorized()
-    mark1 = calculate_duval_4_coordinates(50, 50, 100)
-    fig2.add_trace(go.Scatterternary(a= [mark1[0]],
-                                    b= [mark1[1]],
-                                    c= [mark1[2]],
-                                    name='marker1',
-                                    hovertemplate='H2: %{a:.2f}<br>C2H6: %{b:.2f}<br>CH4: %{c:.2f}<extra></extra>',
-                                    mode='markers',
-                                    marker_color='red',
-                                    marker_size=8
-                                    ))
+    marker_name2 = calculate_duval_4_result(10, 26, 64)
+    fig2.add_trace(create_duval_4_marker(10, 26, 64, marker_name2))
     fig2.show()
 # %%

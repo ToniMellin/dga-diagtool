@@ -1,4 +1,6 @@
 from diagnostic import diagnostic_calculation
+from diagnostic import duval_triangle_1
+from diagnostic import duval_triangle_4
 import numpy as np
 
 def test_ratio_calculation_nan():
@@ -10,3 +12,6 @@ def test_ratio_calculation_even_set():
 def test_iec_ratio_nan():
     assert diagnostic_calculation.iec_ratio_calculation(np.nan, np.nan, np.nan) == 'N/A'
 
+def test_duval_4_result_calculation_1():
+    assert duval_triangle_4.calculate_duval_4_result(10, 26, 64) == 'C'
+    
