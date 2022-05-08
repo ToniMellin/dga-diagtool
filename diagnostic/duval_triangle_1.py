@@ -277,9 +277,9 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
             x, y, z = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
             if x >= 98:
                 return 'PD'
-            elif y < 4 and z < 20 and x < 98:
+            elif x < 98 and z < 20 and y < 4:
                 return 'T1'
-            elif y < 4 and z >= 20 and z < 50:
+            elif  z >= 20 and z < 50 and y <= 4:
                 return 'T2'
             elif y < 15 and z >= 50:
                 return 'T3'

@@ -6,6 +6,8 @@ from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
 from diagnostic import duval_triangle_1
+from diagnostic import duval_triangle_4
+from diagnostic import duval_triangle_5
 from diagnostic import diagnostic_calculation
 from diagnostic import typical_value_comparison
 import webbrowser # autobrowser opening
@@ -127,8 +129,8 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
         diag_results = diagnostic_calculation.calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
     except TypeError:
         print('diag TypeERROR')
-        diag_results = ['-', '-', '-', '-']
-    df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:'], 'Result': diag_results})
+        diag_results = ['-', '-', '-', '-', '-', '-']
+    df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:', 'Duval triangle 4:', 'Duval triangle 5:'], 'Result': diag_results})
     
     typical_results = typical_value_comparison.calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
     df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, 90% typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, 90% typical values'], 
@@ -142,6 +144,15 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                                 'TDCG': ['-', typical_results[1][7], '-']
                                 })
 
+    if diag_results[3] in ['PD', 'T1', 'T2']:
+        duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_result_graph(h2_val, c2h6_val, ch4_val))
+    else:
+        duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_colorized())
+
+    if diag_results[3] in ['T2', 'T3']:
+        duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_result_graph(ch4_val, c2h6_val, c2h4_val))
+    else:
+        duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_colorized())
 
     return html.Div([
                     html.Div([
@@ -162,10 +173,24 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                     html.Div([
                     generate_table(df_typicals)], style={'padding': 20}),
 
-                    #TODO triangle 4 & 5 +styling for parallel triangles
                     html.Div([
-                    dcc.Graph(figure=duval_triangle_1.create_duval_1_result_graph(ch4_val, c2h2_val, c2h4_val))
-                    ])
+                            html.Div([dcc.Graph(figure=duval_triangle_1.create_duval_1_result_graph(ch4_val, c2h2_val, c2h4_val))], style={
+                                                        'display': 'inline-block',
+                                                        'vertical-align': 'top',
+                                                        'padding': 5
+                                                        }),
+                            html.Div([duval4], style={
+                                                        'display': 'inline-block',
+                                                        'vertical-align': 'top',
+                                                        'padding': 5
+                                                        }),
+                            html.Div([duval5], style={
+                                                        'display': 'inline-block',
+                                                        'vertical-align': 'top',
+                                                        'padding': 5
+                                                        }), 
+                    
+                    ]),
                     ])
 
 

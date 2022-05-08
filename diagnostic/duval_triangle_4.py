@@ -228,7 +228,7 @@ def create_duval_4_marker(h2, c2h6, ch4, marker_name):
                                     marker_size=10
                                     )
 
-def create_duval4_result_graph(h2, c2h6, ch4):
+def create_duval_4_result_graph(h2, c2h6, ch4):
     fig = create_duval_4_colorized()
 
     try:
