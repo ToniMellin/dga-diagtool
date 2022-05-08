@@ -17,7 +17,7 @@ def create_duval_4_colorized():
                                     line_color='black',
                                     line_width=0.5,
                                     fill='toself',
-                                    fillcolor='rgba(178,244,255, 0.5)'
+                                    fillcolor='rgba(255,211,37, 0.5)'
                                     ))
     #C
     fig.add_trace(go.Scatterternary(a= [0, 0, 64, 40, 15, 15, 0],
@@ -29,7 +29,7 @@ def create_duval_4_colorized():
                                     line_color='black',
                                     line_width=0.5,
                                     fill='toself',
-                                    fillcolor='rgba(178,205,255, 0.5)'
+                                    fillcolor='rgba(92,81,75, 0.6)'
                                     ))
     #PD
     fig.add_trace(go.Scatterternary(a= [98, 97, 84, 85, 98],
@@ -53,7 +53,7 @@ def create_duval_4_colorized():
                                     line_color='black',
                                     line_width=0.5,
                                     fill='toself',
-                                    fillcolor='rgba(245, 54, 39, 0.5)'
+                                    fillcolor='rgba(170,156,192, 0.5)'
                                     ))
     fig.add_scatterternary(a=[4.5, 64, 28], b=[62, 18, 12], c=[33.5, 18, 60],
                             mode='text', text=['O', 'S', 'C'], hoverinfo='none', showlegend=False)
@@ -201,11 +201,11 @@ def calculate_duval_4_result(h2, c2h6, ch4):
             x, y, z = calculate_duval_4_coordinates(h2, c2h6, ch4)
             if z >= 2 and z < 15 and y < 1:
                 return 'PD'
-            elif (x >= 9 and y >= 30 and y < 46) and (z >= 15 and y >= 24 and y < 30) and (z < 36 and y >= 1 and y < 24) and (z < 36 and z >= 15 and y < 1) and (z < 2 and y < 1):
+            elif (x >= 9 and y >= 30 and y < 46) or (x >= 15 and y >= 24 and y < 30) or (z < 36 and y >= 1 and y < 24) or (z < 36 and z >= 15 and y < 1) or (z < 2 and y < 1):
                 return 'S'
             elif x < 9 and y >= 30:
                 return 'O'
-            elif (z >= 36 and y >= 24) and (x < 15 and y >= 24 and y < 30):
+            elif (z >= 36 and y <= 24) or (x < 15 and y >= 24 and y < 30):
                 return 'C'
             elif (x >= 9 and y >= 46):
                 return 'ND'
