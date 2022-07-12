@@ -179,6 +179,11 @@ def create_duval_4_nocolor():
     
     return fig
 
+def round_half_up(n, decimals=0):
+    # rounding values
+    multiplier = 10 ** decimals
+    return np.floor(n*multiplier + 0.5) / multiplier
+
 def calculate_duval_4_coordinates(h2, c2h6, ch4):
 
     i = h2
@@ -188,7 +193,7 @@ def calculate_duval_4_coordinates(h2, c2h6, ch4):
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100
-    coordinates = np.array([x, y, z])
+    coordinates = round_half_up(np.array([x, y, z]))
 
     return coordinates
 
@@ -198,13 +203,13 @@ def calculate_duval_4_result(h2, c2h6, ch4):
             return 'N/A'
         else:
             x, y, z = calculate_duval_4_coordinates(h2, c2h6, ch4)
-            if z >= 2 and z < 15 and y < 1:
+            if z >= 2 and z <= 15 and y <= 1:
                 return 'PD'
-            elif (x >= 9 and y >= 30 and y < 46) or (x >= 15 and y >= 24 and y < 30) or (z < 36 and y >= 1 and y < 24) or (z < 36 and z >= 15 and y < 1) or (z < 2 and y < 1):
+            elif (x > 9 and y > 30 and y < 46) or (x >= 15 and y >= 24 and y < 30) or (z < 36 and y >= 1 and y < 24) or (z < 36 and z > 15 and y < 1) or (z < 2 and y < 1):
                 return 'S'
-            elif x < 9 and y >= 30:
+            elif x <= 9 and y >= 30:
                 return 'O'
-            elif (z >= 36 and y <= 24) or (x < 15 and y >= 24 and y < 30):
+            elif (z >= 36 and y < 24) or (x < 15 and y >= 24 and y < 30):
                 return 'C'
             elif (x >= 9 and y >= 46):
                 return 'ND'

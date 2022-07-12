@@ -256,6 +256,11 @@ def create_duval_1_nocolor():
     
     return fig
 
+def round_half_up(n, decimals=0):
+    # rounding values
+    multiplier = 10 ** decimals
+    return np.floor(n*multiplier + 0.5) / multiplier
+
 def calculate_duval_1_coordinates(ch4, c2h2, c2h4):
 
     i = ch4
@@ -265,7 +270,7 @@ def calculate_duval_1_coordinates(ch4, c2h2, c2h4):
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100
-    coordinates = np.array([x, y, z])
+    coordinates = round_half_up(np.array([x, y, z]), 2)
 
     return coordinates
 
@@ -277,18 +282,18 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
             x, y, z = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
             if x >= 98:
                 return 'PD'
-            elif x < 98 and z < 20 and y < 4:
-                return 'T1'
-            elif  z >= 20 and z < 50 and y <= 4:
-                return 'T2'
-            elif y < 15 and z >= 50:
-                return 'T3'
-            elif (z < 50 and y >= 4 and y < 13 ) or (z >= 40 and z < 50 and y >= 13 and y < 29) or (z >= 50 and y >= 15 and y < 29):
-                return 'DT'
-            elif z < 23 and y >= 13:
+            elif z <= 23 and y >= 13:
                 return 'D1'
-            elif (z >= 23 and y >= 29) or (z < 40 and z >= 23 and y < 29 and y >=13):
+            elif (z <= 40 and z > 23 and y >= 13) or (z >= 40 and y >= 29):
                 return 'D2'
+            elif x < 98 and z <= 20 and y <= 4:
+                return 'T1'
+            elif  z > 20 and z < 50 and y <= 4:
+                return 'T2'
+            elif y <= 15 and z >= 50:
+                return 'T3'
+            elif (z <= 40 and y > 4 and y < 13 ) or (z > 40 and z < 50 and y > 13 and y < 29) or (z >= 50 and y > 15 and y < 30):
+                return 'DT'
             else:
                 return 'ND'
     except TypeError:
@@ -320,6 +325,7 @@ def create_duval_1_result_graph(ch4, c2h2, c2h4):
 
 # %%
 if __name__ == "__main__":
+    '''
     fig = create_duval_1_nocolor()
     marker_name = calculate_duval_1_result(10, 26, 64)
     fig.add_trace(create_duval_1_marker(10, 26, 64, marker_name))
@@ -329,4 +335,7 @@ if __name__ == "__main__":
     marker_name2 = calculate_duval_1_result(10, 26, 64)
     fig2.add_trace(create_duval_1_marker(10, 26, 64, marker_name2))
     fig2.show()
+    '''
+
+    assert duval_triangle_1.calculate_duval_1_result(78, 2, 20) == 'T2'
 # %%
