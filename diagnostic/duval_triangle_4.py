@@ -205,12 +205,12 @@ def calculate_duval_4_result(h2, c2h6, ch4):
             x, y, z = calculate_duval_4_coordinates(h2, c2h6, ch4)
             if z >= 2 and z <= 15 and y <= 1:
                 return 'PD'
-            elif (x > 9 and y > 30 and y < 46) or (x >= 15 and y >= 24 and y < 30) or (z < 36 and y >= 1 and y < 24) or (z < 36 and z > 15 and y < 1) or (z < 2 and y < 1):
+            elif (x > 9 and y > 30 and y < 46) or (x > 15 and y > 24 and y < 30) or (z < 36 and y >= 1 and y < 24) or (z < 36 and z > 15 and y < 1) or (z < 2 and y < 1):
                 return 'S'
+            elif (z >= 36 and y <= 24) or (x <= 15 and y >= 24 and y <= 30):
+                return 'C'
             elif x <= 9 and y >= 30:
                 return 'O'
-            elif (z >= 36 and y < 24) or (x < 15 and y >= 24 and y < 30):
-                return 'C'
             elif (x >= 9 and y >= 46):
                 return 'ND'
             else:
@@ -253,4 +253,3 @@ if __name__ == "__main__":
     marker_name2 = calculate_duval_4_result(10, 26, 64)
     fig2.add_trace(create_duval_4_marker(10, 26, 64, marker_name2))
     fig2.show()
-# %%

@@ -280,6 +280,11 @@ def create_duval_5_nocolor():
     
     return fig
 
+def round_half_up(n, decimals=0):
+    # rounding values
+    multiplier = 10 ** decimals
+    return np.floor(n*multiplier + 0.5) / multiplier
+
 def calculate_duval_5_coordinates(ch4, c2h6, c2h4):
 
     i = ch4
@@ -289,7 +294,7 @@ def calculate_duval_5_coordinates(ch4, c2h6, c2h4):
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100
-    coordinates = np.array([x, y, z])
+    coordinates = round_half_up(np.array([x, y, z]))
 
     return coordinates
 
@@ -299,17 +304,17 @@ def calculate_duval_5_result(ch4, c2h6, c2h4):
             return 'N/A'
         else:
             x, y, z = calculate_duval_5_coordinates(ch4, c2h6, c2h4)
-            if z < 1 and y >= 2 and y < 14:
+            if z <= 1 and y >= 2 and y <= 14:
                 return 'PD'
-            elif (z >= 1 and z <10 and y >= 2 and y < 14) or (z < 1 and y < 2) or (z < 10 and y >= 54):
+            elif (z > 1 and z <10 and y >= 2 and y <= 14) or (z < 1 and y < 2) or (z < 10 and y >= 54):
                 return 'O'
             elif z < 10 and y >= 14 and y < 54:
                 return 'S'
-            elif z >= 10 and z < 35 and y < 12:
+            elif z >= 10 and z <= 35 and y <= 12:
                 return 'T2'
-            elif (z >= 35 and y < 12) or (z >= 50 and y >= 12 and y < 14) or (z >= 70 and y >= 14) or (z >= 35 and y >= 30):
+            elif (z > 35 and y <= 12) or (z >= 49 and y >= 12 and y <= 14) or (z > 70 and y >= 14) or (z >= 35 and y >= 30):
                 return 'T3'
-            elif (z >= 10 and z < 50 and y  >= 12 and y < 14) or (z >= 10 and z < 70 and y >= 14 and y < 30):
+            elif (z >= 10 and z < 50 and y  > 12 and y <= 14) or (z >= 10 and z <= 70 and y > 14 and y < 30):
                 return 'C'
             elif z >= 10 and z < 35 and y >= 30:
                 return 'ND'
@@ -353,4 +358,3 @@ if __name__ == "__main__":
     marker_name2 = calculate_duval_5_result(10, 26, 64)
     fig2.add_trace(create_duval_5_marker(10, 26, 64, marker_name2))
     fig2.show()
-# %%

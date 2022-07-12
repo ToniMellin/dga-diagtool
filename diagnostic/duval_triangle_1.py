@@ -325,7 +325,6 @@ def create_duval_1_result_graph(ch4, c2h2, c2h4):
 
 # %%
 if __name__ == "__main__":
-    '''
     fig = create_duval_1_nocolor()
     marker_name = calculate_duval_1_result(10, 26, 64)
     fig.add_trace(create_duval_1_marker(10, 26, 64, marker_name))
@@ -335,7 +334,3 @@ if __name__ == "__main__":
     marker_name2 = calculate_duval_1_result(10, 26, 64)
     fig2.add_trace(create_duval_1_marker(10, 26, 64, marker_name2))
     fig2.show()
-    '''
-
-    assert duval_triangle_1.calculate_duval_1_result(78, 2, 20) == 'T2'
-# %%
