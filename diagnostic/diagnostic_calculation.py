@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
-from diagnostic import duval_triangle_1
-from diagnostic import duval_triangle_4
-from diagnostic import duval_triangle_5
+import duval_triangle_1
+import duval_triangle_4
+import duval_triangle_5
+
+def round_half_up(n, decimals=0):
+    # rounding values
+    multiplier = 10 ** decimals
+    return np.floor(n*multiplier + 0.5) / multiplier
 
 def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val):
     '''
@@ -22,7 +27,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(ch4_val) is True) or (pd.isna(h2_val) is True):
             r1_val = np.nan
         else:
-            r1_val = ch4_val / h2_val
+            r1_val = round_half_up(ch4_val / h2_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r1_val = np.nan
@@ -34,7 +39,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(c2h2_val) is True) or (pd.isna(c2h4_val) is True):
             r2_val = np.nan
         else:
-            r2_val = c2h2_val / c2h4_val
+            r2_val = round_half_up(c2h2_val / c2h4_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r2_val = np.nan
@@ -46,7 +51,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(c2h2_val) is True) or (pd.isna(ch4_val) is True):
             r3_val = np.nan
         else:
-            r3_val = c2h2_val / ch4_val
+            r3_val = round_half_up(c2h2_val / ch4_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r3_val = np.nan
@@ -58,7 +63,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(c2h6_val) is True) or (pd.isna(c2h2_val) is True):
             r4_val = np.nan
         else:
-            r4_val = c2h6_val / c2h2_val
+            r4_val = round_half_up(c2h6_val / c2h2_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r4_val = np.nan
@@ -70,7 +75,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(c2h4_val) is True) or (pd.isna(c2h6_val) is True):
             r5_val = np.nan
         else:
-            r5_val = c2h4_val / c2h6_val
+            r5_val = round_half_up(c2h4_val / c2h6_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r5_val = np.nan
@@ -82,7 +87,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(co2_val) is True) or (pd.isna(co_val) is True):
             r6_val = np.nan
         else:
-            r6_val =  co2_val / co_val
+            r6_val =  round_half_up(co2_val / co_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r6_val = np.nan
@@ -94,7 +99,7 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
         elif (pd.isna(o2_val) is True) or (pd.isna(n2_val) is True):
             r7_val = np.nan
         else:
-            r7_val = o2_val / n2_val
+            r7_val = round_half_up(o2_val / n2_val, 2)
     except TypeError as e:
         print(f'Ratio TypeError: {e}')
         r7_val = np.nan

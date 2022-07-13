@@ -193,7 +193,7 @@ def calculate_duval_4_coordinates(h2, c2h6, ch4):
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100
-    coordinates = round_half_up(np.array([x, y, z]))
+    coordinates = round_half_up(np.array([x, y, z]), 2)
 
     return coordinates
 
