@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
+import os # autobrowser opening
+from threading import Timer # autobrowser opening
+import webbrowser # autobrowser opening
+
 import dash
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
+
 from diagnostic import duval_triangle_1
 from diagnostic import duval_triangle_4
 from diagnostic import duval_triangle_5
 from diagnostic import diagnostic_calculation
 from diagnostic import typical_value_comparison
-import webbrowser # autobrowser opening
-from threading import Timer # autobrowser opening
-import os # autobrowser opening
+
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -193,7 +197,9 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                     ]),
                     ])
 
-
-if __name__ == '__main__':
+def main():
     Timer(1, open_browser).start()
     app.run_server(debug=True)
+
+if __name__ == '__main__':
+    main()

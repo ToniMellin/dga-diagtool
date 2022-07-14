@@ -1,6 +1,7 @@
-from diagnostic import typical_value_comparison
 import numpy as np
+from diagnostic import typical_value_comparison
 
+# IEC typical value tests
 def test_iec_typical_values_nan():
     assert typical_value_comparison.iec_typical_calculation(np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan) == ['-', '-', '-', '-', '-', '-', '-']
 
@@ -15,3 +16,14 @@ def test_iec_typical_values_all_normal():
 
 def test_iec_typical_values_all_zero():
     assert typical_value_comparison.iec_typical_calculation(0, 0, 0, 0, 0, 0, 0) == ['Normal', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal']
+
+# TODO add more IEEE 2008 tests
+# IEEE 2008 typical value tests
+def test_ieee_2008_typical_values_all_zero():
+    assert typical_value_comparison.ieee_2008_typical_calculation(0, 0, 0, 0, 0, 0, 0) == ['Normal / Condition 1', 'Normal / Condition 1', 'Normal / Condition 1', 'Normal / Condition 1', 'Normal / Condition 1', 'Normal / Condition 1', 'Normal / Condition 1', 'Normal / Condition 1']
+
+# TODO add more IEEE 2019 tests
+# IEEE 2019 typical value tests
+def test_ieee_2019_typical_values_all_zero():
+    assert typical_value_comparison.ieee_2019_typical_calculation(0, 0, 0, 0, 0, 0, 0, 0, 0, 0) == ['Normal', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal']
+

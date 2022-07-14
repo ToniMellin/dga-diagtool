@@ -1,5 +1,10 @@
+import sys
+import pathlib
+
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent)) # path change to allow importing in upper level for diagnostic sub-modules
 import duval_triangle_1
 import duval_triangle_4
 import duval_triangle_5

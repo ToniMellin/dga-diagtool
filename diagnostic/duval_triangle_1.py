@@ -1,7 +1,7 @@
 # %%
-import plotly.graph_objects as go   # plotly is an interactive plotting library
 import numpy as np
 from pandas import isna
+import plotly.graph_objects as go   # plotly is an interactive plotting library
 
 def create_duval_1_colorized():
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10

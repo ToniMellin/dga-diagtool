@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
     
@@ -159,13 +159,16 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 
     return ieee_typical_results
 
-#TODO add IEEE C57.104-2019 typical values, requires O2/N2 ratio and optional transformer age
+# TODO add IEEE C57.104-2019 95% typical values
+# TODO add 0-value handling for O2/N2 ratio and optional transformer age
 
 def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     ieee_2019_typical_results = []
 
     if (pd.isna(o2_val) == True) or (pd.isna(n2_val) == True):
         o2_n2_ratio = 1
+    elif (o2_val == 0 or n2_val == 0) is True:
+        o2_n2_ratio = 0
     else:
         o2_n2_ratio = o2_val/n2_val
 
@@ -376,7 +379,7 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
                     ieee_2019_typical_results.append('Typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val > 10:
+            elif trafo_age_val >= 10:
                 if c2h4_val > c2h4_typ_open_over_10:
                     ieee_2019_typical_results.append('Typical values exceeded!')
                 else:
@@ -410,7 +413,7 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
                     ieee_2019_typical_results.append('Typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val > 10:
+            elif trafo_age_val >= 10:
                 if co2_val > co2_typ_open_over_10:
                     ieee_2019_typical_results.append('Typical values exceeded!')
                 else:
@@ -439,3 +442,13 @@ def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_
         print(f'Typical value comparison issue!!\n{e}')
 
     return typical_result_list
+
+if __name__ == '__main__':
+    '''
+    typical_list = calculate_typical_results(50, 60, 100, 80, 10, 500, 2000, 15600, 56000, 10)
+    for r in typical_list:
+        print(r, len(r))
+    '''
+
+    ieee2019_0_list = ieee_2019_typical_calculation(50, 60, 100, 80, 10, 500, 2000, 15600, 56000, 10)
+    print(ieee2019_0_list, len(ieee2019_0_list))
