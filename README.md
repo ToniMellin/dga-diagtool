@@ -12,9 +12,9 @@ A dash based transformer oil dissolved gas analysis (DGA) diagnostic tool. When 
 
 Clone the repository
 
-Install needed libraries to python 3.8+ with pip: 
+Install needed libraries to python 3.8+ with pip:
 
-```
+```text
 pip install -r requirements.txt
 ```
 
@@ -24,15 +24,20 @@ Run app_dga_diagtool.py using python with needed libraries installed and a brows
 
 ## Features
 
-- The tool calculates ratios and provides diagnostic method analysis results with given values (Rogers ratio, Doernenburg, IEC ratios, Duval triangle 1, Duval traingle 4 and Duval triangle 5)
+- The tool calculates ratios and provides diagnostic method analysis results with given values (Rogers ratio, Doernenburg, IEC ratios, Duval triangle 1, Duval triangle 4 and Duval triangle 5)
 - If values are omitted, ratios or diagnostic method results that need the omitted values will not produce results, but any ratios or methods that have sufficient data to calculate will be provided
-- The tool will compare gas values against standard typical values (IEC 60599 & IEEE C57.104) and indicate if they are exceeded 
+- The tool will compare gas values against standard typical values (IEC 60599 & IEEE C57.104) and indicate if they are exceeded
 - Duval triangle 1 sample plotting, with additional Duval triangles 4 and 5 samples plotted if applicable
 
 ## TODO (Future feature ides)
-- Add IEEE C57.104-2008 typical value conditions 3 & 4
+
+- Add IEEE C57.104-2019 95% typical values
+- Add IEC 60599 95% typical values
 - Cigre typical values comparison
+- internal logging (with on/off) +logging download
 - Multiple sample points
 - Online monitor data
 - Rate of change comparisons (IEC / IEEE / Cigre)
 - Analysis from trends
+- uncertainty analysis of samples
+- duval triangle uncertainty limits

@@ -79,18 +79,35 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     except:
         tdcg_val = np.nan
 
-    # typical values for condition 1
-    h2_typ1 = 100
-    ch4_typ1 = 120
-    c2h6_typ1 = 65
-    c2h4_typ1 = 50
-    c2h2_typ1 = 1
-    co_typ1 = 350
-    co2_typ1 = 2500
-    tdcg_typ1 = 720
+    # breakpoint of typical values for condition 2
+    h2_typ2 = 101
+    ch4_typ2 = 121
+    c2h6_typ2 = 66
+    c2h4_typ2 = 51
+    c2h2_typ2 = 2
+    co_typ2 = 351
+    co2_typ2 = 2500
+    tdcg_typ2 = 721
 
-    # typical values for condition 2
+    # breakpoint of typical values for condition 3
+    h2_typ3 = 701
+    ch4_typ3 = 401
+    c2h6_typ3 = 101
+    c2h4_typ3 = 101
+    c2h2_typ3 = 10
+    co_typ3 = 571
+    co2_typ3 = 4001
+    tdcg_typ3 = 1921
 
+    # breakpoint of typical values for condition 4
+    h2_typ4 = 1800
+    ch4_typ4 = 1000
+    c2h6_typ4 = 150
+    c2h4_typ4 = 200
+    c2h2_typ4 = 35
+    co_typ4 = 1400
+    co2_typ4 = 10000
+    tdcg_typ4 = 4630
     #TODO add condition 2 and condition 3 typical values and result calculations
 
     #TODO individual typical value comparison handling
@@ -99,56 +116,88 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     try:
         if pd.isna(h2_val) is True:
             ieee_typical_results.append('-')
-        elif h2_val > h2_typ1:
+        elif h2_val > h2_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif h2_val >= h2_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif h2_val >= h2_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(ch4_val) is True:
             ieee_typical_results.append('-')
-        elif ch4_val > ch4_typ1:
+        elif ch4_val > ch4_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif ch4_val >= ch4_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif ch4_val >= ch4_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(c2h6_val) is True:
             ieee_typical_results.append('-')
-        elif c2h6_val > c2h6_typ1:
+        elif c2h6_val > c2h6_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif c2h6_val >= c2h6_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif c2h6_val >= c2h6_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(c2h4_val) is True:
             ieee_typical_results.append('-')
-        elif c2h4_val > c2h4_typ1:
+        elif c2h4_val > c2h4_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif c2h4_val >= c2h4_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif c2h4_val >= c2h4_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(c2h2_val) is True:
             ieee_typical_results.append('-')
-        elif c2h2_val > c2h2_typ1:
+        elif c2h2_val > c2h2_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif c2h2_val >= c2h2_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif c2h2_val >= c2h2_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(co_val) is True:
             ieee_typical_results.append('-')
-        elif co_val > co_typ1:
+        elif co_val > co_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif co_val >= co_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif co_val >= co_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(co2_val) is True:
             ieee_typical_results.append('-')
-        elif co2_val > co2_typ1:
+        elif co2_val > co2_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif co2_val >= co2_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif co2_val > co2_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
 
         if pd.isna(tdcg_val) is True:
             ieee_typical_results.append('-')
-        elif tdcg_val > tdcg_typ1:
+        elif tdcg_val > tdcg_typ4:
+            ieee_typical_results.append('Typical values exceeded! / Condition 4')
+        elif tdcg_val >= tdcg_typ3:
+            ieee_typical_results.append('Typical values exceeded! / Condition 3')
+        elif tdcg_val >= tdcg_typ2:
             ieee_typical_results.append('Typical values exceeded! / Condition 2')
         else:
             ieee_typical_results.append('Normal / Condition 1')
@@ -449,6 +498,8 @@ if __name__ == '__main__':
     for r in typical_list:
         print(r, len(r))
     '''
+    ieee2008_list = ieee_2008_typical_calculation(109.99, 120.99, 65.99, 50.99, 1.99, 350.99, 2500)
+    print(ieee2008_list, len(ieee2008_list))
 
-    ieee2019_0_list = ieee_2019_typical_calculation(50, 60, 100, 80, 10, 500, 2000, 15600, 56000, 10)
-    print(ieee2019_0_list, len(ieee2019_0_list))
+    #ieee2019_0_list = ieee_2019_typical_calculation(50, 60, 100, 80, 10, 500, 2000, 15600, 56000, 10)
+    #print(ieee2019_0_list, len(ieee2019_0_list))
