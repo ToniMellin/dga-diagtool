@@ -137,7 +137,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
     df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:', 'Duval triangle 4:', 'Duval triangle 5:'], 'Result': diag_results})
     
     typical_results = typical_value_comparison.calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
-    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, 90% typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, 90% typical values'], 
+    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, 90% typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values'], 
                                 'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0]], 
                                 'CH4': [typical_results[0][1], typical_results[1][1], typical_results[2][1]], 
                                 'C2H6': [typical_results[0][2], typical_results[1][2], typical_results[2][2]], 

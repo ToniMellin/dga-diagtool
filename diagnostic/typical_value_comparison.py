@@ -18,28 +18,28 @@ def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
         if pd.isna(h2_val) is True:
             iec_typical_results.append('-')
         elif h2_val > h2_typ:
-            iec_typical_results.append('Typical values exceeded!')
+            iec_typical_results.append('90% typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
         if pd.isna(ch4_val) is True:
             iec_typical_results.append('-')
         elif ch4_val > ch4_typ:
-            iec_typical_results.append('Typical values exceeded!')
+            iec_typical_results.append('90% typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
         if pd.isna(c2h6_val) is True:
             iec_typical_results.append('-')
         elif c2h6_val > c2h6_typ:
-            iec_typical_results.append('Typical values exceeded!')
+            iec_typical_results.append('90% typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
         if pd.isna(c2h4_val) is True:
             iec_typical_results.append('-')
         elif c2h4_val > c2h4_typ:
-            iec_typical_results.append('Typical values exceeded!')
+            iec_typical_results.append('90% typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
@@ -47,23 +47,23 @@ def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
             iec_typical_results.append('-')
         elif c2h2_val > c2h2_typ:
             if c2h2_val > c2h2_oltc_typ:
-                iec_typical_results.append('Communicating OLTC typical values exceeded!')
+                iec_typical_results.append('Communicating OLTC 90% typical values exceeded!')
             else:
-                iec_typical_results.append('Typical values exceeded unless communicating OLTC!')
+                iec_typical_results.append('90% typical values exceeded unless communicating OLTC!')
         else:
             iec_typical_results.append('Normal')
 
         if pd.isna(co_val) is True:
             iec_typical_results.append('-')
         elif co_val > co_typ:
-            iec_typical_results.append('Typical values exceeded!')
+            iec_typical_results.append('90% typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
 
         if pd.isna(co2_val) is True:
             iec_typical_results.append('-')
         elif co2_val > co2_typ:
-            iec_typical_results.append('Typical values exceeded!')
+            iec_typical_results.append('90% typical values exceeded!')
         else:
             iec_typical_results.append('Normal')
         
@@ -108,9 +108,7 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     co_typ4 = 1400
     co2_typ4 = 10000
     tdcg_typ4 = 4630
-    #TODO add condition 2 and condition 3 typical values and result calculations
 
-    #TODO individual typical value comparison handling
     ieee_typical_results = []
 
     try:
@@ -208,9 +206,6 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 
     return ieee_typical_results
 
-# TODO add IEEE C57.104-2019 95% typical values
-# TODO add 0-value handling for O2/N2 ratio and optional transformer age
-
 def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     ieee_2019_typical_results = []
 
@@ -221,24 +216,24 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     else:
         o2_n2_ratio = o2_val/n2_val
 
-    # 90th percentile typical values o2/n2 <= 0.2
+    # 90th percentile typical values o2/n2 <= 0.2 (sealed)
     h2_typ_sealed_unknown = 80
     h2_typ_sealed_under_30 = 75
     h2_typ_sealed_over_30 = 100
 
     ch4_typ_sealed_unknown = 90
-    ch4_typ_sealed_under_9 = 45
-    ch4_typ_sealed_under_30 = 90
+    ch4_typ_sealed_under_10 = 45
+    ch4_typ_sealed_over_10 = 90
     ch4_typ_sealed_over_30 = 110
 
     c2h6_typ_sealed_unknown = 90
-    c2h6_typ_sealed_under_9 = 30
-    c2h6_typ_sealed_under_30 = 90
+    c2h6_typ_sealed_under_10 = 30
+    c2h6_typ_sealed_over_10 = 90
     c2h6_typ_sealed_over_30 = 150
 
     c2h4_typ_sealed_unknown = 50
-    c2h4_typ_sealed_under_9 = 20
-    c2h4_typ_sealed_under_30 = 50
+    c2h4_typ_sealed_under_10 = 20
+    c2h4_typ_sealed_over_10 = 50
     c2h4_typ_sealed_over_30 = 90
 
     c2h2_typ_sealed = 1
@@ -246,10 +241,10 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     co_typ_sealed = 900
 
     co2_typ_sealed_unknown = 9000
-    co2_typ_sealed_under_9 = 5000
+    co2_typ_sealed_under_10 = 5000
     co2_typ_sealed_over_10 = 10000    
 
-    # 90th percentile typical values o2/n2 > 0.2
+    # 90th percentile typical values o2/n2 > 0.2 (open / free-breathing)
     h2_typ_open = 40
 
     ch4_typ_open = 20
@@ -257,7 +252,7 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     c2h6_typ_open = 15
 
     c2h4_typ_open_unknown = 50
-    c2h4_typ_open_under_9 = 25
+    c2h4_typ_open_under_10 = 25
     c2h4_typ_open_over_10 = 60
 
     c2h2_typ_open = 2
@@ -265,206 +260,362 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     co_typ_open = 500
 
     co2_typ_open_unknown = 5000
-    co2_typ_open_under_9 = 3500
+    co2_typ_open_under_10 = 3500
     co2_typ_open_over_10 = 5500
 
+    # 95th percentile typical values o2/n2 <= 0.2 (sealed)
+    h2_typ95_sealed = 200
+
+    ch4_typ95_sealed_unknown = 150
+    ch4_typ95_sealed_under_10 = 100
+    ch4_typ95_sealed_over_10 = 150
+    ch4_typ95_sealed_over_30 = 200
+
+    c2h6_typ95_sealed_unknown = 175 
+    c2h6_typ95_sealed_under_10 = 70
+    c2h6_typ95_sealed_over_10 = 175
+    c2h6_typ95_sealed_over_30 = 250
+
+    c2h4_typ95_sealed_unknown = 100
+    c2h4_typ95_sealed_under_10 = 40
+    c2h4_typ95_sealed_over_10 = 95
+    c2h4_typ95_sealed_over_30 = 175
+
+    c2h2_typ95_sealed = 2
+    c2h2_typ95_sealed_over_30 = 4
+
+    co_typ95_sealed = 1100
+
+    co2_typ95_sealed_unknown = 12500
+    co2_typ95_sealed_under_10 = 7000
+    co2_typ95_sealed_over_10 = 14000
+
+    # 95th percentile typical values o2/n2 > 0.2 (open / free-breathing)
+    h2_typ95_open = 90
+
+    ch4_typ95_open_unknown = 50
+    ch4_typ95_open_under_30 = 60
+    ch4_typ95_open_over_30 = 30
+
+    c2h6_typ95_open_unknown = 40
+    c2h6_typ95_open_under_10 = 30
+    c2h6_typ95_open_over_10 = 40
+
+    c2h4_typ95_open_unknown = 100
+    c2h4_typ95_open_under_10 = 80
+    c2h4_typ95_open_over_10 = 125
+
+    c2h2_typ95_open = 7
+
+    co_typ95_open = 600
+
+    co2_typ95_open_unknown = 7000
+    co2_typ95_open_under_10 = 5000
+    co2_typ95_open_over_10 = 8000
+
     try:
+        # Sealed transformer tank, o2/n2 <= 0.2
         if o2_n2_ratio <= 0.2:
             if pd.isna(h2_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if h2_val > h2_typ_sealed_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if h2_val > h2_typ95_sealed:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif h2_val > h2_typ_sealed_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val <= 30:
-                if h2_val > h2_typ_sealed_under_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if h2_val > h2_typ95_sealed:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif h2_val > h2_typ_sealed_under_30:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val > 30:
-                if h2_val > h2_typ_sealed_over_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if h2_val > h2_typ95_sealed:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif h2_val > h2_typ_sealed_over_30:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(ch4_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if ch4_val > ch4_typ_sealed_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if ch4_val > ch4_typ95_sealed_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_sealed_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val <= 9:
-                if ch4_val > ch4_typ_sealed_under_9:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif trafo_age_val < 10:
+                if ch4_val > ch4_typ95_sealed_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_sealed_under_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif (trafo_age_val >= 10) and (trafo_age_val <= 30):
-                if ch4_val > ch4_typ_sealed_under_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if ch4_val > ch4_typ95_sealed_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_sealed_over_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val > 30:
-                if ch4_val > ch4_typ_sealed_over_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if ch4_val > ch4_typ95_sealed_over_30:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_sealed_over_30:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(c2h6_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if c2h6_val > c2h6_typ_sealed_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h6_val > c2h6_typ95_sealed_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_sealed_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val <= 9:
-                if c2h6_val > c2h6_typ_sealed_under_9:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif trafo_age_val < 10:
+                if c2h6_val > c2h6_typ95_sealed_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_sealed_under_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif (trafo_age_val >= 10) and (trafo_age_val <= 30):
-                if c2h6_val > c2h6_typ_sealed_under_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h6_val > c2h6_typ95_sealed_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_sealed_over_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val > 30:
-                if c2h6_val > c2h6_typ_sealed_over_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h6_val > c2h6_typ95_sealed_over_30:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_sealed_over_30:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(c2h4_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if c2h4_val > c2h4_typ_sealed_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h4_val > c2h4_typ95_sealed_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_sealed_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val <= 9:
-                if c2h4_val > c2h4_typ_sealed_under_9:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif trafo_age_val < 10:
+                if c2h4_val > c2h4_typ95_sealed_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_sealed_under_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif (trafo_age_val >= 10) and (trafo_age_val <= 30):
-                if c2h4_val > c2h4_typ_sealed_under_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h4_val > c2h4_typ95_sealed_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_sealed_over_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val > 30:
-                if c2h4_val > c2h4_typ_sealed_over_30:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h4_val > c2h4_typ95_sealed_over_30:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_sealed_over_30:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(c2h2_val) is True:
                 ieee_2019_typical_results.append('-')
-            else:
-                if c2h2_val > c2h2_typ_sealed:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif pd.isna(trafo_age_val) is True:
+                if c2h2_val > c2h2_typ95_sealed:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h2_val > c2h2_typ_sealed:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
+                else:
+                    ieee_2019_typical_results.append('Normal')
+            elif trafo_age_val <= 30:
+                if c2h2_val > c2h2_typ95_sealed:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h2_val > c2h2_typ_sealed:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
+                else:
+                    ieee_2019_typical_results.append('Normal')
+            elif trafo_age_val > 30:
+                if c2h2_val > c2h2_typ95_sealed_over_30:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h2_val > c2h2_typ_sealed:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             
             if pd.isna(co_val) is True:
                 ieee_2019_typical_results.append('-')
             else:
-                if co_val > co_typ_sealed:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if co_val > co_typ95_sealed:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co_val > co_typ_sealed:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(co2_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if co2_val > co2_typ_sealed_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if co2_val > co2_typ95_sealed_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co2_val > co2_typ_sealed_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val <= 9:
-                if co2_val > co2_typ_sealed_under_9:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif trafo_age_val < 10:
+                if co2_val > co2_typ95_sealed_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co2_val > co2_typ_sealed_under_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val >= 10:
-                if co2_val > co2_typ_sealed_over_10:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if co2_val > co2_typ95_sealed_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co2_val > co2_typ_sealed_over_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
+        # Open / free-breathing transformer tank, o2/n2 > 0.2
         else:
             if pd.isna(h2_val) is True:
                 ieee_2019_typical_results.append('-')
             else:
-                if h2_val > h2_typ_open:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if h2_val > h2_typ95_open:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif h2_val > h2_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(ch4_val) is True:
                 ieee_2019_typical_results.append('-')
-            else:
-                if ch4_val > ch4_typ_open:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif pd.isna(trafo_age_val) is True:
+                if ch4_val > ch4_typ95_open_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
+                else:
+                    ieee_2019_typical_results.append('Normal')
+            elif trafo_age_val <= 30:
+                if ch4_val > ch4_typ95_open_under_30:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
+                else:
+                    ieee_2019_typical_results.append('Normal')
+            elif trafo_age_val > 30:
+                if ch4_val > ch4_typ95_open_over_30:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif ch4_val > ch4_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(c2h6_val) is True:
                 ieee_2019_typical_results.append('-')
-            else:
-                if c2h6_val > c2h6_typ_open:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif pd.isna(trafo_age_val) is True:
+                if c2h6_val > c2h6_typ95_open_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
+                else:
+                    ieee_2019_typical_results.append('Normal')
+            elif trafo_age_val < 10:
+                if c2h6_val > c2h6_typ95_open_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
+                else:
+                    ieee_2019_typical_results.append('Normal')
+            elif trafo_age_val >= 10:
+                if c2h6_val > c2h6_typ95_open_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h6_val > c2h6_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             
             if pd.isna(c2h4_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if c2h4_val > c2h4_typ_open_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h4_val > c2h4_typ95_open_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_open_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val <= 9:
-                if c2h4_val > c2h4_typ_open_under_9:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif trafo_age_val < 10:
+                if c2h4_val > c2h4_typ95_open_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_open_under_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val >= 10:
-                if c2h4_val > c2h4_typ_open_over_10:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h4_val > c2h4_typ95_open_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h4_val > c2h4_typ_open_over_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(c2h2_val) is True:
                 ieee_2019_typical_results.append('-')
             else:
-                if c2h2_val > c2h2_typ_open:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if c2h2_val > c2h2_typ95_open:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif c2h2_val > c2h2_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(co_val) is True:
                 ieee_2019_typical_results.append('-')
             else:
-                if co_val > co_typ_open:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if co_val > co_typ95_open:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co_val > co_typ_open:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
             if pd.isna(co2_val) is True:
                 ieee_2019_typical_results.append('-')
             elif pd.isna(trafo_age_val) is True:
-                if co2_val > co2_typ_open_unknown:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if co2_val > co2_typ95_open_unknown:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co2_val > co2_typ_open_unknown:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
-            elif trafo_age_val <= 9:
-                if co2_val > co2_typ_open_under_9:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+            elif trafo_age_val < 10:
+                if co2_val > co2_typ95_open_under_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co2_val > co2_typ_open_under_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
             elif trafo_age_val >= 10:
-                if co2_val > co2_typ_open_over_10:
-                    ieee_2019_typical_results.append('Typical values exceeded!')
+                if co2_val > co2_typ95_open_over_10:
+                    ieee_2019_typical_results.append('95% typical values exceeded!')
+                elif co2_val > co2_typ_open_over_10:
+                    ieee_2019_typical_results.append('90% typical values exceeded!')
                 else:
                     ieee_2019_typical_results.append('Normal')
 
@@ -498,8 +649,8 @@ if __name__ == '__main__':
     for r in typical_list:
         print(r, len(r))
     '''
-    ieee2008_list = ieee_2008_typical_calculation(109.99, 120.99, 65.99, 50.99, 1.99, 350.99, 2500)
-    print(ieee2008_list, len(ieee2008_list))
+    #ieee2008_list = ieee_2008_typical_calculation(109.99, 120.99, 65.99, 50.99, 1.99, 350.99, 2500)
+    #print(ieee2008_list, len(ieee2008_list))
 
-    #ieee2019_0_list = ieee_2019_typical_calculation(50, 60, 100, 80, 10, 500, 2000, 15600, 56000, 10)
-    #print(ieee2019_0_list, len(ieee2019_0_list))
+    ieee2019_0_list = ieee_2019_typical_calculation(40, 20, 15, 50, 2, 500, 5000, 21000, 56000, np.nan)
+    print(ieee2019_0_list, len(ieee2019_0_list))

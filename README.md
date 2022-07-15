@@ -31,7 +31,6 @@ Run app_dga_diagtool.py using python with needed libraries installed and a brows
 
 ## TODO (Future feature ides)
 
-- Add IEEE C57.104-2019 95% typical values
 - Add IEC 60599 95% typical values
 - Cigre typical values comparison
 - internal logging (with on/off) +logging download
