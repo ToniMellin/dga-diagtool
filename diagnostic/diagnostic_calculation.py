@@ -117,13 +117,13 @@ def rogers_ratio_calculation(ratio2, ratio1, ratio5):
     try:
         if (pd.isna(ratio2) is True) or (pd.isna(ratio1) is True) or (pd.isna(ratio5) is True):
             return 'N/A'
-        elif ratio2 < 0.1 and ratio1 > 0.1 and ratio1 < 1 and ratio5 < 1:
+        elif ratio2 < 0.1 and ratio1 >= 0.1 and ratio1 <= 1 and ratio5 < 1:
             return 'Normal'
         elif ratio2 < 0.1 and ratio1 < 0.1 and ratio5 < 1:
             return 'PD'
-        elif ratio2 > 0.1 and ratio2 < 3 and ratio1 > 0.1 and ratio1 < 1 and ratio5 > 3:
-            return 'D1/D2'
-        elif ratio2 < 0.1 and ratio1  > 0.1 and ratio1 < 1 and ratio5 >= 1 and ratio5 <= 3:
+        elif ratio2 >= 0.1 and ratio2 <= 3 and ratio1 >= 0.1 and ratio1 <= 1 and ratio5 > 3:
+            return 'D2'
+        elif ratio2 < 0.1 and ratio1  >= 0.1 and ratio1 <= 1 and ratio5 >= 1 and ratio5 <= 3:
             return 'T1'
         elif ratio2 < 0.1 and ratio1 > 1 and ratio5 >= 1 and ratio5 <= 3:
             return 'T2'
@@ -136,8 +136,8 @@ def rogers_ratio_calculation(ratio2, ratio1, ratio5):
         print(f'{ratio2}, {ratio1}, {ratio5}')
         return '-'
 
-def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
-    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, np.nan, np.nan)
+def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val):
+    ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, np.nan, np.nan, np.nan)
     ratio1 = ratio_list[0]
     ratio2 = ratio_list[1]
     ratio3 = ratio_list[2]
@@ -173,14 +173,14 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
             return 'No fault'
     except:
         print('Doernenburg ratio calculation error!')
-        print(f'{h2_val}, {ch4_val}, {c2h6_val}, {c2h4_val}, {c2h2_val}, {co_val}, {co2_val}')
+        print(f'{h2_val}, {ch4_val}, {c2h6_val}, {c2h4_val}, {c2h2_val}, {co_val}')
         return '-'
 
 def iec_ratio_calculation(ratio2, ratio1, ratio5):
     try:
         if (pd.isna(ratio2) is True) or (pd.isna(ratio1) is True) or (pd.isna(ratio5) is True):
             return 'N/A'
-        if ratio2 < 0.1 and ratio5 < 0.2:
+        if ratio1 < 0.1 and ratio5 < 0.2:
             return 'PD'
         elif ratio2 > 1 and ratio1 >= 0.1 and ratio1 <= 0.5 and ratio5 >1:
             return 'D1'
@@ -214,7 +214,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
         if pd.isna([ratio_list[0], ratio_list[1], ratio_list[2], ratio_list[3]]).any() is True:
             diag_result_list.append('N/A')
         else:
-            doernenburg_result = doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+            doernenburg_result = doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val)
             diag_result_list.append(doernenburg_result)
 
         if pd.isna([ratio_list[0], ratio_list[1], ratio_list[4]]).any() is True:
@@ -256,3 +256,9 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
 
     return diag_result_list
     
+if __name__ == '__main__':
+    #iec_test = iec_ratio_calculation(50, 0.01, 0.1)
+    #print(iec_test)
+
+    doernenburg_test = doernenburg_ratio_calculation(201, 121, 66, 51, 0, 351)
+    print(doernenburg_test)

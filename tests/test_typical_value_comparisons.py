@@ -59,7 +59,6 @@ def test_ieee_2008_typical_values_inverted_pyramid():
     assert typical_value_comparison.ieee_2008_typical_calculation(4000, 800, 78, 20.55, 5.4, 1200, 20000) == ['Typical values exceeded! / Condition 4', 'Typical values exceeded! / Condition 3', 'Typical values exceeded! / Condition 2', 'Normal / Condition 1', 'Typical values exceeded! / Condition 2', 'Typical values exceeded! / Condition 3', 'Typical values exceeded! / Condition 4', 'Typical values exceeded! / Condition 4']
 
 
-# TODO add more IEEE 2019 tests
 # IEEE 2019 typical value tests
 def test_ieee_2019_typical_values_all_zero():
     assert typical_value_comparison.ieee_2019_typical_calculation(0, 0, 0, 0, 0, 0, 0, 0, 0, 0) == ['Normal', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal']

@@ -17,12 +17,137 @@ def test_ratio_calculation_even_and_uneven_set():
 def test_ratio_calculation_even_and_uneven_set():
     assert diagnostic_calculation.calculate_ratios(9, 8, 6, 16, 15, 60, 178, 21100, 80000) == [0.89, 0.94, 1.88, 0.40, 2.67, 2.97, 0.26]
 
+def test_ratio_calculation_set_1():
+    assert diagnostic_calculation.calculate_ratios(201, 50, 10, 50, 50, 350, 178, 21100, 80000) == [0.25, 1, 1, 0.20, 5, 0.51, 0.26]
+
 # IEC ratio tests
-# TODO add tests for all cases and edge events
 def test_iec_ratio_nan():
     assert diagnostic_calculation.iec_ratio_calculation(np.nan, np.nan, np.nan) == 'N/A'
 
-# TODO add the other ratio tests and test cases
+def test_iec_ratio_all_zero():
+    assert diagnostic_calculation.iec_ratio_calculation(0, 0, 0) == 'PD'
+
+def test_iec_ratio_PD_1():
+    assert diagnostic_calculation.iec_ratio_calculation(50, 0.01, 0.1) == 'PD'
+
+def test_iec_ratio_D1_1():
+    assert diagnostic_calculation.iec_ratio_calculation(2, 0.1, 1.1) == 'D1'
+
+def test_iec_ratio_D1_2():
+    assert diagnostic_calculation.iec_ratio_calculation(1.1, 0.5, 2) == 'D1'
+
+def test_iec_ratio_D2_1():
+    assert diagnostic_calculation.iec_ratio_calculation(0.6, 0.1, 2.1) == 'D2'
+
+def test_iec_ratio_D2_2():
+    assert diagnostic_calculation.iec_ratio_calculation(2.5, 1, 2.1) == 'D2'
+
+def test_iec_ratio_T1_1():
+    assert diagnostic_calculation.iec_ratio_calculation(1, 1.1, 0) == 'T1'
+
+def test_iec_ratio_T1_2():
+    assert diagnostic_calculation.iec_ratio_calculation(1, 2, 0.9) == 'T1'
+
+def test_iec_ratio_T2_1():
+    assert diagnostic_calculation.iec_ratio_calculation(0, 1.1, 1) == 'T2'
+
+def test_iec_ratio_T2_2():
+    assert diagnostic_calculation.iec_ratio_calculation(0.01, 1.1, 4) == 'T2'
+
+def test_iec_ratio_T3_1():
+    assert diagnostic_calculation.iec_ratio_calculation(0.1, 1.1, 5) == 'T3'
+
+
+# Rogers ratio tests
+def test_rogers_ratio_nan():
+    assert diagnostic_calculation.rogers_ratio_calculation(np.nan, np.nan, np.nan) == 'N/A'
+
+def test_rogers_ratio_some_nan():
+    assert diagnostic_calculation.rogers_ratio_calculation(np.nan, 2, 1) == 'N/A'
+
+def test_rogers_ratio_all_zero():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 0, 0) == 'PD'
+
+def test_rogers_ratio_PD_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 0.01, 0.5) == 'PD'
+
+def test_rogers_ratio_normal_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 0.1, 0.5) == 'Normal'
+
+def test_rogers_ratio_normal_2():
+    assert diagnostic_calculation.rogers_ratio_calculation(0.01, 1, 0) == 'Normal'
+
+def test_rogers_ratio_D2_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0.1, 0.1, 3.1) == 'D2'
+
+def test_rogers_ratio_D2_2():
+    assert diagnostic_calculation.rogers_ratio_calculation(3, 1, 5) == 'D2'
+
+def test_rogers_ratio_T1_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 0.1, 1) == 'T1'
+
+def test_rogers_ratio_T1_2():
+    assert diagnostic_calculation.rogers_ratio_calculation(0.01, 1, 3) == 'T1'
+
+def test_rogers_ratio_T2_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 1.1, 1) == 'T2'
+
+def test_rogers_ratio_T2_2():
+    assert diagnostic_calculation.rogers_ratio_calculation(0.01, 2, 3) == 'T2'
+
+def test_rogers_ratio_T3_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0.01, 1.1, 5) == 'T3'
+
+def test_rogers_ratio_ND_1():
+    assert diagnostic_calculation.rogers_ratio_calculation(0.1, 1.1, 2) == 'ND'
+
+def test_rogers_ratio_ND_2():
+    assert diagnostic_calculation.rogers_ratio_calculation(4, 0.1, 5) == 'ND'
+
+def test_rogers_ratio_ND_3():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 0, 2) == 'ND'
+
+def test_rogers_ratio_ND_4():
+    assert diagnostic_calculation.rogers_ratio_calculation(0, 2, 0) == 'ND'
+
+def test_rogers_ratio_ND_5():
+    assert diagnostic_calculation.rogers_ratio_calculation(2, 0, 2) == 'ND'
+
+
+# Doernenburg ratio tests
+def test_doernenburg_ratio_all_zero():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(0, 0, 0, 0, 0, 0) == 'No fault'
+
+def test_doernenburg_ratio_all_nan():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(np.nan, np.nan, np.nan, np.nan, np.nan, np.nan) == 'N/A'
+
+def test_doernenburg_ratio_some_nan():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(np.nan, 10, np.nan, 200, 50, 100) == 'N/A'
+
+def test_doernenburg_ratio_no_fault_1():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(200, 240, 65, 100, 2, 350) == 'No fault'
+
+def test_doernenburg_ratio_no_fault_2():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(201, 240, 65, 100, 2, 350) == 'No fault'
+
+def test_doernenburg_ratio_no_fault_3():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(200, 240, 66, 100, 2, 351) == 'No fault'
+
+def test_doernenburg_ratio_no_fault_3():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(201, 240, 65, 100, 2, 350) == 'No fault'
+
+def test_doernenburg_ratio_T_1():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(201, 240, 66, 100, 2, 350) == 'T'
+
+def test_doernenburg_ratio_PD_1():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(201, 0, 66, 100, 2, 350) == 'PD'
+
+def test_doernenburg_ratio_D2_1():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(201, 50, 10, 50, 50, 400) == 'D1/D2'
+
+def test_doernenburg_ratio_ND():
+    assert diagnostic_calculation.doernenburg_ratio_calculation(201, 121, 66, 51, 0, 351) == 'ND'
+
 
 # Duval triangle 1 tests
 def test_duval_1_coordinates_1():
@@ -335,3 +460,5 @@ def test_duval_5_result_calculation_PD_O_edge_2():
 
 def test_duval_5_result_calculation_PD_middle():
     assert duval_triangle_5.calculate_duval_5_result(95, 9.5, 0.5) == 'PD'
+
+# TODO add combined diagnostic ratio results
