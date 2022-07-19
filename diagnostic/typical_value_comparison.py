@@ -2,6 +2,31 @@ import numpy as np
 import pandas as pd
 
 def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+    """
+    Checks given gas concentration values (ppm) againt IEC 60599 typical values and indicates if they are exceeded
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    
+    Returns
+    -------
+    list
+        list of str values that are results from checking the gas concentrations against typical values if nothing is given or comparison impossible dashes '-' are returned
+    """
     
     # IEC 90th percentile typical values
     h2_typ = 150
@@ -74,6 +99,32 @@ def iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
     return iec_typical_results
 
 def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+    """
+    Checks given gas concentration values (ppm) againt IEEE C57.104-2008 typical values and indicates if they are exceeded
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    
+    Returns
+    -------
+    list
+        list of str values that are results from checking the gas concentrations against typical values if nothing is given or comparison impossible dashes '-' are returned
+    """
+
     try:
         tdcg_val = h2_val + ch4_val + c2h6_val + c2h4_val + c2h2_val + co_val
     except:
@@ -207,6 +258,38 @@ def ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     return ieee_typical_results
 
 def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+    """
+    Checks given gas concentration values (ppm) againt IEEE C57.104-2019 typical values and indicates if they are exceeded
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    o2_val : float
+        oxygen (O2) gas concentration in ppm
+    n2_val : float
+        nitrogen (N2) gas concentration in ppm
+    trafo_age_val : int
+        transformer age in years
+
+    Returns
+    -------
+    list
+        list of str values that are results from checking the gas concentrations against typical values if nothing is given or comparison impossible dashes '-' are returned
+    """
+    
     ieee_2019_typical_results = []
 
     if (pd.isna(o2_val) == True) or (pd.isna(n2_val) == True):
@@ -627,6 +710,38 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
     
 
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+    """
+    Combines the multiple checks of given gas concentration values (ppm) againt different standards typical values and indicates if they are exceeded
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    o2_val : float
+        oxygen (O2) gas concentration in ppm
+    n2_val : float
+        nitrogen (N2) gas concentration in ppm
+    trafo_age_val : int
+        transformer age in years
+
+    Returns
+    -------
+    list
+        nested list of str values that combines results from checking the gas concentrations against different standards typical values if nothing is given or comparison impossible dashes '-' are returned
+    """
+    
     typical_result_list = []
     
     try:

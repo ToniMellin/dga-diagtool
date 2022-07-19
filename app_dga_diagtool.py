@@ -21,11 +21,12 @@ from diagnostic import typical_value_comparison
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 def open_browser():
-    # function to open browser if not already running
+    """function to open browser if not already running"""
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         webbrowser.open_new('http://127.0.0.1:8050/')
 
 def generate_table(dataframe):
+    """function to generate a Dash html table from given dataframe"""
     return html.Table([
         html.Thead(
             html.Tr([html.Th(col) for col in dataframe.columns])
@@ -126,6 +127,7 @@ app.layout = html.Div([
 
 
 def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+    """Updates the dash app output, including duval triangle graphs, typical value and the diagnostic result tables"""
     r_list = diagnostic_calculation.calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val)
     df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):', 'Ratio 7 (O2/N2):'],
                             'Value': r_list}).round(2)
@@ -137,7 +139,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
     df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:', 'Duval triangle 4:', 'Duval triangle 5:'], 'Result': diag_results})
     
     typical_results = typical_value_comparison.calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
-    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, 90% typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values'], 
+    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values'], 
                                 'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0]], 
                                 'CH4': [typical_results[0][1], typical_results[1][1], typical_results[2][1]], 
                                 'C2H6': [typical_results[0][2], typical_results[1][2], typical_results[2][2]], 

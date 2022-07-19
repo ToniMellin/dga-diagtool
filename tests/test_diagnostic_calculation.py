@@ -20,6 +20,10 @@ def test_ratio_calculation_even_and_uneven_set():
 def test_ratio_calculation_set_1():
     assert diagnostic_calculation.calculate_ratios(201, 50, 10, 50, 50, 350, 178, 21100, 80000) == [0.25, 1, 1, 0.20, 5, 0.51, 0.26]
 
+def test_ratio_calculation_set_2():
+    assert diagnostic_calculation.calculate_ratios(500, 121, 874, 12, 50, 5000, 1000, 19800, 65000) == [0.24, 4.17, 0.41, 17.48, 0.01, 0.20, 0.30]
+
+
 # IEC ratio tests
 def test_iec_ratio_nan():
     assert diagnostic_calculation.iec_ratio_calculation(np.nan, np.nan, np.nan) == 'N/A'
@@ -460,5 +464,3 @@ def test_duval_5_result_calculation_PD_O_edge_2():
 
 def test_duval_5_result_calculation_PD_middle():
     assert duval_triangle_5.calculate_duval_5_result(95, 9.5, 0.5) == 'PD'
-
-# TODO add combined diagnostic ratio results

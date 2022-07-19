@@ -10,12 +10,14 @@ import duval_triangle_4
 import duval_triangle_5
 
 def round_half_up(n, decimals=0):
-    # rounding values
+    """Function for rounding values up according to given decimal count, returns the rounded float value"""
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
 
 def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val):
-    '''
+    """
+    Calculates gas ratios 1-7 from given gas concentration (ppm) values, rounding them up with 2 decimals
+
     R1: CH4/H2
     R2: C2H2/C2H4
     R3: C2H2/CH4
@@ -23,7 +25,33 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
     R5: C2H4/C2H6
     R6: CO2/CO
     R7: O2/N2
-    '''
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    o2_val : float
+        oxygen (O2) gas concentration in ppm
+    n2_val : float
+        nitrogen (N2) gas concentration in ppm
+
+    Returns
+    -------
+    list
+        list of float values with the 7 gas ratios rounded up with 2 decimals
+    """
 
     # Ratio 1: CH4/H2
     try:
@@ -114,6 +142,32 @@ def calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_
     return ratio_list
 
 def rogers_ratio_calculation(ratio2, ratio1, ratio5):
+    """
+    Diagnoses DGA result based on ratios 1, 2 & 5 according to rogers ratio method 
+    and returns the fault code
+    
+    Logic of diagnosis method as per IEEE C57.104-2019, 
+    in case the analysis is not possible the function returns 'N/A', 'ND' or '-'
+    
+    R1: CH4/H2
+    R2: C2H2/C2H4
+    R5: C2H4/C2H6
+
+    Parameters
+    ----------
+    ratio2 : float
+        gas concentration ratio 2 (C2H2/C2H4)
+    ratio1 : float
+        gas concentration ratio 2 (CH4/H2)
+    ratio5 : float
+        gas concentration ratio 2 (C2H2/C2H4)
+
+    Returns
+    -------
+    str
+        fault code string
+    """
+
     try:
         if (pd.isna(ratio2) is True) or (pd.isna(ratio1) is True) or (pd.isna(ratio5) is True):
             return 'N/A'
@@ -137,12 +191,47 @@ def rogers_ratio_calculation(ratio2, ratio1, ratio5):
         return '-'
 
 def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val):
+    """
+    Diagnoses DGA result based on ratios 1, 2, 3 & 4 according to doernenburg ratio method 
+    and returns the fault code
+    
+    Logic of diagnosis method as per IEEE C57.104-2019, 
+    in case the analysis is not possible the function returns 'N/A', 'ND' or '-'
+    
+    R1: CH4/H2
+    R2: C2H2/C2H4
+    R3: C2H2/CH4
+    R4: C2H6/C2H2
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+
+    Returns
+    -------
+    str
+        fault code string
+    """
+    
+    # calculate needed ratios
     ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, np.nan, np.nan, np.nan)
     ratio1 = ratio_list[0]
     ratio2 = ratio_list[1]
     ratio3 = ratio_list[2]
     ratio4 = ratio_list[3]
 
+    # limits needed to be exceeded for usage of doernenburg ratio method
     h2_l1 = 100
     h2_2l1 = 100 * 2
     ch4_l1 = 120
@@ -177,6 +266,30 @@ def doernenburg_ratio_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
         return '-'
 
 def iec_ratio_calculation(ratio2, ratio1, ratio5):
+    """
+    Diagnoses DGA result based on ratios 1, 2 & 5 according to IEC ratio method and returns the fault code
+    
+    Logic of diagnosis method as per IEC 60599 (2015), in case the analysis is not possible the function returns 'N/A', 'ND' or '-'
+    
+    R1: CH4/H2
+    R2: C2H2/C2H4
+    R5: C2H4/C2H6
+
+    Parameters
+    ----------
+    ratio2 : float
+        gas concentration ratio 2 (C2H2/C2H4)
+    ratio1 : float
+        gas concentration ratio 2 (CH4/H2)
+    ratio5 : float
+        gas concentration ratio 2 (C2H2/C2H4)
+
+    Returns
+    -------
+    str
+        fault code string
+    """
+
     try:
         if (pd.isna(ratio2) is True) or (pd.isna(ratio1) is True) or (pd.isna(ratio5) is True):
             return 'N/A'
@@ -200,6 +313,39 @@ def iec_ratio_calculation(ratio2, ratio1, ratio5):
         return '-'
 
 def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+    """
+    Combines calculation of diagnostic results using different diagnostic methods from given gas concentration (ppm) values
+
+    Included diagnostic methods tests:
+    - Rogers ratio method
+    - Doernenburg ratio method
+    - IEC ratio method
+    - Duval triangle 1
+    - Duval triangle 4 & 5 when required preconditions of triangle 1 are matched
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    
+    Returns
+    -------
+    list
+        list of str values that correspond to the diagnostic methods results of diagnosed fault condition
+    """
+
     ratio_list = calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, np.nan, np.nan)
 
     diag_result_list = []
@@ -230,6 +376,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
             duval1_result = duval_triangle_1.calculate_duval_1_result(ch4_val, c2h2_val, c2h4_val)
             diag_result_list.append(duval1_result)
 
+        # duval triangle 4 result only calculated and shown if triangle 1 result is PD, T1 or T2
         if pd.isna([h2_val, c2h6_val, ch4_val]).any() is True:
             diag_result_list.append('N/A')
         elif duval1_result in ['PD', 'T1', 'T2']:
@@ -238,6 +385,7 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
         else:
             diag_result_list.append('N/A')
 
+        # duval triangle 5 result only calculated and shown if triangle 1 result T2 or T3
         if pd.isna([ch4_val, c2h6_val, c2h4_val]).any() is True:
             diag_result_list.append('N/A')
         elif duval1_result in ['T2', 'T3']:
