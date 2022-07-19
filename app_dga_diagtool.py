@@ -6,6 +6,7 @@ import webbrowser # autobrowser opening
 import dash
 from dash import dcc
 from dash import html
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
@@ -18,7 +19,8 @@ from diagnostic import typical_value_comparison
 
 
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+dbc_css = "bootstrap.min.css"
 
 def open_browser():
     """function to open browser if not already running"""
@@ -38,8 +40,12 @@ def generate_table(dataframe):
         ])
     ])
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css] )
 
+#TODO add multicomponent layout from Dash bootstrap
+'''dbc.Row([dbc.Col([dropdown, button, checkbox], width=6),
+dbc.Col([dropdown, slider, date-picker], width=5),
+]),'''
 app.layout = html.Div([
     
     html.H2('DGA diagtool\n'), #, style={'color': 'white', 'backgroundColor':'#003366'}
