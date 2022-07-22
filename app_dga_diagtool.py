@@ -211,8 +211,9 @@ input_groups = html.Div(
     className="mt-4 p-4",
 )
 submit_button = html.Div([
-                    html.Button(id='submit-button-state', n_clicks=0, children='Calculate')
-                    ], style={'padding': 10})
+                    dbc.Button(id='submit-button-state', n_clicks=0, color="primary", className="d-grid gap-2 col-6 mx-auto", children='Calculate'),
+                    html.Br(),
+                    ])
 
 # ======= Tables ==========================================================
 '''
