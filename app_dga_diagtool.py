@@ -215,13 +215,59 @@ submit_button = html.Div([
                     html.Br(),
                     ])
 
-# ======= Tables ==========================================================
-'''
-df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):', 'Ratio 7 (O2/N2):'],
-                            'Value': []})
+# ======= Tabs ============================================================
 
-df_ratio_table = dbc.Table.from_dataframe(df_ratio, striped=True, bordered=True, hover=True)
-'''
+
+
+single_sample_data_source_card = dbc.Card(
+    [
+        dbc.CardHeader("Input sample values:", className="card-title"),
+        html.Div([input_groups, submit_button]),
+    ],
+    className="mt-4",
+    )
+
+single_sample_tab = dbc.Container([
+    dbc.Row([
+            dbc.Col([single_sample_data_source_card], width=12, lg=4, className="mt-4"),
+            dbc.Col([html.H4("Ratio calculation:"), 
+                    html.Div(id='ratio-output-state'),
+                    html.H4("Diagnostic method results:"), 
+                    html.Div(id='diagmethod-output-state')], width=12, lg=8, className="mt-4"),
+
+    ]),
+    dbc.Row(
+            dbc.Col([html.H4("Typical values comparison:"),
+                    html.Div(id='typicals-output-state')], className="mt-4"),
+    ),
+    dbc.Row(
+            dbc.Col([html.H4("Duval triangle visualizations:"), 
+                    html.Div(id='duval-output-state')], width=12, lg=12, className="mt-4"),
+    ),
+    ],fluid=True,
+    )
+
+multiple_sample_tab = dbc.Card(
+    [
+        dbc.CardHeader("Multiple samples measurement"),
+    ],
+    className="mt-4",
+)
+
+tabs = dbc.Tabs(
+    [
+        dbc.Tab(single_sample_tab, tab_id="tab-1", label="Single sample diagnosis"),
+        dbc.Tab(multiple_sample_tab,
+            tab_id="tab-2",
+            label="Multiple sample diagnosis",
+            className="pb-4",
+        ),
+    ],
+    id="tabs",
+    active_tab="tab-1",
+    className="mt-2",
+)
+
 # ======= Main layout
 
 app.layout = dbc.Container(
@@ -233,17 +279,8 @@ app.layout = dbc.Container(
             )
     ),
     dbc.Row([
-            dbc.Col([input_groups, submit_button], width=12, lg=4, className="mt-4 border"),
-            dbc.Col([html.Div(id='ratio-output-state'), html.Div(id='diagmethod-output-state')], width=12, lg=8, className="mt-4 border"),
-
+            dbc.Col([tabs], width=12, lg=12, className="mt-4"),
     ]),
-    dbc.Row(
-            dbc.Col([html.Div(id='typicals-output-state')], className="mt-4"),
-    ),
-    dbc.Row(
-            dbc.Col([html.Div(id='duval-output-state')], className="mt-4"),
-    ),
-
     ],fluid=True,
     )
 
@@ -294,6 +331,8 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                                 })
     typicals_table = dbc.Table.from_dataframe(df_typicals, striped=True, bordered=True, hover=True)
 
+    duval1 = dcc.Graph(figure=duval_triangle_1.create_duval_1_result_graph(ch4_val, c2h2_val, c2h4_val))
+
     if diag_results[3] in ['PD', 'T1', 'T2']:
         duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_result_graph(h2_val, c2h6_val, ch4_val))
     else:
@@ -305,7 +344,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
         duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_colorized())
 
     duval_triangles = html.Div([
-                            html.Div([dcc.Graph(figure=duval_triangle_1.create_duval_1_result_graph(ch4_val, c2h2_val, c2h4_val))], style={
+                            html.Div([duval1], style={
                                                         'display': 'inline-block',
                                                         'vertical-align': 'top',
                                                         'padding': 5
