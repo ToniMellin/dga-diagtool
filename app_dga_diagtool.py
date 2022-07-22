@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import os # autobrowser opening
 from threading import Timer # autobrowser opening
-import webbrowser # autobrowser opening
+import webbrowser
+from zipfile import is_zipfile # autobrowser opening
 
 import dash
 from dash import dcc
@@ -17,7 +18,7 @@ from diagnostic import duval_triangle_5
 from diagnostic import diagnostic_calculation
 from diagnostic import typical_value_comparison
 
-
+# TODO add theme changing https://hellodash.pythonanywhere.com/theme_change_components
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 dbc_css = "bootstrap.min.css"
@@ -40,110 +41,245 @@ def generate_table(dataframe):
         ])
     ])
 
+
+
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css] )
 
-#TODO add multicomponent layout from Dash bootstrap
-'''dbc.Row([dbc.Col([dropdown, button, checkbox], width=6),
-dbc.Col([dropdown, slider, date-picker], width=5),
-]),'''
-app.layout = html.Div([
-    
-    html.H2('DGA diagtool\n'), #, style={'color': 'white', 'backgroundColor':'#003366'}
-    
+# ======= InputGroup tooltips =============================================
 
-    html.Div([
-    html.Br(),
-    html.Label('Hydrogen (H2)'),    
-    dcc.Input(id='h2-state', type='number'),
+h2_tooltip = """Hydrogen (H2) dissolved gas value in ppm."""
 
-    html.Br(),
-    html.Label('Methane (CH4)'),    
-    dcc.Input(id='ch4-state', type='number'),
+ch4_tooltip = """Methane (CH4) dissolved gas value in ppm."""
 
-    html.Br(),
-    html.Label('Ethane (C2H6)'),    
-    dcc.Input(id='c2h6-state', type='number'),
+c2h6_tooltip = """Ethane (C2H6) dissolved gas value in ppm."""
 
-    html.Br(),
-    html.Label('Ethylene (C2H4)'),    
-    dcc.Input(id='c2h4-state', type='number'),
+c2h4_tooltip = """Ethylene (C2H4) dissolved gas value in ppm."""
 
-    html.Br(),
-    html.Label('Acetylene (C2H2)'),    
-    dcc.Input(id='c2h2-state', type='number'),
+c2h2_tooltip = """Acetylene (C2H2) dissolved gas value in ppm."""
 
-    html.Div([
-    html.Br(),
-    html.Button(id='submit-button-state', n_clicks=0, children='Calculate')
-    ], style={'padding': 10}),
+co_tooltip = """Carbon monoxide (CO) dissolved gas value in ppm."""
 
-    ], style={
-            'display': 'inline-block',
-            'vertical-align': 'top',
-            'padding': 20
-        }),
+co2_tooltip = """Carbon dioxide (CO2) dissolved gas value in ppm. Does not affect included diagnostic method results."""
 
-    html.Div([
-    html.Br(),
-    html.Label('Carbon monoxide (CO)'),
-    dcc.Input(id='co-state', type='number'),
+o2_tooltip = """Oxygen (O2) dissolved gas value in ppm. 
+                Oxygen value only affects IEEE C57.104-2019 typical value comparison. 
+                If left empty, free breathing transformer design assumed and used as basis for comparison."""
 
-    html.Br(),
-    html.Label('Carbon dioxide (CO2)'),
-    dcc.Input(id='co2-state', type='number'),
+n2_tooltip = """Nitrogen (N2) dissolved gas value in ppm.
+                Nitrogen value only affects IEEE C57.104-2019 typical value comparison. 
+                If left empty, free breathing transformer design assumed and used as basis for comparison."""
 
-    html.Br(),
-    html.Label('Oxygen (O2) - Optional'), 
-    dcc.Input(id='o2-state', type='number'),
+trafo_age_tooltip = """Transformer age (years). 
+                    Transformer age only affects IEEE C57.104-2019 typical value comparison.
+                    If left empty, \"Unknown\" used as basis for comparison."""
 
-    html.Br(),
-    html.Label('Nitrogen (N2) - Optional'), 
-    dcc.Input(id='n2-state', type='number'),
+# ======= InputGroup components ===========================================
 
-    html.Br(),
-    html.Label('Transformer age (years) - Optional'), 
-    dcc.Input(id='trafo-age-state', type='number')
-    ], style={
-            'display': 'inline-block',
-            'vertical-align': 'top',
-            'margin-left': '50px',
-            'padding': 20
-        }),
+h2_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Hydrogen (H2)"),
+        dbc.Input(
+            id="h2-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(h2_tooltip, target="h2-state"),
+    ],
+    className="mb-3",
+)
+ch4_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Methane (CH4)"),
+        dbc.Input(
+            id="ch4-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(ch4_tooltip, target="ch4-state"),
+    ],
+    className="mb-3",
+)
+c2h6_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Ethane (C2H6)"),
+        dbc.Input(
+            id="c2h6-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(c2h6_tooltip, target="c2h6-state"),
+    ],
+    className="mb-3",
+)
+c2h4_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Ethylene (C2H4)"),
+        dbc.Input(
+            id="c2h4-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(c2h4_tooltip, target="c2h4-state"),
+    ],
+    className="mb-3",
+)
+c2h2_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Acetylene (C2H2)"),
+        dbc.Input(
+            id="c2h2-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(c2h2_tooltip, target="c2h2-state"),
+    ],
+    className="mb-3",
+)
+co_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Carbon monoxide (CO)"),
+        dbc.Input(
+            id="co-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(co_tooltip, target="co-state"),
+    ],
+    className="mb-3",
+)
+co2_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Carbon dioxide (CO2)"),
+        dbc.Input(
+            id="co2-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(co2_tooltip, target="co2-state"),
+    ],
+    className="mb-3",
+)
+o2_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Oxygen (O2)"),
+        dbc.Input(
+            id="o2-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(o2_tooltip, target="o2-state"),
+    ],
+    className="mb-3",
+)
+n2_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Nitrogen (N2)"),
+        dbc.Input(
+            id="n2-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(n2_tooltip, target="n2-state"),
+    ],
+    className="mb-3",
+)
+trafo_age_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Transformer age (years)"),
+        dbc.Input(
+            id="trafo-age-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(trafo_age_tooltip, target="trafo-age-state"),
+    ],
+    className="mb-3",
+)
+input_groups = html.Div(
+    [h2_input, ch4_input, c2h6_input, c2h4_input, c2h2_input, co_input, co2_input, o2_input, n2_input, trafo_age_input],
+    className="mt-4 p-4",
+)
+submit_button = html.Div([
+                    html.Button(id='submit-button-state', n_clicks=0, children='Calculate')
+                    ], style={'padding': 10})
 
-    html.Br(),
-    html.Div(id='output-state')
-    ], style={
-            'display': 'inline-block',
-            'vertical-align': 'top'
-        })
+# ======= Tables ==========================================================
+'''
+df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):', 'Ratio 7 (O2/N2):'],
+                            'Value': []})
 
-@app.callback(Output('output-state', 'children'),
-              [Input('submit-button-state', 'n_clicks')],
-              [State('h2-state', 'value'),
-               State('ch4-state', 'value'),
-               State('c2h6-state', 'value'),
-               State('c2h4-state', 'value'),
-               State('c2h2-state', 'value'),
-               State('co-state', 'value'),
-               State('co2-state', 'value'),
-               State('o2-state', 'value'),
-               State('n2-state', 'value'),
-               State('trafo-age-state', 'value')]
+df_ratio_table = dbc.Table.from_dataframe(df_ratio, striped=True, bordered=True, hover=True)
+'''
+# ======= Main layout
+
+app.layout = dbc.Container(
+    [
+
+    dbc.Row(
+            dbc.Col(
+                html.H2("DGA diagtool", className="text-center bg-secondary text-white p-2"),
+            )
+    ),
+    dbc.Row([
+            dbc.Col([input_groups, submit_button], width=12, lg=4, className="mt-4 border"),
+            dbc.Col([html.Div(id='ratio-output-state'), html.Div(id='diagmethod-output-state')], width=12, lg=8, className="mt-4 border"),
+
+    ]),
+    dbc.Row(
+            dbc.Col([html.Div(id='typicals-output-state')], className="mt-4"),
+    ),
+    dbc.Row(
+            dbc.Col([html.Div(id='duval-output-state')], className="mt-4"),
+    ),
+
+    ],fluid=True,
+    )
+
+# ======= Callbacks =======================================================
+
+@app.callback(Output('ratio-output-state', 'children'),
+                Output('diagmethod-output-state', 'children'),
+                Output('typicals-output-state', 'children'),
+                Output('duval-output-state', 'children'),
+                Input('submit-button-state', 'n_clicks'),
+                State('h2-state', 'value'),
+                State('ch4-state', 'value'),
+                State('c2h6-state', 'value'),
+                State('c2h4-state', 'value'),
+                State('c2h2-state', 'value'),
+                State('co-state', 'value'),
+                State('co2-state', 'value'),
+                State('o2-state', 'value'),
+                State('n2-state', 'value'),
+                State('trafo-age-state', 'value')
                )
-
-
 def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     """Updates the dash app output, including duval triangle graphs, typical value and the diagnostic result tables"""
     r_list = diagnostic_calculation.calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val)
     df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):', 'Ratio 7 (O2/N2):'],
-                            'Value': r_list}).round(2)
+                            'Value': r_list})
+    ratio_table = dbc.Table.from_dataframe(df_ratio, striped=True, bordered=True, hover=True)
+    
     try:
         diag_results = diagnostic_calculation.calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
     except TypeError:
         print('diag TypeERROR')
         diag_results = ['-', '-', '-', '-', '-', '-']
+
     df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:', 'Duval triangle 4:', 'Duval triangle 5:'], 'Result': diag_results})
-    
+    diagresults_table = dbc.Table.from_dataframe(df_diag, striped=True, bordered=True, hover=True)
+
     typical_results = typical_value_comparison.calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
     df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values'], 
                                 'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0]], 
@@ -155,6 +291,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                                 'CO2': [typical_results[0][6], typical_results[1][6], typical_results[2][6]],
                                 'TDCG': ['-', typical_results[1][7], '-']
                                 })
+    typicals_table = dbc.Table.from_dataframe(df_typicals, striped=True, bordered=True, hover=True)
 
     if diag_results[3] in ['PD', 'T1', 'T2']:
         duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_result_graph(h2_val, c2h6_val, ch4_val))
@@ -166,26 +303,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
     else:
         duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_colorized())
 
-    return html.Div([
-                    html.Div([
-                        generate_table(df_ratio)], style={
-                                                        'display': 'inline-block',
-                                                        'vertical-align': 'top',
-                                                        'padding': 20
-                                                        }),
-                    html.Div([
-                        generate_table(df_diag)], style={
-                                                        'display': 'inline-block',
-                                                        'vertical-align': 'top',
-                                                        'margin-left': '100px',
-                                                        'padding': 20
-                                                        }),
-
-                    html.Br(),
-                    html.Div([
-                    generate_table(df_typicals)], style={'padding': 20}),
-
-                    html.Div([
+    duval_triangles = html.Div([
                             html.Div([dcc.Graph(figure=duval_triangle_1.create_duval_1_result_graph(ch4_val, c2h2_val, c2h4_val))], style={
                                                         'display': 'inline-block',
                                                         'vertical-align': 'top',
@@ -202,8 +320,9 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                                                         'padding': 5
                                                         }), 
                     
-                    ]),
                     ])
+
+    return ratio_table, diagresults_table, typicals_table, duval_triangles
 
 def main():
     Timer(1, open_browser).start()
