@@ -44,7 +44,7 @@ def generate_table(dataframe):
 
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css] )
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css]) # IF needed to not include initial callbacks , prevent_initial_callbacks=True
 
 # ======= InputGroup tooltips =============================================
 
@@ -73,6 +73,12 @@ n2_tooltip = """Nitrogen (N2) dissolved gas value in ppm.
 trafo_age_tooltip = """Transformer age (years). 
                     Transformer age only affects IEEE C57.104-2019 typical value comparison.
                     If left empty, \"Unknown\" used as basis for comparison."""
+
+date_tooltip = "Sample date. Used for rate of change analyis."
+
+name_tooltip = "Sample reference name (**Optional**). Name is optional, but may help you in handling your samples."
+
+# TODO multi sample point further descriptions
 
 # ======= InputGroup components ===========================================
 
@@ -210,19 +216,187 @@ input_groups = html.Div(
     [h2_input, ch4_input, c2h6_input, c2h4_input, c2h2_input, co_input, co2_input, o2_input, n2_input, trafo_age_input],
     className="mt-4 p-4",
 )
-submit_button = html.Div([
-                    dbc.Button(id='submit-button-state', n_clicks=0, color="primary", className="d-grid gap-2 col-6 mx-auto", children='Calculate'),
-                    html.Br(),
+calculate_button = html.Div([
+                    dbc.Button(id='calculate-button-state', n_clicks=0, color="primary", className="d-grid gap-2 col-6 mx-auto", children='Calculate'),
                     ])
 
+
+date_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Sample date"),
+        dbc.Input(
+            id="date-multi-state",
+            type="text",
+            placeholder="YYYY-MM-DD",
+        ),
+        dbc.Tooltip(date_tooltip, target="h2-multi-state"),
+    ],
+    className="mb-3",
+)
+name_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Sample name"),
+        dbc.Input(
+            id="name-multi-state",
+            type="text",
+        ),
+        dbc.Tooltip(name_tooltip, target="name-multi-state"),
+    ],
+    className="mb-3",
+)
+h2_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Hydrogen (H2)"),
+        dbc.Input(
+            id="h2-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(h2_tooltip, target="h2-multi-state"),
+    ],
+    className="mb-3",
+)
+ch4_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Methane (CH4)"),
+        dbc.Input(
+            id="ch4-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(ch4_tooltip, target="ch4-multi-state"),
+    ],
+    className="mb-3",
+)
+c2h6_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Ethane (C2H6)"),
+        dbc.Input(
+            id="c2h6-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(c2h6_tooltip, target="c2h6-multi-state"),
+    ],
+    className="mb-3",
+)
+c2h4_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Ethylene (C2H4)"),
+        dbc.Input(
+            id="c2h4-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(c2h4_tooltip, target="c2h4-multi-state"),
+    ],
+    className="mb-3",
+)
+c2h2_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Acetylene (C2H2)"),
+        dbc.Input(
+            id="c2h2-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(c2h2_tooltip, target="c2h2-multi-state"),
+    ],
+    className="mb-3",
+)
+co_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Carbon monoxide (CO)"),
+        dbc.Input(
+            id="co-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(co_tooltip, target="co-multi-state"),
+    ],
+    className="mb-3",
+)
+co2_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Carbon dioxide (CO2)"),
+        dbc.Input(
+            id="co2-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(co2_tooltip, target="co2-multi-state"),
+    ],
+    className="mb-3",
+)
+o2_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Oxygen (O2)"),
+        dbc.Input(
+            id="o2-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(o2_tooltip, target="o2-multi-state"),
+    ],
+    className="mb-3",
+)
+n2_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Nitrogen (N2)"),
+        dbc.Input(
+            id="n2-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(n2_tooltip, target="n2-multi-state"),
+    ],
+    className="mb-3",
+)
+trafo_age_multi_input = dbc.InputGroup(
+    [
+        dbc.InputGroupText("Transformer age (years)"),
+        dbc.Input(
+            id="trafo-age-multi-state",
+            type="number",
+            min=0,
+            max=1000000,
+        ),
+        dbc.Tooltip(trafo_age_tooltip, target="trafo-age-multi-state"),
+    ],
+    className="mb-3",
+)
+input_groups_multi = html.Div(
+    [date_multi_input, name_multi_input, h2_multi_input, ch4_multi_input, c2h6_multi_input, c2h4_multi_input, c2h2_multi_input, co_multi_input, co2_multi_input, o2_multi_input, n2_multi_input, trafo_age_multi_input],
+    className="mt-4 p-4",
+)
+add_sample_button = html.Div([
+                    dbc.Button(id='add-sample-button-state', n_clicks=0, color="primary", className="d-grid gap-2 col-8 mx-auto", children='Add sample'),
+                    ])
+clear_samples_button = html.Div([
+                    dbc.Button(id='clear-samples-button-state', n_clicks=0, outline=True, color="primary", className="d-grid gap-2 col-8 mx-auto", children='Clear samples'),
+                    ])
+update_multi_diagnostic_button = html.Div([
+                    dbc.Button(id='update-multi-button-state', n_clicks=0, color="success", className="d-grid gap-2 col-8 mx-auto", children='Update diagnostic'),
+                    ])
+
+# TODO add toggle for lineest function usage or absolute values
+
 # ======= Tabs ============================================================
-
-
 
 single_sample_data_source_card = dbc.Card(
     [
         dbc.CardHeader("Input sample values:", className="card-title"),
-        html.Div([input_groups, submit_button]),
+        html.Div([input_groups, calculate_button]),
+        html.Br(),
     ],
     className="mt-4",
     )
@@ -247,19 +421,33 @@ single_sample_tab = dbc.Container([
     ],fluid=True,
     )
 
-multiple_sample_tab = dbc.Card(
+
+multiple_sample_data_source_card = dbc.Card(
     [
-        dbc.CardHeader("Multiple samples measurement"),
+        dbc.CardHeader("Input multiple sample values and choose settings:", className="card-title"),
+        html.Div([input_groups_multi, add_sample_button, clear_samples_button, html.Br(), update_multi_diagnostic_button]),
+        html.Br(),
     ],
     className="mt-4",
-)
+    )
 
+multiple_sample_tab = dbc.Container([
+    dbc.Row([ 
+        dbc.Col([multiple_sample_data_source_card], width=12, lg=4, className="mt-4"),
+        dbc.Col([html.H4("Sample data:"), 
+                html.Div(id='samplelist-output-state'),
+                ], width=12, lg=8, className="mt-4"),
+    ]),
+    ],fluid=True,
+    )
+
+# Build tabs
 tabs = dbc.Tabs(
     [
-        dbc.Tab(single_sample_tab, tab_id="tab-1", label="Single sample diagnosis"),
+        dbc.Tab(single_sample_tab, tab_id="tab-1", label="Single sample diagnostic"),
         dbc.Tab(multiple_sample_tab,
             tab_id="tab-2",
-            label="Multiple sample diagnosis",
+            label="Multiple sample diagnostic",
             className="pb-4",
         ),
     ],
@@ -268,7 +456,8 @@ tabs = dbc.Tabs(
     className="mt-2",
 )
 
-# ======= Main layout
+
+# ======= Main layout =====================================================
 
 app.layout = dbc.Container(
     [
@@ -281,6 +470,8 @@ app.layout = dbc.Container(
     dbc.Row([
             dbc.Col([tabs], width=12, lg=12, className="mt-4"),
     ]),
+    # dcc.Store stores the samples data
+    dcc.Store(id='multi-samples-data'),
     ],fluid=True,
     )
 
@@ -290,7 +481,7 @@ app.layout = dbc.Container(
                 Output('diagmethod-output-state', 'children'),
                 Output('typicals-output-state', 'children'),
                 Output('duval-output-state', 'children'),
-                Input('submit-button-state', 'n_clicks'),
+                Input('calculate-button-state', 'n_clicks'),
                 State('h2-state', 'value'),
                 State('ch4-state', 'value'),
                 State('c2h6-state', 'value'),
@@ -363,6 +554,45 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                     ])
 
     return ratio_table, diagresults_table, typicals_table, duval_triangles
+
+@app.callback(Output('multi-samples-data', 'data'),
+                Input('add-sample-button-state', 'n_clicks'),
+                Input('multi-samples-data', 'data'),
+                State('date-multi-state', 'value'),
+                State('name-multi-state', 'value'),
+                State('h2-multi-state', 'value'),
+                State('ch4-multi-state', 'value'),
+                State('c2h6-multi-state', 'value'),
+                State('c2h4-multi-state', 'value'),
+                State('c2h2-multi-state', 'value'),
+                State('co-multi-state', 'value'),
+                State('co2-multi-state', 'value'),
+                State('o2-multi-state', 'value'),
+                State('n2-multi-state', 'value'),
+                State('trafo-age-multi-state', 'value')
+               )
+def add_sample_info(n_clicks, multi_data, date_val, name_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+    df_sample = pd.DataFrame({'Date': pd.to_datetime(date_val), 'Sample name': name_val, 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])    
+
+    if n_clicks == 0:
+        return df_sample.to_json(date_format='iso', orient='split')
+    else:
+        df_multi_samples = pd.read_json(multi_data, orient='split')
+
+        df_multi_samples = pd.concat([df_multi_samples, df_sample])
+
+        return df_multi_samples.to_json(date_format='iso', orient='split')
+
+@app.callback(Output('samplelist-output-state', 'children'),
+                Input('multi-samples-data', 'data'),
+            )
+def update_multi_sample_table(multi_data):
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No sample data entered", color="info")
+    else:
+        return dbc.Table.from_dataframe(df_multi_samples, bordered=True, hover=True)
 
 def main():
     Timer(1, open_browser).start()
