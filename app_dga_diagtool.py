@@ -18,6 +18,8 @@ from diagnostic import duval_triangle_5
 from diagnostic import diagnostic_calculation
 from diagnostic import typical_value_comparison
 
+ctx = dash.callback_context
+
 # TODO add theme changing https://hellodash.pythonanywhere.com/theme_change_components
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -557,6 +559,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
 
 @app.callback(Output('multi-samples-data', 'data'),
                 Input('add-sample-button-state', 'n_clicks'),
+                Input('clear-samples-button-state', 'n_clicks'),
                 Input('multi-samples-data', 'data'),
                 State('date-multi-state', 'value'),
                 State('name-multi-state', 'value'),
@@ -571,17 +574,28 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                 State('n2-multi-state', 'value'),
                 State('trafo-age-multi-state', 'value')
                )
-def add_sample_info(n_clicks, multi_data, date_val, name_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
-    df_sample = pd.DataFrame({'Date': pd.to_datetime(date_val), 'Sample name': name_val, 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])    
+def add_sample_info(n_clicks, clear_clicks, multi_data, date_val, name_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+    
+    ctx = dash.callback_context
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    if button_id == 'clear-samples-button-state':
+        df_no_samples = pd.DataFrame(columns=['Date', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
 
-    if n_clicks == 0:
-        return df_sample.to_json(date_format='iso', orient='split')
+        return df_no_samples.to_json(date_format='iso', orient='split')    
     else:
-        df_multi_samples = pd.read_json(multi_data, orient='split')
+        if n_clicks == 0:
+            df_no_samples = pd.DataFrame(columns=['Date', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
 
-        df_multi_samples = pd.concat([df_multi_samples, df_sample])
+            return df_no_samples.to_json(date_format='iso', orient='split')
+        else:
+            df_sample = pd.DataFrame({'Date': pd.to_datetime(date_val), 'Sample name': name_val, 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])
 
-        return df_multi_samples.to_json(date_format='iso', orient='split')
+            df_multi_samples = pd.read_json(multi_data, orient='split')
+
+            df_multi_samples = pd.concat([df_multi_samples, df_sample])
+
+            return df_multi_samples.to_json(date_format='iso', orient='split')
 
 @app.callback(Output('samplelist-output-state', 'children'),
                 Input('multi-samples-data', 'data'),
@@ -593,6 +607,7 @@ def update_multi_sample_table(multi_data):
         return dbc.Alert("No sample data entered", color="info")
     else:
         return dbc.Table.from_dataframe(df_multi_samples, bordered=True, hover=True)
+
 
 def main():
     Timer(1, open_browser).start()
