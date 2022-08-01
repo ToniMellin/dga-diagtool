@@ -12,6 +12,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
+import plotly.express as px
 
 from diagnostic import duval_triangle_1
 from diagnostic import duval_triangle_4
@@ -439,6 +440,7 @@ multiple_sample_tab = dbc.Container([
         dbc.Col([multiple_sample_data_source_card], width=12, lg=4, className="mt-4"),
         dbc.Col([html.H4("Sample data:"), 
                 html.Div(id='samplelist-output-state'),
+                html.Div(dcc.Graph(id='line-chart', figure={}), )
                 ], width=12, lg=8, className="mt-4"),
     ]),
     ],fluid=True,
@@ -636,6 +638,18 @@ def update_multi_sample_table(multi_data):
         )   
         return multi_samples_table
 
+@app.callback(Output('line-chart', 'figure'),
+                Input('multi-samples-data', 'data'),
+            )
+def update_line_chart(multi_data):
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    # sorting according to the date column
+    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Date'])
+
+    fig = px.line(df_multi_samples_sorted, x='Date', y=df_multi_samples_sorted.filter(['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2']).columns, markers=True)
+
+    return fig
 
 def main():
     Timer(1, open_browser).start()
