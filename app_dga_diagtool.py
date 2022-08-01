@@ -13,6 +13,7 @@ from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 from diagnostic import duval_triangle_1
 from diagnostic import duval_triangle_4
@@ -386,7 +387,7 @@ add_sample_button = html.Div([
                     dbc.Button(id='add-sample-button-state', n_clicks=0, color="primary", className="d-grid gap-2 col-8 mx-auto", children='Add sample'),
                     ])
 clear_samples_button = html.Div([
-                    dbc.Button(id='clear-samples-button-state', n_clicks=0, outline=True, color="primary", className="d-grid gap-2 col-8 mx-auto", children='Clear samples'),
+                    dbc.Button(id='clear-samples-button-state', n_clicks=0, outline=True, color="danger", className="d-grid gap-2 col-8 mx-auto", children='Clear samples'),
                     ])
 update_multi_diagnostic_button = html.Div([
                     dbc.Button(id='update-multi-button-state', n_clicks=0, color="success", className="d-grid gap-2 col-8 mx-auto", children='Update diagnostic'),
@@ -435,6 +436,7 @@ multiple_sample_data_source_card = dbc.Card(
     className="mt-4",
     )
 
+# TODO add accordian for the sample datatable and line-chart
 multiple_sample_tab = dbc.Container([
     dbc.Row([ 
         dbc.Col([multiple_sample_data_source_card], width=12, lg=4, className="mt-4"),
@@ -625,7 +627,7 @@ def update_multi_sample_table(multi_data):
                 ]
             ),
             data=df_multi_samples_sorted.to_dict("records"),
-            page_size=15,
+            page_size=5,
             style_table={"overflowX": "scroll"},
             #style_as_list_view=True,
             #TODO add a way to delete rows and then update the stored data by removing those rows row_deletable=True, https://community.plotly.com/t/callback-for-deleting-a-row-in-a-data-table/21437
@@ -647,7 +649,67 @@ def update_line_chart(multi_data):
     # sorting according to the date column
     df_multi_samples_sorted = df_multi_samples.sort_values(by=['Date'])
 
-    fig = px.line(df_multi_samples_sorted, x='Date', y=df_multi_samples_sorted.filter(['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2']).columns, markers=True)
+    fig = go.Figure()
+    for y_gas in df_multi_samples_sorted.filter(['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2']).columns:
+        fig.add_trace(go.Scatter(x=df_multi_samples_sorted['Date'], y=df_multi_samples_sorted[y_gas],
+                            mode='lines+markers',
+                            name=y_gas))
+    for y2_gas in df_multi_samples_sorted.filter(['CO', 'CO2', 'O2', 'N2']).columns:
+        fig.add_trace(go.Scatter(x=df_multi_samples_sorted['Date'], y=df_multi_samples_sorted[y2_gas],
+                            mode='lines+markers',
+                            name=f'{y2_gas} (y2)',
+                            yaxis="y2"))
+    fig.update_layout(
+                            showlegend=True,
+                            legend=dict(
+                                        orientation="h",
+                                        yanchor="bottom",
+                                        y=1.05,
+                                        xanchor="left",
+                                        x=0
+                                    ),
+                            title_x=0.5,
+                            height=800,
+                            xaxis_title='Time',
+                            yaxis_title='Hydrogen & hydrocarbon gases',
+                            yaxis_ticksuffix=' ppm',
+                            yaxis2=dict(
+                                title="Carbon oxides & athmospheric gases",
+                                ticksuffix=' ppm',
+                                anchor="x",
+                                overlaying="y",
+                                side="right",
+                                ),
+                            xaxis=dict(domain=[0, 1],
+                                rangeselector=dict(
+                                    buttons=list([
+                                        dict(count=1,
+                                            label="1m",
+                                            step="month",
+                                            stepmode="backward"),
+                                        dict(count=6,
+                                            label="6m",
+                                            step="month",
+                                            stepmode="backward"),
+                                        dict(count=1,
+                                            label="YTD",
+                                            step="year",
+                                            stepmode="todate"),
+                                        dict(count=1,
+                                            label="1y",
+                                            step="year",
+                                            stepmode="backward"),
+                                        dict(step="all")
+                                    ])
+                                ),
+                                rangeslider=dict(
+                                    visible=True
+                                ),
+                                type="date"),
+                            modebar_add = ["v1hovermode", 'toggleSpikelines',]
+                        )
+
+    
 
     return fig
 
