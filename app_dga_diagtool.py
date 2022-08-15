@@ -79,7 +79,7 @@ trafo_age_tooltip = """Transformer age (years).
                     Transformer age only affects IEEE C57.104-2019 typical value comparison.
                     If left empty, \"Unknown\" used as basis for comparison."""
 
-date_tooltip = "Sample date. Used for rate of change analyis."
+timestamp_tooltip = "Sample timestamp. Used for rate of change analysis and sequantial plotting. Use ISO format \n2022-01-20 15:38 \nOR \n2022-01-20"
 
 name_tooltip = "Sample reference name (**Optional**). Name is optional, but may help you in handling your samples."
 
@@ -226,15 +226,15 @@ calculate_button = html.Div([
                     ])
 
 
-date_multi_input = dbc.InputGroup(
+timestamp_multi_input = dbc.InputGroup(
     [
-        dbc.InputGroupText("Sample date"),
+        dbc.InputGroupText("Timestamp"),
         dbc.Input(
-            id="date-multi-state",
+            id="timestamp-multi-state",
             type="text",
-            placeholder="YYYY-MM-DD",
+            placeholder="YYYY-MM-DD HH:MM",
         ),
-        dbc.Tooltip(date_tooltip, target="h2-multi-state"),
+        dbc.Tooltip(timestamp_tooltip, target="timestamp-multi-state"),
     ],
     className="mb-3",
 )
@@ -380,7 +380,7 @@ trafo_age_multi_input = dbc.InputGroup(
     className="mb-3",
 )
 input_groups_multi = html.Div(
-    [date_multi_input, name_multi_input, h2_multi_input, ch4_multi_input, c2h6_multi_input, c2h4_multi_input, c2h2_multi_input, co_multi_input, co2_multi_input, o2_multi_input, n2_multi_input, trafo_age_multi_input],
+    [timestamp_multi_input, name_multi_input, h2_multi_input, ch4_multi_input, c2h6_multi_input, c2h4_multi_input, c2h2_multi_input, co_multi_input, co2_multi_input, o2_multi_input, n2_multi_input, trafo_age_multi_input],
     className="mt-4 p-4",
 )
 add_sample_button = html.Div([
@@ -436,6 +436,35 @@ multiple_sample_data_source_card = dbc.Card(
     className="mt-4",
     )
 
+multi_sample_diagnostic_accordion = html.Div(
+    dbc.Accordion(
+        [
+            dbc.AccordionItem(
+                html.Div(["This is the content of the first section",
+                html.Div(id='multidiagnostic-output-state')]),
+                title="Diagnostic results table",
+            ),
+            dbc.AccordionItem(
+                "This is the content of the second section",
+                title="Duval triangles results visualization",
+            ),
+            dbc.AccordionItem(
+                "This is the content of the third section",
+                title="Rate of change summaries",
+            ),
+            dbc.AccordionItem(
+                "This is the content of the fourth section",
+                title="Rate of change based diagnostics",
+            ),
+            dbc.AccordionItem(
+                "This is the content of the fifth section",
+                title="Rate of change based duval triangles results",
+            ),
+        ],
+        always_open=True,
+    )
+)
+
 # TODO add accordian for the sample datatable and line-chart
 multiple_sample_tab = dbc.Container([
     dbc.Row([ 
@@ -444,6 +473,9 @@ multiple_sample_tab = dbc.Container([
                 html.Div(id='samplelist-output-state'),
                 html.Div(dcc.Graph(id='line-chart', figure={}), )
                 ], width=12, lg=8, className="mt-4"),
+    ]),
+    dbc.Row([
+        multi_sample_diagnostic_accordion,
     ]),
     ],fluid=True,
     )
@@ -566,7 +598,7 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                 Input('add-sample-button-state', 'n_clicks'),
                 Input('clear-samples-button-state', 'n_clicks'),
                 Input('multi-samples-data', 'data'),
-                State('date-multi-state', 'value'),
+                State('timestamp-multi-state', 'value'),
                 State('name-multi-state', 'value'),
                 State('h2-multi-state', 'value'),
                 State('ch4-multi-state', 'value'),
@@ -579,25 +611,36 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                 State('n2-multi-state', 'value'),
                 State('trafo-age-multi-state', 'value')
                )
-def add_sample_info(n_clicks, clear_clicks, multi_data, date_val, name_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, name_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
     if button_id == 'clear-samples-button-state':
-        df_no_samples = pd.DataFrame(columns=['Date', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
+        df_no_samples = pd.DataFrame(columns=['Timestamp', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
 
         return df_no_samples.to_json(date_format='iso', orient='split')    
     else:
         if n_clicks == 0:
-            #df_no_samples = pd.DataFrame(columns=['Date', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
+            #df_no_samples = pd.DataFrame(columns=['Timestamp', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
 
-            df_sample = pd.DataFrame({'Date': ['2021-02-11', '2022-03-15', '2020-01-02 15:02'], 'Sample name': ['test2', 'test3', 'test'], 'H2': [10, 50, 0], 'CH4': [20, 60, 10], 'C2H6': [60, 121, 12], 'C2H4': [5, 50, 2], 'C2H2': [3, 12, 1], 'CO': [400, 1005, 200], 'CO2': [2211, 4200, 154], 'O2': [19000, 21500, 18060], 'N2': [52000, 56500, 49780], 'Transformer age': [10, 11, 9]}, index=[0, 1, 2])
+            df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')], 
+                        'Sample name': ['test0', 'test1', 'test2', 'test3', 'test4', 'test5'], 
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
 
             #return df_no_samples.to_json(date_format='iso', orient='split')
             return df_sample.to_json(date_format='iso', orient='split')
         else:
-            df_sample = pd.DataFrame({'Date': pd.to_datetime(date_val), 'Sample name': name_val, 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])
+            df_sample = pd.DataFrame({'Timestamp': pd.to_datetime(timestamp_val), 'Sample name': name_val, 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])
 
             df_multi_samples = pd.read_json(multi_data, orient='split')
 
@@ -612,7 +655,7 @@ def update_multi_sample_table(multi_data):
     df_multi_samples = pd.read_json(multi_data, orient='split')
 
     # sorting according to the date column
-    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Date'])
+    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
 
     if len(df_multi_samples) == 0:
         return dbc.Alert("No sample data entered", color="info")
@@ -620,7 +663,7 @@ def update_multi_sample_table(multi_data):
         multi_samples_table = dash_table.DataTable(
             id="multi_samples_table",
             columns=(
-                [{"id": "Date", "name": "Date", "type": "datetime"}]
+                [{"id": "Timestamp", "name": "Timestamp", "type": "datetime"}]
                 + [
                     {"id": col, "name": col, "type": "numeric"}
                     for col in df_multi_samples_sorted.columns[1:]
@@ -647,15 +690,15 @@ def update_line_chart(multi_data):
     df_multi_samples = pd.read_json(multi_data, orient='split')
 
     # sorting according to the date column
-    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Date'])
+    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
 
     fig = go.Figure()
     for y_gas in df_multi_samples_sorted.filter(['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2']).columns:
-        fig.add_trace(go.Scatter(x=df_multi_samples_sorted['Date'], y=df_multi_samples_sorted[y_gas],
+        fig.add_trace(go.Scatter(x=df_multi_samples_sorted['Timestamp'], y=df_multi_samples_sorted[y_gas],
                             mode='lines+markers',
                             name=y_gas))
     for y2_gas in df_multi_samples_sorted.filter(['CO', 'CO2', 'O2', 'N2']).columns:
-        fig.add_trace(go.Scatter(x=df_multi_samples_sorted['Date'], y=df_multi_samples_sorted[y2_gas],
+        fig.add_trace(go.Scatter(x=df_multi_samples_sorted['Timestamp'], y=df_multi_samples_sorted[y2_gas],
                             mode='lines+markers',
                             name=f'{y2_gas} (y2)',
                             yaxis="y2"))
@@ -712,6 +755,43 @@ def update_line_chart(multi_data):
     
 
     return fig
+
+@app.callback(Output('multidiagnostic-output-state', 'children'),
+                Input('multi-samples-data', 'data'),
+            )
+def update_multi_sample_diagnostic_table(multi_data):
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    # sorting according to the date column
+    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No sample data entered", color="info")
+    else:
+        #TODO for loop to get diagnostic results for each sample
+        #TODO gather diagnostic results for samples to single dataframe'
+        #TODO return diagnostic results summary table
+        multi_samples_table = dash_table.DataTable(
+            id="multi_samples_table",
+            columns=(
+                [{"id": "Timestamp", "name": "Timestamp", "type": "datetime"}]
+                + [
+                    {"id": col, "name": col, "type": "numeric"}
+                    for col in df_multi_samples_sorted.columns[1:]
+                ]
+            ),
+            data=df_multi_samples_sorted.to_dict("records"),
+            page_size=5,
+            style_table={"overflowX": "scroll"},
+            #style_as_list_view=True,
+            style_cell={
+                        'height': 'auto',
+                        # all three widths are needed
+                        'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
+                        'whiteSpace': 'normal'
+    }
+        )   
+        return multi_samples_table
 
 def main():
     Timer(1, open_browser).start()
