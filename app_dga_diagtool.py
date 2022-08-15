@@ -436,6 +436,29 @@ multiple_sample_data_source_card = dbc.Card(
     className="mt-4",
     )
 
+multi_sample_data_accordion = html.Div(
+    [
+        dbc.Accordion(
+            [
+                dbc.AccordionItem(
+                    html.Div(id='samplelist-output-state'),
+                    title="Sample data table",
+                    item_id="data-table",
+                ),
+                dbc.AccordionItem(
+                    html.Div(dcc.Graph(id='line-chart', figure={})),
+                    title="Sample data graph",
+                    item_id="data-graph",
+                ),
+            ],
+            id="data-accordion",
+            active_item=["data-table", "data-graph"],
+            always_open=True,
+        ),
+        html.Div(id="accordion-contents", className="mt-4"),
+    ]
+)
+
 multi_sample_diagnostic_accordion = html.Div(
     dbc.Accordion(
         [
@@ -469,9 +492,8 @@ multi_sample_diagnostic_accordion = html.Div(
 multiple_sample_tab = dbc.Container([
     dbc.Row([ 
         dbc.Col([multiple_sample_data_source_card], width=12, lg=4, className="mt-4"),
-        dbc.Col([html.H4("Sample data:"), 
-                html.Div(id='samplelist-output-state'),
-                html.Div(dcc.Graph(id='line-chart', figure={}), )
+        dbc.Col([
+                html.Div(multi_sample_data_accordion),
                 ], width=12, lg=8, className="mt-4"),
     ]),
     dbc.Row([
@@ -650,8 +672,9 @@ def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, name_val,
 
 @app.callback(Output('samplelist-output-state', 'children'),
                 Input('multi-samples-data', 'data'),
+                Input("data-accordion", "active_item"),
             )
-def update_multi_sample_table(multi_data):
+def update_multi_sample_table(multi_data, accordion_active):
     df_multi_samples = pd.read_json(multi_data, orient='split')
 
     # sorting according to the date column
@@ -660,6 +683,13 @@ def update_multi_sample_table(multi_data):
     if len(df_multi_samples) == 0:
         return dbc.Alert("No sample data entered", color="info")
     else:
+        if accordion_active is None:
+            sample_size = 30
+        else:
+            if 'data-graph' in accordion_active:
+                sample_size = 5
+            else:
+                sample_size = 30
         multi_samples_table = dash_table.DataTable(
             id="multi_samples_table",
             columns=(
@@ -670,7 +700,7 @@ def update_multi_sample_table(multi_data):
                 ]
             ),
             data=df_multi_samples_sorted.to_dict("records"),
-            page_size=5,
+            page_size=sample_size,
             style_table={"overflowX": "scroll"},
             #style_as_list_view=True,
             #TODO add a way to delete rows and then update the stored data by removing those rows row_deletable=True, https://community.plotly.com/t/callback-for-deleting-a-row-in-a-data-table/21437
