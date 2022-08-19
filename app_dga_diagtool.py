@@ -79,9 +79,9 @@ trafo_age_tooltip = """Transformer age (years).
                     Transformer age only affects IEEE C57.104-2019 typical value comparison.
                     If left empty, \"Unknown\" used as basis for comparison."""
 
-timestamp_tooltip = "Sample timestamp. Used for rate of change analysis and sequantial plotting. Use ISO format \n2022-01-20 15:38 \nOR \n2022-01-20"
+timestamp_tooltip = """Sample timestamp. Used for rate of change analysis and sequantial plotting. Use ISO format \n2022-01-20 15:38 \nOR \n2022-01-20"""
 
-name_tooltip = "Sample reference name (**Optional**). Name is optional, but may help you in handling your samples."
+name_tooltip = """Sample reference name (**Optional**). Name is optional, but may help you in handling your samples."""
 
 # TODO multi sample point further descriptions
 
@@ -238,17 +238,6 @@ timestamp_multi_input = dbc.InputGroup(
     ],
     className="mb-3",
 )
-name_multi_input = dbc.InputGroup(
-    [
-        dbc.InputGroupText("Sample name"),
-        dbc.Input(
-            id="name-multi-state",
-            type="text",
-        ),
-        dbc.Tooltip(name_tooltip, target="name-multi-state"),
-    ],
-    className="mb-3",
-)
 h2_multi_input = dbc.InputGroup(
     [
         dbc.InputGroupText("Hydrogen (H2)"),
@@ -380,7 +369,7 @@ trafo_age_multi_input = dbc.InputGroup(
     className="mb-3",
 )
 input_groups_multi = html.Div(
-    [timestamp_multi_input, name_multi_input, h2_multi_input, ch4_multi_input, c2h6_multi_input, c2h4_multi_input, c2h2_multi_input, co_multi_input, co2_multi_input, o2_multi_input, n2_multi_input, trafo_age_multi_input],
+    [timestamp_multi_input, h2_multi_input, ch4_multi_input, c2h6_multi_input, c2h4_multi_input, c2h2_multi_input, co_multi_input, co2_multi_input, o2_multi_input, n2_multi_input, trafo_age_multi_input],
     className="mt-4 p-4",
 )
 add_sample_button = html.Div([
@@ -463,24 +452,28 @@ multi_sample_diagnostic_accordion = html.Div(
     dbc.Accordion(
         [
             dbc.AccordionItem(
+                "In development....",
+                title="Typical value results table",
+            ),
+            dbc.AccordionItem(
                 html.Div(["This is the content of the first section",
                 html.Div(id='multidiagnostic-output-state')]),
                 title="Diagnostic results table",
             ),
             dbc.AccordionItem(
-                "This is the content of the second section",
+                "In development....",
                 title="Duval triangles results visualization",
             ),
             dbc.AccordionItem(
-                "This is the content of the third section",
+                "In development....",
                 title="Rate of change summaries",
             ),
             dbc.AccordionItem(
-                "This is the content of the fourth section",
+                "In development....",
                 title="Rate of change based diagnostics",
             ),
             dbc.AccordionItem(
-                "This is the content of the fifth section",
+                "In development....",
                 title="Rate of change based duval triangles results",
             ),
         ],
@@ -621,7 +614,6 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                 Input('clear-samples-button-state', 'n_clicks'),
                 Input('multi-samples-data', 'data'),
                 State('timestamp-multi-state', 'value'),
-                State('name-multi-state', 'value'),
                 State('h2-multi-state', 'value'),
                 State('ch4-multi-state', 'value'),
                 State('c2h6-multi-state', 'value'),
@@ -633,21 +625,20 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
                 State('n2-multi-state', 'value'),
                 State('trafo-age-multi-state', 'value')
                )
-def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, name_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
     if button_id == 'clear-samples-button-state':
-        df_no_samples = pd.DataFrame(columns=['Timestamp', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
+        df_no_samples = pd.DataFrame(columns=['Timestamp', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
 
         return df_no_samples.to_json(date_format='iso', orient='split')    
     else:
         if n_clicks == 0:
-            #df_no_samples = pd.DataFrame(columns=['Timestamp', 'Sample name', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
+            #df_no_samples = pd.DataFrame(columns=['Timestamp', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
 
-            df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')], 
-                        'Sample name': ['test0', 'test1', 'test2', 'test3', 'test4', 'test5'], 
+            df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 
                         'CH4': [0, 20, 41, 60, 66, 80], 
                         'C2H6': [0, 60, 121, 172, 200, 207], 
@@ -662,7 +653,7 @@ def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, name_val,
             #return df_no_samples.to_json(date_format='iso', orient='split')
             return df_sample.to_json(date_format='iso', orient='split')
         else:
-            df_sample = pd.DataFrame({'Timestamp': pd.to_datetime(timestamp_val), 'Sample name': name_val, 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])
+            df_sample = pd.DataFrame({'Timestamp': pd.to_datetime(timestamp_val), 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])
 
             df_multi_samples = pd.read_json(multi_data, orient='split')
 

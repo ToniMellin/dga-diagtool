@@ -1,7 +1,9 @@
 # %%
 import numpy as np
 from pandas import isna
+import pandas as pd
 import plotly.graph_objects as go   # plotly is an interactive plotting library
+import plotly.colors as pcolors
 
 def create_duval_1_colorized():
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
@@ -300,7 +302,8 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
         print('Duval result calculation error!')
         print('{ch4}, {c2h2}, {c2h4}')
         return 'N/A'
-    
+
+# TODO add arg for color, include result in hovertemplate +maybe arg for 
 def create_duval_1_marker(ch4, c2h2, c2h4, marker_name):
     mark_coordinates = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
     return go.Scatterternary(       a= [mark_coordinates[0]],
@@ -323,6 +326,24 @@ def create_duval_1_result_graph(ch4, c2h2, c2h4):
     except:
         return fig
 
+# TODO multi point duval 1 results
+def create_duval_1_multi_results_graph(samples_df):
+    fig = create_duval_1_colorized()
+
+    sample_count = len(samples_df)
+    colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
+    
+
+    try:
+        for row in samples_df.itertuples(name=None):
+            time, ch4, c2h4, c2h2 = row[1], 
+            duval_result = calculate_duval_1_result(ch4, c2h2, c2h4)
+            result_name = f'{duval_result} {time}'
+            fig.add_trace(create_duval_1_marker(ch4, c2h2, c2h4, result_name))
+        return fig
+    except:
+        return fig
+
 # %%
 if __name__ == "__main__":
     fig = create_duval_1_nocolor()
@@ -334,3 +355,15 @@ if __name__ == "__main__":
     marker_name2 = calculate_duval_1_result(10, 26, 64)
     fig2.add_trace(create_duval_1_marker(10, 26, 64, marker_name2))
     fig2.show()
+
+    df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
