@@ -276,7 +276,6 @@ def calculate_duval_1_coordinates(ch4, c2h2, c2h4):
 
     return coordinates
 
-# TODO check DT operation +tests
 def calculate_duval_1_result(ch4, c2h2, c2h4):
     try:
         if (isna(ch4) is True) or (isna(c2h2) is True) or (isna(c2h4) is True):
@@ -305,8 +304,7 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
         print('Duval result calculation error!')
         print('{ch4}, {c2h2}, {c2h4}')
         return 'N/A'
-
-# TODO add arg for color, include result in hovertemplate +maybe arg for 
+ 
 def create_duval_1_marker(ch4, c2h2, c2h4, marker_name, **kwargs):
     marker_coordinates = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
 
@@ -349,7 +347,6 @@ def create_duval_1_result_graph(ch4, c2h2, c2h4):
     except:
         return fig
 
-# TODO multi point duval 1 results
 def create_duval_1_multi_results_graph(samples_df):
     fig = create_duval_1_colorized()
 
