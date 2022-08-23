@@ -199,8 +199,14 @@ def test_duval_1_result_calculation_PD_middle():
 def test_duval_1_result_calculation_PD_T1_DT_cross():
     assert duval_triangle_1.calculate_duval_1_result(96, 4, 0) == 'T1'
 
-def test_duval_1_result_calculation_DT_middle():
+def test_duval_1_result_calculation_DT_upper_zone():
+    assert duval_triangle_1.calculate_duval_1_result(57, 8, 35) == 'DT'
+
+def test_duval_1_result_calculation_DT_middle_zone():
     assert duval_triangle_1.calculate_duval_1_result(40, 15, 45) == 'DT'
+
+def test_duval_1_result_calculation_DT_lower_zone():
+    assert duval_triangle_1.calculate_duval_1_result(20, 20, 60) == 'DT'
 
 def test_duval_1_result_calculation_D1_middle():
     assert duval_triangle_1.calculate_duval_1_result(42, 46, 12) == 'D1'
@@ -214,8 +220,11 @@ def test_duval_1_result_calculation_D1_DT_between():
 def test_duval_1_result_calculation_D1_D2_DT_cross():
     assert duval_triangle_1.calculate_duval_1_result(64, 13, 23) == 'D1'
 
-def test_duval_1_result_calculation_D2_middle():
+def test_duval_1_result_calculation_D2_upper_zone():
     assert duval_triangle_1.calculate_duval_1_result(25, 40, 35) == 'D2'
+
+def test_duval_1_result_calculation_D2_lower_zone():
+    assert duval_triangle_1.calculate_duval_1_result(10, 40, 50) == 'D2'
 
 def test_duval_1_result_calculation_D2_DT_between():
     assert duval_triangle_1.calculate_duval_1_result(57, 13, 30) == 'D2'

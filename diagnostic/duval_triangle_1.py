@@ -276,9 +276,12 @@ def calculate_duval_1_coordinates(ch4, c2h2, c2h4):
 
     return coordinates
 
+# TODO check DT operation +tests
 def calculate_duval_1_result(ch4, c2h2, c2h4):
     try:
         if (isna(ch4) is True) or (isna(c2h2) is True) or (isna(c2h4) is True):
+            return 'N/A'
+        if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
             return 'N/A'
         else:
             x, y, z = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
@@ -294,7 +297,7 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
                 return 'T2'
             elif y <= 15 and z >= 50:
                 return 'T3'
-            elif (z <= 40 and y > 4 and y < 13 ) or (z > 40 and z < 50 and y > 13 and y < 29) or (z >= 50 and y > 15 and y < 30):
+            elif (z <= 40 and y > 4 and y < 13 ) or (z > 40 and z < 50 and y > 4 and y < 29) or (z >= 50 and y > 15 and y < 29):
                 return 'DT'
             else:
                 return 'ND'
@@ -304,17 +307,37 @@ def calculate_duval_1_result(ch4, c2h2, c2h4):
         return 'N/A'
 
 # TODO add arg for color, include result in hovertemplate +maybe arg for 
-def create_duval_1_marker(ch4, c2h2, c2h4, marker_name):
-    mark_coordinates = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
-    return go.Scatterternary(       a= [mark_coordinates[0]],
-                                    b= [mark_coordinates[1]],
-                                    c= [mark_coordinates[2]],
-                                    name= marker_name,
-                                    hovertemplate='CH4: %{a:.2f}<br>C2H2: %{b:.2f}<br>C2H4: %{c:.2f}<extra></extra>',
-                                    mode='markers',
-                                    marker_color='red',
-                                    marker_size=10
-                                    )
+def create_duval_1_marker(ch4, c2h2, c2h4, marker_name, **kwargs):
+    marker_coordinates = calculate_duval_1_coordinates(ch4, c2h2, c2h4)
+
+    if 'timestamp' in kwargs and 'result' in kwargs and 'marker_color' in kwargs:
+        try:
+            timestamp = kwargs['timestamp']
+            result = kwargs['result']
+            set_color = kwargs['marker_color']
+            return go.Scatterternary(       a= [marker_coordinates[0]],
+                                            b= [marker_coordinates[1]],
+                                            c= [marker_coordinates[2]],
+                                            name= marker_name,
+                                            mode='markers',
+                                            marker_color=set_color,
+                                            marker_size=10,
+                                            meta= [result, timestamp],
+                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4: %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<br>%{meta[1]}<extra></extra>"
+                                            )
+        except:
+            pass
+    else:  
+        return go.Scatterternary(       a= [marker_coordinates[0]],
+                                        b= [marker_coordinates[1]],
+                                        c= [marker_coordinates[2]],
+                                        name= marker_name,
+                                        mode='markers',
+                                        marker_color='red',
+                                        marker_size=10,
+                                        meta= marker_name,
+                                        hovertemplate="Diagnosis: %{meta}<br>CH4: %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"
+                                        )
 
 def create_duval_1_result_graph(ch4, c2h2, c2h4):
     fig = create_duval_1_colorized()
@@ -332,20 +355,24 @@ def create_duval_1_multi_results_graph(samples_df):
 
     sample_count = len(samples_df)
     colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
-    
 
     try:
         for row in samples_df.itertuples(name=None):
-            time, ch4, c2h4, c2h2 = row[1], 
-            duval_result = calculate_duval_1_result(ch4, c2h2, c2h4)
-            result_name = f'{duval_result} {time}'
-            fig.add_trace(create_duval_1_marker(ch4, c2h2, c2h4, result_name))
+            time, ch4, c2h4, c2h2, rowcolor = row[1], row[3], row[5], row[6], colorscale[row[0]]
+            if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
+                continue
+            else:
+                duval_result = calculate_duval_1_result(ch4, c2h2, c2h4)
+                mark_name = f'{duval_result} {time}'
+                fig.add_trace(create_duval_1_marker(ch4, c2h2, c2h4, mark_name, timestamp=time, result=duval_result, marker_color=rowcolor))
         return fig
-    except:
+    except Exception as e:
+        print(e)
         return fig
 
 # %%
 if __name__ == "__main__":
+    '''
     fig = create_duval_1_nocolor()
     marker_name = calculate_duval_1_result(10, 26, 64)
     fig.add_trace(create_duval_1_marker(10, 26, 64, marker_name))
@@ -355,6 +382,11 @@ if __name__ == "__main__":
     marker_name2 = calculate_duval_1_result(10, 26, 64)
     fig2.add_trace(create_duval_1_marker(10, 26, 64, marker_name2))
     fig2.show()
+
+    '''
+
+    #fig3 = create_duval_1_result_graph(55, 8, 55)
+    #fig3.show()
 
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 
@@ -367,3 +399,8 @@ if __name__ == "__main__":
                         'O2': [0, 19000, 20005, 20100, 21000, 21010], 
                         'N2': [0, 51000, 52500, 53780, 54900, 55620], 
                         'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+
+    print(df_sample)
+
+    fig4 = create_duval_1_multi_results_graph(df_sample)
+    fig4.show()

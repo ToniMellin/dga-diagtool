@@ -454,30 +454,38 @@ multi_sample_diagnostic_accordion = html.Div(
             dbc.AccordionItem(
                 "In development....",
                 title="Typical value results table",
+                item_id="multi-1",
             ),
             dbc.AccordionItem(
-                html.Div(["This is the content of the first section",
+                html.Div(["In development...",
                 html.Div(id='multidiagnostic-output-state')]),
                 title="Diagnostic results table",
+                item_id="multi-2",
             ),
             dbc.AccordionItem(
-                "In development....",
+                html.Div(["In development...",
+                html.Div(id='multiduval-output-state')]),
                 title="Duval triangles results visualization",
+                item_id="multi-3",
             ),
             dbc.AccordionItem(
                 "In development....",
                 title="Rate of change summaries",
+                item_id="multi-4",
             ),
             dbc.AccordionItem(
                 "In development....",
                 title="Rate of change based diagnostics",
+                item_id="multi-5",
             ),
             dbc.AccordionItem(
                 "In development....",
                 title="Rate of change based duval triangles results",
+                item_id="multi-6",
             ),
         ],
         always_open=True,
+        active_item=["multi-2", 'multi-3'],
     )
 )
 
@@ -813,6 +821,52 @@ def update_multi_sample_diagnostic_table(multi_data):
     }
         )   
         return multi_samples_table
+
+@app.callback(Output('multiduval-output-state', 'children'),
+                Input('multi-samples-data', 'data'),
+            )
+def update_multi_sample_diagnostic_table(multi_data):
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    # sorting according to the date column
+    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No sample data entered", color="info")
+    else:
+        duval1 = dcc.Graph(figure=duval_triangle_1.create_duval_1_multi_results_graph(df_multi_samples_sorted))
+        '''
+        if diag_results[3] in ['PD', 'T1', 'T2']:
+            duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_result_graph(h2_val, c2h6_val, ch4_val))
+        else:
+            duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_colorized())
+
+        if diag_results[3] in ['T2', 'T3']:
+            duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_result_graph(ch4_val, c2h6_val, c2h4_val))
+        else:
+            duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_colorized())
+
+        duval_triangles = html.Div([
+                                html.Div([duval1], style={
+                                                            'display': 'inline-block',
+                                                            'vertical-align': 'top',
+                                                            'padding': 5
+                                                            }),
+                                html.Div([duval4], style={
+                                                            'display': 'inline-block',
+                                                            'vertical-align': 'top',
+                                                            'padding': 5
+                                                            }),
+                                html.Div([duval5], style={
+                                                            'display': 'inline-block',
+                                                            'vertical-align': 'top',
+                                                            'padding': 5
+                                                            }), 
+                        
+                        ])
+        '''
+
+        return duval1
 
 def main():
     Timer(1, open_browser).start()
