@@ -56,11 +56,11 @@ def create_duval_5_colorized():
                                     fill='toself',
                                     fillcolor='rgba(178,255,228, 0.5)'
                                     ))
-    #T2
+    #T2-H
     fig.add_trace(go.Scatterternary(a= [90, 78, 53, 65, 90],
                                     b= [0, 12, 12, 0, 0],
                                     c= [10, 10, 35, 35, 10],
-                                    name='T2',
+                                    name='T2-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
@@ -81,11 +81,11 @@ def create_duval_5_colorized():
                                     fillcolor='rgba(92,81,75, 0.6)'
                                     ))
     
-    #T3
+    #T3-H
     fig.add_trace(go.Scatterternary(a= [0, 0, 35, 0],
                                     b= [65, 30, 30, 65],
                                     c= [35, 70, 35, 35],
-                                    name='T3',
+                                    name='T3-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
@@ -93,11 +93,11 @@ def create_duval_5_colorized():
                                     fill='toself',
                                     fillcolor='rgba(245, 54, 39, 0.5)'
                                     ))
-    #T3-2
+    #T3-H-2
     fig.add_trace(go.Scatterternary(a= [0, 0, 65, 53, 38, 36, 16],
                                     b= [30, 0, 0, 12, 12, 14, 14],
                                     c= [70, 100, 35, 35, 50, 50, 70 ],
-                                    name='T3',
+                                    name='T3-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
@@ -106,7 +106,7 @@ def create_duval_5_colorized():
                                     fillcolor='rgba(245, 54, 39, 0.5)'
                                     ))
     fig.add_scatterternary(a=[25, 65, 90, 49, 73, 13, 13], b=[70, 30, 5, 21, 6, 40.5, 9], c=[5, 5, 5, 30, 21, 45.5, 78],
-                            mode='text', text=['O', 'S', 'O', 'C', 'T2', 'T3', 'T3'], hoverinfo='none', showlegend=False)
+                            mode='text', text=['O', 'S', 'O', 'C', 'T2-H', 'T3-H', 'T3-H'], hoverinfo='none', showlegend=False)
     fig.add_scatterternary(a=[91.5], b=[8], c=[0.5],
                             mode='text', text=['PD'], hoverinfo='none',
                             showlegend=False)
@@ -200,11 +200,11 @@ def create_duval_5_nocolor():
                                     line_color='black',
                                     line_width=0.5
                                     ))
-    #T2
+    #T2-H
     fig.add_trace(go.Scatterternary(a= [90, 78, 53, 65, 90],
                                     b= [0, 12, 12, 0, 0],
                                     c= [10, 10, 35, 35, 10],
-                                    name='T2',
+                                    name='T2-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
@@ -220,28 +220,28 @@ def create_duval_5_nocolor():
                                     line_color='black',
                                     line_width=0.5
                                     ))
-    #T3
+    #T3-H
     fig.add_trace(go.Scatterternary(a= [0, 0, 35, 0],
                                     b= [65, 30, 30, 65],
                                     c= [35, 70, 35, 35],
-                                    name='T3',
+                                    name='T3-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
-    #T3
+    #T3-H
     fig.add_trace(go.Scatterternary(a= [0, 0, 65, 53, 38, 36, 16],
                                     b= [30, 0, 0, 12, 12, 14, 14],
                                     c= [70, 100, 35, 35, 50, 50, 70 ],
-                                    name='T3',
+                                    name='T3-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
     fig.add_scatterternary(a=[25, 65, 90, 49, 73, 13, 13], b=[70, 30, 5, 21, 6, 40.5, 9], c=[5, 5, 5, 30, 21, 45.5, 78],
-                            mode='text', text=['O', 'S', 'O', 'C', 'T2', 'T3', 'T3'], hoverinfo='skip',
+                            mode='text', text=['O', 'S', 'O', 'C', 'T2-H', 'T3-H', 'T3-H'], hoverinfo='skip',
                             showlegend=False)
     fig.add_scatterternary(a=[91.5], b=[8], c=[0.5],
                             mode='text', text=['PD'], hoverinfo='skip',
@@ -311,9 +311,9 @@ def calculate_duval_5_result(ch4, c2h6, c2h4):
             elif z < 10 and y >= 14 and y < 54:
                 return 'S'
             elif z >= 10 and z <= 35 and y <= 12:
-                return 'T2'
+                return 'T2-H'
             elif (z > 35 and y <= 12) or (z >= 49 and y >= 12 and y <= 14) or (z > 70 and y >= 14) or (z >= 35 and y >= 30):
-                return 'T3'
+                return 'T3-H'
             elif (z >= 10 and z < 50 and y  > 12 and y <= 14) or (z >= 10 and z <= 70 and y > 14 and y < 30):
                 return 'C'
             elif z >= 10 and z < 35 and y >= 30:
