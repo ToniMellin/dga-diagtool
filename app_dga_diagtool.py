@@ -463,7 +463,7 @@ multi_sample_diagnostic_accordion = html.Div(
                 item_id="multi-2",
             ),
             dbc.AccordionItem(
-                html.Div(["In development...",
+                html.Div([
                 html.Div(id='multiduval-output-state')]),
                 title="Duval triangles results visualization",
                 item_id="multi-3",
@@ -800,6 +800,7 @@ def update_multi_sample_diagnostic_table(multi_data):
         #TODO for loop to get diagnostic results for each sample
         #TODO gather diagnostic results for samples to single dataframe'
         #TODO return diagnostic results summary table
+        #TODO colorization of diagnostics results summary table
         multi_samples_table = dash_table.DataTable(
             id="multi_samples_table",
             columns=(
@@ -835,14 +836,19 @@ def update_multi_sample_diagnostic_table(multi_data):
         return dbc.Alert("No sample data entered", color="info")
     else:
         duval1 = dcc.Graph(figure=duval_triangle_1.create_duval_1_multi_results_graph(df_multi_samples_sorted))
-        '''
-        if diag_results[3] in ['PD', 'T1', 'T2']:
-            duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_result_graph(h2_val, c2h6_val, ch4_val))
+
+        df_multi_samples_sorted['DuvalResult'] = df_multi_samples_sorted.apply(lambda x: duval_triangle_1.calculate_duval_1_result(x['CH4'], x['C2H2'], x['C2H4']), axis=1)
+        
+        found_PDT1T2 = df_multi_samples_sorted[df_multi_samples_sorted['DuvalResult'].str.contains('PD|T1|T2')]
+        found_T2T3 = df_multi_samples_sorted[df_multi_samples_sorted['DuvalResult'].str.contains('T2|T3')]
+
+        if len(found_PDT1T2) > 0:
+            duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_multi_results_graph(found_PDT1T2))
         else:
             duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_colorized())
 
-        if diag_results[3] in ['T2', 'T3']:
-            duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_result_graph(ch4_val, c2h6_val, c2h4_val))
+        if len(found_T2T3) > 0:
+            duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_multi_results_graph(found_T2T3))
         else:
             duval5 = dcc.Graph(figure=duval_triangle_5.create_duval_5_colorized())
 
@@ -864,9 +870,9 @@ def update_multi_sample_diagnostic_table(multi_data):
                                                             }), 
                         
                         ])
-        '''
+        
 
-        return duval1
+        return duval_triangles
 
 def main():
     Timer(1, open_browser).start()

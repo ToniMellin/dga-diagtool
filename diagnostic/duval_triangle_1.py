@@ -323,7 +323,8 @@ def create_duval_1_marker(ch4, c2h2, c2h4, marker_name, **kwargs):
                                             meta= [result, timestamp],
                                             hovertemplate="Diagnosis: %{meta[0]}<br>CH4: %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<br>%{meta[1]}<extra></extra>"
                                             )
-        except:
+        except Exception as e:
+            print(e)
             pass
     else:  
         return go.Scatterternary(       a= [marker_coordinates[0]],
@@ -354,8 +355,10 @@ def create_duval_1_multi_results_graph(samples_df):
     colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
 
     try:
+        sample_num = 0
         for row in samples_df.itertuples(name=None):
-            time, ch4, c2h4, c2h2, rowcolor = row[1], row[3], row[5], row[6], colorscale[row[0]]
+            time, ch4, c2h4, c2h2, rowcolor = row[1], row[3], row[5], row[6], colorscale[sample_num]
+            sample_num+=1
             if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
                 continue
             else:
