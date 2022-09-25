@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""typical_value_comparison.py
+
+This module makes the comparisons againts typical gas values and returns the results based on defined standards.
+
+@Author: https://github.com/ToniMellin
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -707,7 +715,178 @@ def ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
         ieee_2019_typical_results = ['-', '-', '-', '-', '-', '-', '-']
 
     return ieee_2019_typical_results
-    
+
+def cigre_771_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val):
+    """
+    Checks given gas concentration values (ppm) againt Cigre Technical Brochure 771 typical values and indicates if they are exceeded
+
+    Parameters
+    ----------
+    h2_val : float
+        hydrogen (H2) gas concentration in ppm
+    ch4_val : float
+        methane (CH4) gas concentration in ppm
+    c2h6_val : float
+        ethane (C2H6) gas concentration in ppm
+    c2h4_val : float
+        ethylene (C2H4) gas concentration in ppm
+    c2h2_val : float
+        acetylene (C2H2) gas concentration in ppm
+    co_val : float
+        carbon monoxide (CO) gas concentration in ppm
+    co2_val : float
+        carbon dioxide (CO2) gas concentration in ppm
+    o2_val : float
+        oxygen (O2) gas concentration in ppm
+    n2_val : float
+        nitrogen (N2) gas concentration in ppm
+    trafo_age_val : int
+        transformer age in years
+
+    Returns
+    -------
+    list
+        list of str values that are results from checking the gas concentrations against typical values if nothing is given or comparison impossible dashes '-' are returned
+    """
+    #Cigre TB 771 C.5.2 typical values
+    #TODO include the option of comparing with table F1 using oxygen/nitrogen ratio based typical values
+    h2_typ = 118
+    h2_int1 = 200
+    h2_int2 = 280
+    h2_pf = 725
+
+    ch4_typ = 85
+    ch4_int1 = 135
+    ch4_int2 = 180
+    ch4_pf = 400
+
+    c2h6_typ = 111
+    c2h6_int1 = 210
+    c2h6_int2 = 300
+    c2h6_pf = 900
+
+    c2h4_typ = 56
+    c2h4_int1 = 120
+    c2h4_int2 = 200
+    c2h4_pf = 800
+
+    c2h2_typ = 5
+    c2h2_int1 = 19
+    c2h2_int2 = 40
+    c2h2_pf = 450
+
+    co_typ = 700
+    co_int1 = 970
+    co_int2 = 1180
+    co_pf = 2100
+
+    co2_typ = 6300
+    co2_int1 = 11600
+    co2_int2 = 16700
+    co2_pf = 50000
+
+
+    cigre_771_typical_results = []
+    #TODO add Cigre TB 771 based typical value comparison
+
+    try:
+        if pd.isna(h2_val) is True:
+            cigre_771_typical_results.append('-')
+        elif h2_val > h2_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif h2_val > h2_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif h2_val > h2_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif h2_val > h2_typ:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+
+        if pd.isna(ch4_val) is True:
+            cigre_771_typical_results.append('-')
+        elif ch4_val > ch4_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif ch4_val > ch4_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif ch4_val > ch4_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif ch4_val > ch4_typ:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+
+        if pd.isna(c2h6_val) is True:
+            cigre_771_typical_results.append('-')
+        elif c2h6_val > c2h6_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif c2h6_val > c2h6_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif c2h6_val > c2h6_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif c2h6_val > c2h6_typ:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+
+        if pd.isna(c2h4_val) is True:
+            cigre_771_typical_results.append('-')
+        elif c2h4_val > c2h4_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif c2h4_val > c2h4_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif c2h4_val > c2h4_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif c2h4_val > c2h4_typ:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+
+        if pd.isna(c2h2_val) is True:
+            cigre_771_typical_results.append('-')
+        elif c2h2_val > c2h2_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif c2h2_val > c2h2_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif c2h2_val > c2h2_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif c2h2_val > c2h2_typ:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+
+        if pd.isna(co_val) is True:
+            cigre_771_typical_results.append('-')
+        elif co_val > co_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif co_val > co_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif co_val > co_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif co_val > co_int1:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+
+        if pd.isna(co2_val) is True:
+            cigre_771_typical_results.append('-')
+        elif co2_val > co2_pf:
+            cigre_771_typical_results.append('Typical values and pre-failure levels exceeded!')
+        elif co2_val > co2_int2:
+            cigre_771_typical_results.append('Typical values and intermediate 2 levels exceeded!')
+        elif co2_val > co2_int1:
+            cigre_771_typical_results.append('Typical values and intermediate 1 levels exceeded!')
+        elif co2_val > co2_int1:
+            cigre_771_typical_results.append('Typical values exceeded!')
+        else:
+            cigre_771_typical_results.append('Normal')
+        
+    except Exception as e:
+        print(f'Cigre TB 771 typical values comparison issue!!\n{e}')
+        cigre_771_typical_results = ['-', '-', '-', '-', '-', '-', '-']
+
+    return cigre_771_typical_results
+
 
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     """
@@ -753,6 +932,10 @@ def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_
 
         ieee_2019_typical_list = ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
         typical_result_list.append(ieee_2019_typical_list)
+
+        cigre_tb771_typical_list = cigre_771_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+        typical_result_list.append(cigre_tb771_typical_list)
+
     except Exception as e:
         print(f'Typical value comparison issue!!\n{e}')
 

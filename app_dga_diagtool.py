@@ -1,4 +1,17 @@
 # -*- coding: utf-8 -*-
+"""app_dga_diagtool.py
+
+Main program file for the DGA-diagtool, which is a  dash based transformer oil dissolved gas analysis (DGA) diagnostic tool. 
+
+This module contains the functional workings of the user interface.
+
+@Author: https://github.com/ToniMellin
+"""
+
+__version__ = 0.1
+__author__ = 'ToniMellin'
+
+
 import os # autobrowser opening
 from threading import Timer # autobrowser opening
 import webbrowser
@@ -221,6 +234,7 @@ input_groups = html.Div(
     [h2_input, ch4_input, c2h6_input, c2h4_input, c2h2_input, co_input, co2_input, o2_input, n2_input, trafo_age_input],
     className="mt-4 p-4",
 )
+#TODO add toggle for CIgre TB 771 oxygen/nitrogen ratio typical values and selection of over and under 0.05 or 0.2
 calculate_button = html.Div([
                     dbc.Button(id='calculate-button-state', n_clicks=0, color="primary", className="d-grid gap-2 col-6 mx-auto", children='Calculate'),
                     ])
@@ -452,19 +466,24 @@ multi_sample_diagnostic_accordion = html.Div(
     dbc.Accordion(
         [
             dbc.AccordionItem(
-                "In development....",
+                #TODO add toggle for CIgre TB 771 oxygen/nitrogen ratio typical values and selection of over and under 0.05 or 0.2
+                html.Div([
+                html.Div(id='multi-typicalvalues-output-state')
+                ]),
                 title="Typical value results table",
                 item_id="multi-1",
             ),
             dbc.AccordionItem(
-                html.Div(["In development...",
-                html.Div(id='multidiagnostic-output-state')]),
+                html.Div([
+                html.Div(id='multi-diagnostic-output-state')
+                ]),
                 title="Diagnostic results table",
                 item_id="multi-2",
             ),
             dbc.AccordionItem(
                 html.Div([
-                html.Div(id='multiduval-output-state')]),
+                html.Div(id='multi-duvaldiagnostic-output-state')
+                ]),
                 title="Duval triangles results visualization",
                 item_id="multi-3",
             ),
@@ -485,7 +504,7 @@ multi_sample_diagnostic_accordion = html.Div(
             ),
         ],
         always_open=True,
-        active_item=["multi-2", 'multi-3'],
+        active_item=['multi-1', 'multi-2', 'multi-3'],
     )
 )
 
@@ -555,7 +574,7 @@ app.layout = dbc.Container(
                 State('n2-state', 'value'),
                 State('trafo-age-state', 'value')
                )
-def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+def update_single_sample_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     """Updates the dash app output, including duval triangle graphs, typical value and the diagnostic result tables"""
     r_list = diagnostic_calculation.calculate_ratios(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val)
     df_ratio = pd.DataFrame({'Ratio': ['Ratio 1 (CH4/H2):', 'Ratio 2 (C2H2/C2H4):', 'Ratio 3 (C2H2/CH4):', 'Ratio 4 (C2H6/C2H2):', 'Ratio 5 (C2H4/C2H6):', 'Ratio 6 (CO2/CO):', 'Ratio 7 (O2/N2):'],
@@ -572,15 +591,15 @@ def update_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_va
     diagresults_table = dbc.Table.from_dataframe(df_diag, striped=True, bordered=True, hover=True)
 
     typical_results = typical_value_comparison.calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
-    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values'], 
-                                'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0]], 
-                                'CH4': [typical_results[0][1], typical_results[1][1], typical_results[2][1]], 
-                                'C2H6': [typical_results[0][2], typical_results[1][2], typical_results[2][2]], 
-                                'C2H4': [typical_results[0][3], typical_results[1][3], typical_results[2][3]], 
-                                'C2H2': [typical_results[0][4], typical_results[1][4], typical_results[2][4]], 
-                                'CO': [typical_results[0][5], typical_results[1][5], typical_results[2][5]], 
-                                'CO2': [typical_results[0][6], typical_results[1][6], typical_results[2][6]],
-                                'TDCG': ['-', typical_results[1][7], '-']
+    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values', 'Cigre TB 771, typical values'], 
+                                'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0], typical_results[3][0]], 
+                                'CH4': [typical_results[0][1], typical_results[1][1], typical_results[2][1], typical_results[3][1]], 
+                                'C2H6': [typical_results[0][2], typical_results[1][2], typical_results[2][2], typical_results[3][2]], 
+                                'C2H4': [typical_results[0][3], typical_results[1][3], typical_results[2][3], typical_results[3][3]], 
+                                'C2H2': [typical_results[0][4], typical_results[1][4], typical_results[2][4], typical_results[3][4]], 
+                                'CO': [typical_results[0][5], typical_results[1][5], typical_results[2][5], typical_results[3][5]], 
+                                'CO2': [typical_results[0][6], typical_results[1][6], typical_results[2][6], typical_results[3][6]],
+                                'TDCG': ['-', typical_results[1][7], '-', '-']
                                 })
     typicals_table = dbc.Table.from_dataframe(df_typicals, striped=True, bordered=True, hover=True)
 
@@ -785,7 +804,28 @@ def update_line_chart(multi_data):
 
     return fig
 
-@app.callback(Output('multidiagnostic-output-state', 'children'),
+@app.callback(Output('multi-typicalvalues-output-state', 'children'),
+                Input('multi-samples-data', 'data'),
+            )
+def update_multi_sample_diagnostic_table(multi_data):
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    # sorting according to the date column
+    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
+
+    #TODO for loop to get typical results for each sample
+    #TODO gather typical value results for samples to single dataframe
+    #TODO return typical values results summary table
+    #TODO colorization of typicla value results summary table https://dash.plotly.com/datatable/conditional-formatting
+    #TODO add the ppm values in tooltips of each cell
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No sample data entered", color="info")
+    else:
+        return dbc.Alert("Under development...", color='warning')
+
+
+@app.callback(Output('multi-diagnostic-output-state', 'children'),
                 Input('multi-samples-data', 'data'),
             )
 def update_multi_sample_diagnostic_table(multi_data):
@@ -800,7 +840,8 @@ def update_multi_sample_diagnostic_table(multi_data):
         #TODO for loop to get diagnostic results for each sample
         #TODO gather diagnostic results for samples to single dataframe'
         #TODO return diagnostic results summary table
-        #TODO colorization of diagnostics results summary table
+        #TODO colorization of diagnostics results summary table https://dash.plotly.com/datatable/conditional-formatting
+        #TODO add the ppm values in tooltips of columns
         multi_samples_table = dash_table.DataTable(
             id="multi_samples_table",
             columns=(
@@ -823,10 +864,10 @@ def update_multi_sample_diagnostic_table(multi_data):
         )   
         return multi_samples_table
 
-@app.callback(Output('multiduval-output-state', 'children'),
+@app.callback(Output('multi-duvaldiagnostic-output-state', 'children'),
                 Input('multi-samples-data', 'data'),
             )
-def update_multi_sample_diagnostic_table(multi_data):
+def update_multi_duval_diagnostic_output(multi_data):
     df_multi_samples = pd.read_json(multi_data, orient='split')
 
     # sorting according to the date column
