@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""typical_value_comparison.py
+
+This module makes the comparisons againts typical gas values and returns the results based on defined standards.
+
+@Author: https://github.com/ToniMellin
+"""
+
 import sys
 import pathlib
 
@@ -403,7 +411,23 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
         diag_result_list = ['-', '-', '-', '-', '-', '-']
 
     return diag_result_list
+
+def combine_diagnostic_result_to_dataframe(input_df):
+
+    diag_results_col = ['Timestamp', 'Rogers ratio', 'Doernenburg ratio', 'IEC 60599 ratio', 'Duval triangle 1', 'Duval triangle 4', 'Duval triangle 5']
+    df_combined_diag = pd.DataFrame(columns=diag_results_col)
+
+    for row in input_df.itertuples():
+        results = calculate_diagnostic_results(row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+
+        df_combined_diag_new = pd.DataFrame([[row[1], results[0], results[1], results[2], results[3], results[4], results[5]]], columns=diag_results_col)
+        df_combined_diag = pd.concat([df_combined_diag, df_combined_diag_new], ignore_index=True)
+
+    #TODO fix ValueError
+    df_diagnostics_matrix = input_df.merge(df_combined_diag, how='inner')
     
+    return df_diagnostics_matrix
+
 def calculate_rates_of_change(df, time_name):
     df_sorted = df.sort_values(by=[time_name])
 

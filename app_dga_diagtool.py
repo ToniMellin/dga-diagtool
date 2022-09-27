@@ -488,17 +488,17 @@ multi_sample_diagnostic_accordion = html.Div(
                 item_id="multi-3",
             ),
             dbc.AccordionItem(
-                "In development....",
+                "Under development....",
                 title="Rate of change summaries",
                 item_id="multi-4",
             ),
             dbc.AccordionItem(
-                "In development....",
+                "Under development....",
                 title="Rate of change based diagnostics",
                 item_id="multi-5",
             ),
             dbc.AccordionItem(
-                "In development....",
+                "Under development....",
                 title="Rate of change based duval triangles results",
                 item_id="multi-6",
             ),
@@ -587,19 +587,18 @@ def update_single_sample_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c
         print('diag TypeERROR')
         diag_results = ['-', '-', '-', '-', '-', '-']
 
-    df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599:', 'Duval triangle 1:', 'Duval triangle 4:', 'Duval triangle 5:'], 'Result': diag_results})
+    df_diag = pd.DataFrame({'Diagnostic method': ['Rogers ratio:', 'Doernenburg ratio:', 'IEC 60599 ratio:', 'Duval triangle 1:', 'Duval triangle 4:', 'Duval triangle 5:'], 'Result': diag_results})
     diagresults_table = dbc.Table.from_dataframe(df_diag, striped=True, bordered=True, hover=True)
 
     typical_results = typical_value_comparison.calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
-    df_typicals = pd.DataFrame({'Typical Values': ['IEC 60599, typical values', 'IEEE C57.104-2008, typical values', 'IEEE C57.104-2019, typical values', 'Cigre TB 771, typical values'], 
-                                'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0], typical_results[3][0]], 
-                                'CH4': [typical_results[0][1], typical_results[1][1], typical_results[2][1], typical_results[3][1]], 
-                                'C2H6': [typical_results[0][2], typical_results[1][2], typical_results[2][2], typical_results[3][2]], 
-                                'C2H4': [typical_results[0][3], typical_results[1][3], typical_results[2][3], typical_results[3][3]], 
-                                'C2H2': [typical_results[0][4], typical_results[1][4], typical_results[2][4], typical_results[3][4]], 
-                                'CO': [typical_results[0][5], typical_results[1][5], typical_results[2][5], typical_results[3][5]], 
-                                'CO2': [typical_results[0][6], typical_results[1][6], typical_results[2][6], typical_results[3][6]],
-                                'TDCG': ['-', typical_results[1][7], '-', '-']
+    df_typicals = pd.DataFrame({'Typical values': ['IEC 60599:2022, typical values:', 'IEEE C57.104-2019, typical values:', 'Cigre TB 771, typical values:'], 
+                                'H2': [typical_results[0][0], typical_results[1][0], typical_results[2][0]], 
+                                'CH4': [typical_results[0][1], typical_results[1][1], typical_results[2][1]], 
+                                'C2H6': [typical_results[0][2], typical_results[1][2], typical_results[2][2]], 
+                                'C2H4': [typical_results[0][3], typical_results[1][3], typical_results[2][3]], 
+                                'C2H2': [typical_results[0][4], typical_results[1][4], typical_results[2][4]], 
+                                'CO': [typical_results[0][5], typical_results[1][5], typical_results[2][5]], 
+                                'CO2': [typical_results[0][6], typical_results[1][6], typical_results[2][6]]
                                 })
     typicals_table = dbc.Table.from_dataframe(df_typicals, striped=True, bordered=True, hover=True)
 
@@ -807,51 +806,33 @@ def update_line_chart(multi_data):
 @app.callback(Output('multi-typicalvalues-output-state', 'children'),
                 Input('multi-samples-data', 'data'),
             )
-def update_multi_sample_diagnostic_table(multi_data):
+def update_multi_sample_typical_values_table(multi_data):
     df_multi_samples = pd.read_json(multi_data, orient='split')
-
-    # sorting according to the date column
-    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
-
-    #TODO for loop to get typical results for each sample
-    #TODO gather typical value results for samples to single dataframe
-    #TODO return typical values results summary table
-    #TODO colorization of typicla value results summary table https://dash.plotly.com/datatable/conditional-formatting
-    #TODO add the ppm values in tooltips of each cell
 
     if len(df_multi_samples) == 0:
         return dbc.Alert("No sample data entered", color="info")
     else:
-        return dbc.Alert("Under development...", color='warning')
+        # sorting according to the date column
+        df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
 
+        #combine typical results to dataframe
+        df_typicals_combined = typical_value_comparison.combine_typical_results_to_dataframe(df_multi_samples_sorted)
 
-@app.callback(Output('multi-diagnostic-output-state', 'children'),
-                Input('multi-samples-data', 'data'),
-            )
-def update_multi_sample_diagnostic_table(multi_data):
-    df_multi_samples = pd.read_json(multi_data, orient='split')
+        #TODO colorization of typical value results summary table https://dash.plotly.com/datatable/conditional-formatting
+        #TODO add the ppm values in tooltips of each cell
 
-    # sorting according to the date column
-    df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
+        df_typical_summary = df_typicals_combined.filter(['Timestamp', 'IEC typical values', 'IEEE typical values', 'Cigre typical values'])
 
-    if len(df_multi_samples) == 0:
-        return dbc.Alert("No sample data entered", color="info")
-    else:
-        #TODO for loop to get diagnostic results for each sample
-        #TODO gather diagnostic results for samples to single dataframe'
-        #TODO return diagnostic results summary table
-        #TODO colorization of diagnostics results summary table https://dash.plotly.com/datatable/conditional-formatting
-        #TODO add the ppm values in tooltips of columns
-        multi_samples_table = dash_table.DataTable(
+        multi_typicals_table = dash_table.DataTable(
             id="multi_samples_table",
             columns=(
                 [{"id": "Timestamp", "name": "Timestamp", "type": "datetime"}]
                 + [
-                    {"id": col, "name": col, "type": "numeric"}
-                    for col in df_multi_samples_sorted.columns[1:]
+                    {"id": col, "name": col}
+                    for col in df_typical_summary.columns[1:]
                 ]
             ),
-            data=df_multi_samples_sorted.to_dict("records"),
+            data=df_typical_summary.to_dict("records"),
             page_size=5,
             style_table={"overflowX": "scroll"},
             #style_as_list_view=True,
@@ -862,7 +843,55 @@ def update_multi_sample_diagnostic_table(multi_data):
                         'whiteSpace': 'normal'
     }
         )   
-        return multi_samples_table
+        return multi_typicals_table
+        
+        #return dbc.Alert("Under development...", color='warning')
+
+
+@app.callback(Output('multi-diagnostic-output-state', 'children'),
+                Input('multi-samples-data', 'data'),
+            )
+def update_multi_sample_diagnostic_table(multi_data):
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No sample data entered", color="info")
+    else:
+        # sorting according to the date column
+        df_multi_samples_sorted = df_multi_samples.sort_values(by=['Timestamp'])
+
+        df_diagnostics_combined = diagnostic_calculation.combine_diagnostic_result_to_dataframe(df_multi_samples_sorted)
+
+        df_diagnostics_summary = df_diagnostics_combined.filter(['Timestamp', 'Rogers ratio', 'Doernenburg ratio', 'IEC 60599 ratio', 'Duval triangle 1', 'Duval triangle 4', 'Duval triangle 5'])
+
+        #TODO fix ValueError
+
+        #TODO colorization of diagnostics results summary table https://dash.plotly.com/datatable/conditional-formatting
+        #TODO add the ppm values in tooltips of columns
+        multi_diagnostics_table = dash_table.DataTable(
+            id="multi_diagnostics_table",
+            columns=(
+                [{"id": "Timestamp", "name": "Timestamp", "type": "datetime"}]
+                + [
+                    {"id": col, "name": col}
+                    for col in df_diagnostics_summary.columns[1:]
+                ]
+            ),
+            data=df_diagnostics_summary.to_dict("records"),
+            page_size=5,
+            style_table={"overflowX": "scroll"},
+            #style_as_list_view=True,
+            style_cell={
+                        'height': 'auto',
+                        # all three widths are needed
+                        'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
+                        'whiteSpace': 'normal'
+    }
+        )   
+        #return multi_diagnostics_table
+        return dbc.Alert("Under development...", color='warning')
 
 @app.callback(Output('multi-duvaldiagnostic-output-state', 'children'),
                 Input('multi-samples-data', 'data'),

@@ -927,8 +927,8 @@ def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_
         iec_typical_list = iec_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
         typical_result_list.append(iec_typical_list)
 
-        ieee_2008_typical_list = ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
-        typical_result_list.append(ieee_2008_typical_list)
+        #ieee_2008_typical_list = ieee_2008_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val)
+        #typical_result_list.append(ieee_2008_typical_list)
 
         ieee_2019_typical_list = ieee_2019_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val)
         typical_result_list.append(ieee_2019_typical_list)
@@ -941,6 +941,57 @@ def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_
 
     return typical_result_list
 
+def typical_value_combined_result_check(results_list):
+    unique = list(dict.fromkeys(results_list))
+
+    if len(unique) == 0 or unique == ['-']:
+        return '-'
+    if len(unique) == 1 and unique == ['Normal']:
+        return 'Normal'
+    if unique == ['-', 'Normal'] or unique == ['Normal', '-']:
+        return 'Normal / -'
+    if any('exceeded' in s for s in unique):
+        return 'Typical values exceeded!'
+
+def combine_typical_results_to_dataframe(input_df):
+
+    gas_names_list = ['h2', 'ch4', 'c2h6', 'c2h4', 'c2h2', 'co', 'co2']
+    combined_col = ['Timestamp', 'IEC typical values', 'IEEE typical values', 'Cigre typical values']
+
+    iec_col = ['Timestamp']
+    iec_col.extend([f'iec_typ_{gas}' for gas in gas_names_list])
+
+    ieee_col = ['Timestamp']
+    ieee_col.extend([f'ieee_typ_{gas}' for gas in gas_names_list])
+
+    cigre_col = ['Timestamp']
+    cigre_col.extend([f'cigre_typ_{gas}' for gas in gas_names_list])
+
+    df_combined = pd.DataFrame(columns=combined_col)
+    df_iec = pd.DataFrame(columns=iec_col)
+    df_ieee = pd.DataFrame(columns=ieee_col)
+    df_cigre = pd.DataFrame(columns=cigre_col)
+
+
+    for row in input_df.itertuples():
+        results = calculate_typical_results(row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11])
+
+        df_combined_new = pd.DataFrame([[row[1], typical_value_combined_result_check(results[0]), typical_value_combined_result_check(results[1]), typical_value_combined_result_check(results[2])]], columns=combined_col)
+        df_combined = pd.concat([df_combined, df_combined_new], ignore_index=True)
+
+        df_iec_new = pd.DataFrame([[row[1], results[0][0], results[0][1], results[0][2], results[0][3], results[0][4], results[0][5], results[0][6]]], columns=iec_col)
+        df_iec = pd.concat([df_iec, df_iec_new], ignore_index=True)
+        
+        df_ieee_new = pd.DataFrame([[row[1], results[1][0], results[1][1], results[1][2], results[1][3], results[1][4], results[1][5], results[1][6]]], columns=ieee_col)
+        df_ieee = pd.concat([df_ieee, df_ieee_new], ignore_index=True)
+        
+        df_cigre_new = pd.DataFrame([[row[1], results[2][0], results[2][1], results[2][2], results[2][3], results[2][4], results[2][5], results[2][6]]], columns=cigre_col)
+        df_cigre = pd.concat([df_cigre, df_cigre_new], ignore_index=True)
+
+    df_typical_matrix = df_combined.merge(df_iec, how='inner').merge(df_ieee, how='inner').merge(df_cigre, how='inner')
+    
+    return df_typical_matrix
+
 if __name__ == '__main__':
     '''
     typical_list = calculate_typical_results(50, 60, 100, 80, 10, 500, 2000, 15600, 56000, 10)
@@ -952,3 +1003,19 @@ if __name__ == '__main__':
 
     ieee2019_0_list = ieee_2019_typical_calculation(40, 20, 15, 50, 2, 500, 5000, 21000, 56000, np.nan)
     print(ieee2019_0_list, len(ieee2019_0_list))
+
+    df_sample3 = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+
+    df_combined = combine_typical_results_to_dataframe(df_sample3)
+    print(df_combined)
+    
