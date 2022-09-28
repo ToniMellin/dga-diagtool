@@ -890,8 +890,8 @@ def update_multi_sample_diagnostic_table(multi_data):
                         'whiteSpace': 'normal'
     }
         )   
-        #return multi_diagnostics_table
-        return dbc.Alert("Under development...", color='warning')
+        return multi_diagnostics_table
+        #return dbc.Alert("Under development...", color='warning')
 
 @app.callback(Output('multi-duvaldiagnostic-output-state', 'children'),
                 Input('multi-samples-data', 'data'),

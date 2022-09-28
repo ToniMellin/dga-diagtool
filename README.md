@@ -34,9 +34,9 @@ Run app_dga_diagtool.py using python with needed libraries installed and a brows
 ### Multiple sample diagnostic
 
 - Sample data graphing in an interactive plotly graph
-- The tool calculates ratios and provides diagnostic method analysis results with given values (Rogers ratio, Doernenburg, IEC ratios, Duval triangle 1, Duval triangle 4 and Duval triangle 5)
 - If values are omitted, ratios or diagnostic method results that need the omitted values will not produce results, but any ratios or methods that have sufficient data to calculate will be provided
-- Typical values comparison with a summary table
+- Typical values comparison summary table
+- DGA diagnostic method analysis results summary table (Rogers ratio, Doernenburg, IEC ratios, Duval triangle 1, Duval triangle 4 and Duval triangle 5)
 - Duval triangle 1 multi sample plotting, with additional Duval triangles 4 and 5 samples plotted if applicable
 
 ## TODO (Future feature ides)
@@ -44,8 +44,9 @@ Run app_dga_diagtool.py using python with needed libraries installed and a brows
 - Add IEC 60599 95% typical values
 - Cigre typical values comparison that includes n2/o2 ratio typicals
 - internal logging (with on/off) +logging download
-- Online monitor data
 - Rate of change comparisons (IEC / IEEE / Cigre) for multiple samples
+- DGA monitor data with analysis
+- DGA monitor data and lab sample comparison with uncertainty limits
 - Analysis from trends
 - uncertainty analysis of samples
 - duval triangle uncertainty limits

@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""duval_triangle_1.py
+
+This module calculates duval triangle 1 related diagnostics and generates duval triangle visualizations using plotly library.
+
+@Author: https://github.com/ToniMellin
+"""
+
 # %%
 import numpy as np
 from pandas import isna

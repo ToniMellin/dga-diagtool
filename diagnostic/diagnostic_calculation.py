@@ -420,10 +420,12 @@ def combine_diagnostic_result_to_dataframe(input_df):
     for row in input_df.itertuples():
         results = calculate_diagnostic_results(row[2], row[3], row[4], row[5], row[6], row[7], row[8])
 
-        df_combined_diag_new = pd.DataFrame([[row[1], results[0], results[1], results[2], results[3], results[4], results[5]]], columns=diag_results_col)
+        df_combined_diag_new = pd.DataFrame([[ pd.to_datetime(row[1]), results[0], results[1], results[2], results[3], results[4], results[5]]], columns=diag_results_col)
         df_combined_diag = pd.concat([df_combined_diag, df_combined_diag_new], ignore_index=True)
 
-    #TODO fix ValueError
+    #Timestamp dtype not inferred directly when iterating, this fixes it to allow merging dataframes
+    df_combined_diag['Timestamp'] = pd.to_datetime(df_combined_diag['Timestamp'], infer_datetime_format=True)
+
     df_diagnostics_matrix = input_df.merge(df_combined_diag, how='inner')
     
     return df_diagnostics_matrix
@@ -521,5 +523,20 @@ if __name__ == '__main__':
     #iec_test = iec_ratio_calculation(50, 0.01, 0.1)
     #print(iec_test)
 
-    doernenburg_test = doernenburg_ratio_calculation(201, 121, 66, 51, 0, 351)
-    print(doernenburg_test)
+    #doernenburg_test = doernenburg_ratio_calculation(201, 121, 66, 51, 0, 351)
+    #print(doernenburg_test)
+
+    df_sample3 = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+
+    df_combined = combine_diagnostic_result_to_dataframe(df_sample3)
+    print(df_combined)

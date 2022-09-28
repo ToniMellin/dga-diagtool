@@ -161,3 +161,7 @@ def test_ieee_2019_typical_values_95_over_breakpoint_open_age_30():
 
 def test_ieee_2019_typical_values_95_over_breakpoint_open_age_40():
     assert typical_value_comparison.ieee_2019_typical_calculation(91, 31, 41, 126, 8, 601, 8001, 21000, 56000, 40) == ['95% typical values exceeded!', '95% typical values exceeded!', '95% typical values exceeded!', '95% typical values exceeded!', '95% typical values exceeded!', '95% typical values exceeded!', '95% typical values exceeded!']
+
+#TODO add tests for Cigre typical values
+
+#TODO add tests for combined typical results from dataframes

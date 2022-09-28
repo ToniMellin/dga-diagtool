@@ -473,3 +473,5 @@ def test_duval_5_result_calculation_PD_O_edge_2():
 
 def test_duval_5_result_calculation_PD_middle():
     assert duval_triangle_5.calculate_duval_5_result(95, 9.5, 0.5) == 'PD'
+
+#TODO add tests for combined diagnostic results from dataframe
