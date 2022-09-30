@@ -887,6 +887,7 @@ def cigre_771_typical_calculation(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val,
 
     return cigre_771_typical_results
 
+#TODO ROC typical value comparisons
 
 def calculate_typical_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     """

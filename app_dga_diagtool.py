@@ -23,6 +23,7 @@ from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -32,6 +33,7 @@ from diagnostic import duval_triangle_1
 from diagnostic import duval_triangle_4
 from diagnostic import duval_triangle_5
 from diagnostic import diagnostic_calculation
+from diagnostic import roc_calculation
 from diagnostic import typical_value_comparison
 
 ctx = dash.callback_context
@@ -470,7 +472,7 @@ multi_sample_diagnostic_accordion = html.Div(
                 html.Div([
                 html.Div(id='multi-typicalvalues-output-state')
                 ]),
-                title="Typical value results table",
+                title="Typical values comparison results",
                 item_id="multi-1",
             ),
             dbc.AccordionItem(
@@ -488,23 +490,36 @@ multi_sample_diagnostic_accordion = html.Div(
                 item_id="multi-3",
             ),
             dbc.AccordionItem(
-                "Under development....",
+                html.Div([
+                html.Div(id='roc-table-output')
+                ]),
                 title="Rate of change summaries",
                 item_id="multi-4",
             ),
             dbc.AccordionItem(
-                "Under development....",
-                title="Rate of change based diagnostics",
+                html.Div([
+                html.Div(id='roc-typicalvalues-table-output')
+                ]),
+                title="Rate of change based typical values comparison",
                 item_id="multi-5",
             ),
             dbc.AccordionItem(
-                "Under development....",
-                title="Rate of change based duval triangles results",
+                html.Div([
+                html.Div(id='roc-diagnostic-table-output')
+                ]),
+                title="Rate of change based diagnostics results",
                 item_id="multi-6",
+            ),
+            dbc.AccordionItem(
+                html.Div([
+                html.Div(id='roc-duvaldiagnostic-output')
+                ]),
+                title="Rate of change based duval triangle visualizations",
+                item_id="multi-7",
             ),
         ],
         always_open=True,
-        active_item=['multi-1', 'multi-2', 'multi-3'],
+        active_item=['multi-1', 'multi-2', 'multi-3', 'multi-4'],
     )
 )
 
@@ -542,6 +557,9 @@ tabs = dbc.Tabs(
 
 app.layout = dbc.Container(
     [
+    # dcc.Store stores the samples data
+    dcc.Store(id='multi-samples-data', storage_type='local'),
+    dcc.Store(id='roc-data'),
 
     dbc.Row(
             dbc.Col(
@@ -551,8 +569,6 @@ app.layout = dbc.Container(
     dbc.Row([
             dbc.Col([tabs], width=12, lg=12, className="mt-4"),
     ]),
-    # dcc.Store stores the samples data
-    dcc.Store(id='multi-samples-data'),
     ],fluid=True,
     )
 
@@ -636,6 +652,7 @@ def update_single_sample_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c
     return ratio_table, diagresults_table, typicals_table, duval_triangles
 
 @app.callback(Output('multi-samples-data', 'data'),
+                Output('roc-data', 'data'),
                 Input('add-sample-button-state', 'n_clicks'),
                 Input('clear-samples-button-state', 'n_clicks'),
                 Input('multi-samples-data', 'data'),
@@ -651,7 +668,7 @@ def update_single_sample_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c
                 State('n2-multi-state', 'value'),
                 State('trafo-age-multi-state', 'value')
                )
-def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
+def update_sample_data(n_clicks, clear_clicks, multi_data, timestamp_val, h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, co_val, co2_val, o2_val, n2_val, trafo_age_val):
     
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -663,6 +680,8 @@ def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, h2_val, c
     else:
         if n_clicks == 0:
             #df_no_samples = pd.DataFrame(columns=['Timestamp', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2', 'O2', 'N2', 'Transformer age'])
+
+            #df_no_rocs = pd.DataFrame(columns=['Timestamp', 'H2', 'CH4', 'C2H6', 'C2H4', 'C2H2', 'CO', 'CO2'])
 
             df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 
@@ -676,8 +695,10 @@ def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, h2_val, c
                         'N2': [0, 51000, 52500, 53780, 54900, 55620], 
                         'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
 
-            #return df_no_samples.to_json(date_format='iso', orient='split')
-            return df_sample.to_json(date_format='iso', orient='split')
+            roc_ftl, roc_last = roc_calculation.calculate_rates_of_change(df_sample, 'Timestamp')
+
+            #return df_no_samples.to_json(date_format='iso', orient='split'), df_no_rocs.to_json(date_format='iso', orient='split')
+            return df_sample.to_json(date_format='iso', orient='split'), roc_ftl.to_json(date_format='iso', orient='split')
         else:
             df_sample = pd.DataFrame({'Timestamp': pd.to_datetime(timestamp_val), 'H2': h2_val, 'CH4': ch4_val, 'C2H6': c2h6_val, 'C2H4': c2h4_val, 'C2H2': c2h2_val, 'CO': co_val, 'CO2': co2_val, 'O2': o2_val, 'N2': n2_val, 'Transformer age': trafo_age_val}, index=[n_clicks-1])
 
@@ -685,7 +706,9 @@ def add_sample_info(n_clicks, clear_clicks, multi_data, timestamp_val, h2_val, c
 
             df_multi_samples = pd.concat([df_multi_samples, df_sample])
 
-            return df_multi_samples.to_json(date_format='iso', orient='split')
+            roc_ftl, roc_last = roc_calculation.calculate_rates_of_change(df_multi_samples, 'Timestamp')
+
+            return df_multi_samples.to_json(date_format='iso', orient='split'), roc_ftl.to_json(date_format='iso', orient='split')
 
 @app.callback(Output('samplelist-output-state', 'children'),
                 Input('multi-samples-data', 'data'),
@@ -866,8 +889,6 @@ def update_multi_sample_diagnostic_table(multi_data):
 
         df_diagnostics_summary = df_diagnostics_combined.filter(['Timestamp', 'Rogers ratio', 'Doernenburg ratio', 'IEC 60599 ratio', 'Duval triangle 1', 'Duval triangle 4', 'Duval triangle 5'])
 
-        #TODO fix ValueError
-
         #TODO colorization of diagnostics results summary table https://dash.plotly.com/datatable/conditional-formatting
         #TODO add the ppm values in tooltips of columns
         multi_diagnostics_table = dash_table.DataTable(
@@ -943,6 +964,81 @@ def update_multi_duval_diagnostic_output(multi_data):
         
 
         return duval_triangles
+
+
+
+@app.callback(Output('roc-table-output', 'children'),
+                Input('roc-data', 'modified_timestamp'),
+                State('roc-data', 'data'),
+            )
+def update_roc_tables(ts, roc_data):
+    if roc_data is None or ts is None:
+        raise PreventUpdate
+        return roc_data, dbc.Alert("No sample data entered", color="info")
+
+    df_roc = pd.read_json(roc_data, orient='split')
+
+
+    
+    return dbc.Alert("Under development...", color='warning')
+    #return df_multi_samples.to_json(date_format='iso', orient='split')
+
+
+@app.callback(Output('roc-typicalvalues-table-output', 'children'),
+                Input('roc-data', 'data'),
+            )
+def update_roc_typical_values_tables(multi_data):
+    if multi_data is None:
+        raise PreventUpdate
+        return dbc.Alert("No ROC data available", color="warning")
+
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    #TODO typical value table gathering
+    #TODO color mapping based on results
+    #TODO tooltip ROC values
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No ROC data available", color="warning")
+    else:
+        return dbc.Alert("Under development...", color='warning')
+
+
+@app.callback(Output('roc-diagnostic-table-output', 'children'),
+                Input('roc-data', 'data'),
+            )
+def update_roc_diagnostic_tables(multi_data):
+    if multi_data is None:
+        raise PreventUpdate
+        return dbc.Alert("No ROC data available", color="warning")
+
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    #TODO ROC diagnostics table
+    #TODO color mapping based on results
+    #TODO tooltip ROC values
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No ROC data available", color="warning")
+    else:
+        return dbc.Alert("Under development...", color='warning')
+
+@app.callback(Output('roc-duvaldiagnostic-output', 'children'),
+                Input('roc-data', 'data'),
+            )
+def update_roc_duvaldiagnostics_output(multi_data):
+    if multi_data is None:
+        raise PreventUpdate
+        return dbc.Alert("No ROC data available", color="warning")
+    
+    df_multi_samples = pd.read_json(multi_data, orient='split')
+
+    #TODO ROC duvaldiagnostics
+
+    if len(df_multi_samples) == 0:
+        return dbc.Alert("No ROC data available", color="warning")
+    else:
+        return dbc.Alert("Under development...", color='warning')
 
 def main():
     Timer(1, open_browser).start()
