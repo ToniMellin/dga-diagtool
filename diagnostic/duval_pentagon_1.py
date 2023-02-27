@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""duval_pentagon_2.py
+"""duval_pentagon_1.py
 
-This module calculates duval pentagon 2 related diagnostics and generates duval pentagon visualizations using plotly library.
+This module calculates duval pentagon 1 related diagnostics and generates duval pentagon visualizations using plotly library.
 
 @Author: https://github.com/ToniMellin
 """
@@ -18,7 +18,7 @@ def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
 
-def create_duval_p2_colorized():
+def create_duval_p1_colorized():
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=[0, -35, -38, 0, 0, -1, -1, 0, 0], y=[1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5], 
                              name='S',
@@ -38,26 +38,26 @@ def create_duval_p2_colorized():
                             fill="toself",
                             fillcolor='rgba(178,255,228, 0.5)'
                             ))
-    fig.add_trace(go.Scatter(x=[-3.5, -11, -21.5, -23.5, -35, 0, 0, -3.5], y=[-3, -8, -32.4, -32.4, 3.1, 1.5, -3, -3], 
-                             name='O',
+    fig.add_trace(go.Scatter(x=[-6, -22.5, -23.5, -35, 0, 0, -6], y=[-4, -32.4, -32.4, 3, 1.5, -3, -4], 
+                             name='T1',
                             showlegend=False,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
                             fill="toself",
-                            fillcolor='rgba(255,211,37, 0.5)'
+                            fillcolor='rgba(245, 243, 39, 0.5)'
                             ))
-    fig.add_trace(go.Scatter(x=[-3.5, 2.5, -21.5, -11, -3.5], y=[-3, -32.4, -32.4, -8, -3], 
-                             name='C',
+    fig.add_trace(go.Scatter(x=[-6, 1, -22.5, -6], y=[-4, -32.4, -32.4, -4], 
+                             name='T2',
                             showlegend=False,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
                             fill="toself",
-                            fillcolor='rgba(92,81,75, 0.6)'
+                            fillcolor='rgba(245, 148, 39, 0.5)'
                             ))
-    fig.add_trace(go.Scatter(x=[0, 24.3, 23.5, 2.5, -3.5, 0], y=[-3, -30, -32.4, -32.4, -3, -3], 
-                             name='T3-H',
+    fig.add_trace(go.Scatter(x=[0, 24.3, 23.5, 1, -6, 0], y=[-3, -30, -32.4, -32.4, -4, -3], #-32 as per TB 771 & C57.143-2019 would leave a gap
+                             name='T3',
                             showlegend=False,
                             mode='lines',
                             line_color='black',
@@ -94,7 +94,7 @@ def create_duval_p2_colorized():
                         )
     return fig
 
-def create_duval_p2_nocolor():
+def create_duval_p1_nocolor():
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=[0, -35, -38, 0, 0, -1, -1, 0, 0], y=[1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5], 
                              name='S',
@@ -110,22 +110,22 @@ def create_duval_p2_nocolor():
                             line_color='black',
                             line_width=0.5
                             ))
-    fig.add_trace(go.Scatter(x=[-3.5, -11, -21.5, -23.5, -35, 0, 0, -3.5], y=[-3, -8, -32.4, -32.4, 3.1, 1.5, -3, -3], 
-                             name='O',
+    fig.add_trace(go.Scatter(x=[-6, -22.5, -23.5, -35, 0, 0, -6], y=[-4, -32.4, -32.4, 3, 1.5, -3, -4], 
+                             name='T1',
                             showlegend=False,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
-    fig.add_trace(go.Scatter(x=[-3.5, 2.5, -21.5, -11, -3.5], y=[-3, -32.4, -32.4, -8, -3], 
-                             name='C',
+    fig.add_trace(go.Scatter(x=[-6, 1, -22.5, -6], y=[-4, -32.4, -32.4, -4], 
+                             name='T2',
                             showlegend=False,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
-    fig.add_trace(go.Scatter(x=[0, 24.3, 23.5, 2.5, -3.5, 0], y=[-3, -30, -32.4, -32.4, -3, -3], 
-                             name='T3-H',
+    fig.add_trace(go.Scatter(x=[0, 24.3, 23.5, 1, -6, 0], y=[-3, -30, -32.4, -32.4, -4, -3], 
+                             name='T3',
                             showlegend=False,
                             mode='lines',
                             line_color='black',
@@ -157,11 +157,11 @@ def create_duval_p2_nocolor():
     
     return fig
 
-def calculate_duval_p2_result():
+def calculate_duval_p1_result():
 
     return
 
-def create_duval_p2_marker():
+def create_duval_p1_marker():
 
     return
 
@@ -169,11 +169,11 @@ def create_duval_p2_marker():
 # %%
 if __name__ == "__main__":
     '''
-    fig = create_duval_p2_colorized()
-    marker_name = calculate_duval_p2_result(10, 26, 64)
-    fig.add_trace(create_duval_p2_marker(10, 26, 64, marker_name))
+    fig = create_duval_p1_colorized()
+    marker_name = calculate_duval_p1_result(10, 26, 64)
+    fig.add_trace(create_duval_p1_marker(10, 26, 64, marker_name))
     fig.show()
     '''
-    fig = create_duval_p2_colorized()
-    #fig = create_duval_p2_nocolor()
+    fig = create_duval_p1_colorized()
+    #fig = create_duval_p1_nocolor()
     fig.show()
