@@ -307,25 +307,38 @@ def create_duval_p2_marker(h2, ch4, c2h6, c2h4, c2h2, marker_name, **kwargs):
             timestamp = kwargs['timestamp']
             result = kwargs['result']
             set_color = kwargs['marker_color']
-            return go.Scatter(x=marker_x, y=marker_y,
+            return go.Scatter(x=[marker_x], y=[marker_y],
                                 name= marker_name,
                                 mode='markers',
                                 marker_color=set_color,
                                 marker_size=10,
                                 meta= [result, timestamp],
-                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}%<br>Y: %{y:.2f}%<br>%{meta[1]}<extra></extra>")
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[1]}<extra></extra>")
          except Exception as e:
             print(e)
             pass
-    else:  
-        return go.Scatter(x=marker_x, y=marker_y,
-                                name= marker_name,
-                                marker_color=set_color,
-                                marker_size=10,
-                                meta= marker_name,
-                                hovertemplate="Diagnosis: %{meta}<br>X: %{x:.2f}%<br>Y: %{y:.2f}%<br>%<extra></extra>")
+    else:
+        try:  
+            return go.Scatter(x=[marker_x], y=[marker_y],
+                                    name= marker_name,
+                                    marker_color='red',
+                                    marker_size=10,
+                                    meta= marker_name,
+                                    hovertemplate="Diagnosis: %{meta}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br><extra></extra>")
+        except Exception as e:
+            print(e)
+            pass
 
+def create_duval_p2_result_graph(h2, ch4, c2h6, c2h4, c2h2,):
+    fig = create_duval_p2_colorized()
 
+    try:
+        result_name = calculate_duval_p2_result(h2, ch4, c2h6, c2h4, c2h2)
+        fig.add_trace(create_duval_p2_marker(h2, ch4, c2h6, c2h4, c2h2, result_name))
+        #print(f'duval p2 result {result_name}')
+        return fig
+    except:
+        return fig
 
 # %%
 if __name__ == "__main__":
@@ -335,10 +348,13 @@ if __name__ == "__main__":
     fig.add_trace(create_duval_p2_marker(10, 26, 64, marker_name))
     fig.show()
     '''
-    fig = create_duval_p2_colorized()
+    #fig = create_duval_p2_colorized()
     #fig = create_duval_p2_nocolor()
-    fig.show()
+    #fig.show()
 
     # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> O
     dp2_result = calculate_duval_p2_result(31, 192, 130, 31, 0)
     print(dp2_result)
+
+    duvp2_fig = create_duval_p2_result_graph(31, 192, 130, 31, 0)
+    duvp2_fig.show()
