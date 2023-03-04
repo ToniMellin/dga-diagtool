@@ -26,7 +26,6 @@ Sy = [1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)
     
-
 # PD - Partial discharges
 PDx = [0, -1, -1, 0, 0]
 PDy = [33, 33, 24.5, 24.5, 33]
@@ -157,6 +156,12 @@ def create_duval_p2_colorized():
                         showlegend=True,
   						modebar_add = ["v1hovermode", 'toggleSpikelines',],
                         )
+    # fixed aspect ratio prevents distortion of the pentagon
+    fig.update_yaxes(
+        scaleanchor = "x",
+        scaleratio = 1,
+    )
+    
     return fig
 
 def create_duval_p2_nocolor():
@@ -224,7 +229,12 @@ def create_duval_p2_nocolor():
                         showlegend=True,
   						modebar_add = ["v1hovermode", 'toggleSpikelines',],
                         )
-    
+    # fixed aspect ratio prevents distortion of the pentagon
+    fig.update_yaxes(
+        scaleanchor = "x",
+        scaleratio = 1,
+    )
+
     return fig
 
 def calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2):
@@ -399,7 +409,7 @@ if __name__ == "__main__":
 
     duvp2_multi_fig = create_duval_p2_multi_results_graph(df_sample)
     duvp2_multi_fig.show()
-    
+
     '''
     test_fig = create_duval_p2_colorized()
     test_fig.add_trace(go.Scatter(x=[10], y=[10],
