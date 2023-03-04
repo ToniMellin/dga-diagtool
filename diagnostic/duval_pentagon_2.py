@@ -143,7 +143,12 @@ def create_duval_p2_colorized():
                             fill="toself",
                             fillcolor='rgba(178,244,255, 0.5)'
                             ))
-    #TODO add labes inside zones
+    fig.add_scatter(x=[0, -24.5, -40, 25, 40], y=[41, -34, 12.5, -34, 12.5],
+                    mode='text', text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'], 
+                    hoverinfo='skip', showlegend=False)
+    fig.add_scatter(x=[-16, -0.5, 16, 14, 7, -8, -20], y=[16, 28.75, 16 ,-5, -20, -20, -8],
+                    mode='text', text=['S', 'PD', 'D1', 'D2', 'T3-H', 'C', 'O'], 
+                    hoverinfo='skip', showlegend=False)
     fig.update_layout(
                         paper_bgcolor='rgba(0,0,0,0)',
                         plot_bgcolor='rgba(0,0,0,0)',
@@ -205,7 +210,12 @@ def create_duval_p2_nocolor():
                             line_color='black',
                             line_width=0.5
                             ))
-    #TODO add labes inside zones
+    fig.add_scatter(x=[0, -24.5, -40, 25, 40], y=[41, -34, 12.5, -34, 12.5],
+                    mode='text', text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'], 
+                    hoverinfo='skip', showlegend=False)
+    fig.add_scatter(x=[-16, -0.5, 16, 14, 7, -8, -20], y=[16, 28.75, 16 ,-5, -20, -20, -8],
+                    mode='text', text=['S', 'PD', 'D1', 'D2', 'T3-H', 'C', 'O'], 
+                    hoverinfo='skip', showlegend=False)
     fig.update_layout(
                         paper_bgcolor='rgba(0,0,0,0)',
                         plot_bgcolor='rgba(0,0,0,0)',
@@ -340,21 +350,63 @@ def create_duval_p2_result_graph(h2, ch4, c2h6, c2h4, c2h2,):
     except:
         return fig
 
+def create_duval_p2_multi_results_graph(samples_df):
+    fig = create_duval_p2_colorized()
+
+    sample_count = len(samples_df)
+    colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
+
+    try:
+        sample_num = 0
+        for row in samples_df.itertuples(name=None):
+            time, h2, ch4, c2h6, c2h4, c2h2, rowcolor = row[1], row[2], row[3], row[4], row[5], row[6], colorscale[sample_num]
+            sample_num+=1
+            if ((h2 == 0) and (ch4 == 0) and (c2h6 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
+                continue
+            else:
+                duval_result = calculate_duval_p2_result(h2, ch4, c2h6, c2h4, c2h2)
+                mark_name = f'{duval_result} {time}'
+                fig.add_trace(create_duval_p2_marker(h2, ch4, c2h6, c2h4, c2h2, mark_name, timestamp=time, result=duval_result, marker_color=rowcolor))
+        return fig
+    except Exception as e:
+        print(e)
+        return fig
+        
+
 # %%
 if __name__ == "__main__":
-    '''
-    fig = create_duval_p2_colorized()
-    marker_name = calculate_duval_p2_result(10, 26, 64)
-    fig.add_trace(create_duval_p2_marker(10, 26, 64, marker_name))
-    fig.show()
-    '''
-    #fig = create_duval_p2_colorized()
-    #fig = create_duval_p2_nocolor()
-    #fig.show()
-
+    
     # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> O
     dp2_result = calculate_duval_p2_result(31, 192, 130, 31, 0)
     print(dp2_result)
 
     duvp2_fig = create_duval_p2_result_graph(31, 192, 130, 31, 0)
     duvp2_fig.show()
+
+    df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+
+    print(df_sample)
+
+    duvp2_multi_fig = create_duval_p2_multi_results_graph(df_sample)
+    duvp2_multi_fig.show()
+    
+    '''
+    test_fig = create_duval_p2_colorized()
+    test_fig.add_trace(go.Scatter(x=[10], y=[10],
+                                name= 'TEST',
+                                mode='markers',
+                                marker_color='green',
+                                marker_size=12)
+                            )
+    test_fig.show()
+    '''
