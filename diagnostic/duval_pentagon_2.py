@@ -264,6 +264,7 @@ def calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2):
 
     x_list = [x1, x2, x3, x4, x5]
     y_list = [y1, y2, y3, y4, y5]
+    summit_list = [(x_list[i], y_list[i]) for i in range(0, len(x_list))]
 
     # calculate denominator sum
     denominator_xy = 0
@@ -284,7 +285,9 @@ def calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2):
 
     centroid_y = round_half_up((numerator_y / denominator_xy), 2)
 
-    return centroid_x, centroid_y
+    centroid_list = [centroid_x, centroid_y]
+
+    return centroid_list, summit_list
 
 
 def calculate_duval_p2_result(h2, ch4, c2h6, c2h4, c2h2):
@@ -295,8 +298,8 @@ def calculate_duval_p2_result(h2, ch4, c2h6, c2h4, c2h2):
         if ((h2 == 0) and (ch4 == 0) and (c2h6 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
             return 'N/A'
         else:
-            centroid_x, centroid_y = calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2)
-            point = Point(centroid_x, centroid_y)
+            centroid_list, summit_list = calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2)
+            point = Point(centroid_list[0], centroid_list[1])
             if (S_polygon.contains(point) or (point.distance(S_polygon) < epsilon)) is True:
                 return 'S'
             if (PD_polygon.contains(point) or (point.distance(PD_polygon) < epsilon)) is True:
@@ -320,14 +323,14 @@ def calculate_duval_p2_result(h2, ch4, c2h6, c2h4, c2h2):
         return 'N/A'
 
 def create_duval_p2_marker(h2, ch4, c2h6, c2h4, c2h2, marker_name, **kwargs):
-    marker_x, marker_y = calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2)
+    marker_coord, summit_list = calculate_duval_p2_coordinates(h2, ch4, c2h6, c2h4, c2h2)
 
     if 'timestamp' in kwargs and 'result' in kwargs and 'marker_color' in kwargs:
          try:
             timestamp = kwargs['timestamp']
             result = kwargs['result']
             set_color = kwargs['marker_color']
-            return go.Scatter(x=[marker_x], y=[marker_y],
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
                                 name= marker_name,
                                 mode='markers',
                                 marker_color=set_color,
@@ -339,7 +342,7 @@ def create_duval_p2_marker(h2, ch4, c2h6, c2h4, c2h2, marker_name, **kwargs):
             pass
     else:
         try:  
-            return go.Scatter(x=[marker_x], y=[marker_y],
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
                                     name= marker_name,
                                     marker_color='red',
                                     marker_size=10,
@@ -387,6 +390,9 @@ def create_duval_p2_multi_results_graph(samples_df):
 if __name__ == "__main__":
     
     # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> O
+    dp2_coord, dp2_summits = calculate_duval_p2_coordinates(31, 192, 130, 31, 0)
+    print(dp2_coord, dp2_summits)
+    
     dp2_result = calculate_duval_p2_result(31, 192, 130, 31, 0)
     print(dp2_result)
 

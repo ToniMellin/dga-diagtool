@@ -263,6 +263,7 @@ def calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2):
 
     x_list = [x1, x2, x3, x4, x5]
     y_list = [y1, y2, y3, y4, y5]
+    summit_list = [(x_list[i], y_list[i]) for i in range(0, len(x_list))]
 
     # calculate denominator sum
     denominator_xy = 0
@@ -283,7 +284,9 @@ def calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2):
 
     centroid_y = round_half_up((numerator_y / denominator_xy), 2)
 
-    return centroid_x, centroid_y
+    centroid_list = [centroid_x, centroid_y]
+
+    return centroid_list, summit_list
 
 def calculate_duval_p1_result(h2, ch4, c2h6, c2h4, c2h2):
 
@@ -293,16 +296,16 @@ def calculate_duval_p1_result(h2, ch4, c2h6, c2h4, c2h2):
         if ((h2 == 0) and (ch4 == 0) and (c2h6 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
             return 'N/A'
         else:
-            centroid_x, centroid_y = calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2)
-            point = Point(centroid_x, centroid_y)
+            centroid_list, summit_list = calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2)
+            point = Point(centroid_list[0], centroid_list[1])
             if (S_polygon.contains(point) or (point.distance(S_polygon) < epsilon)) is True:
                 return 'S'
             if (PD_polygon.contains(point) or (point.distance(PD_polygon) < epsilon)) is True:
                 return 'PD'
             if (T1_polygon.contains(point) or (point.distance(T1_polygon) < epsilon)) is True:
-                return 'O'
+                return 'T1'
             if (T2_polygon.contains(point) or (point.distance(T2_polygon) < epsilon)) is True:
-                return 'C'
+                return 'T2'
             if (T3_polygon.contains(point) or (point.distance(T3_polygon) < epsilon)) is True:
                 return 'T3H'
             if (D2_polygon.contains(point) or (point.distance(D2_polygon) < epsilon)) is True:
@@ -318,14 +321,14 @@ def calculate_duval_p1_result(h2, ch4, c2h6, c2h4, c2h2):
         return 'N/A'
 
 def create_duval_p1_marker(h2, ch4, c2h6, c2h4, c2h2, marker_name, **kwargs):
-    marker_x, marker_y = calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2)
+    marker_coord, summit_list = calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2)
 
     if 'timestamp' in kwargs and 'result' in kwargs and 'marker_color' in kwargs:
          try:
             timestamp = kwargs['timestamp']
             result = kwargs['result']
             set_color = kwargs['marker_color']
-            return go.Scatter(x=[marker_x], y=[marker_y],
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
                                 name= marker_name,
                                 mode='markers',
                                 marker_color=set_color,
@@ -337,7 +340,7 @@ def create_duval_p1_marker(h2, ch4, c2h6, c2h4, c2h2, marker_name, **kwargs):
             pass
     else:
         try:  
-            return go.Scatter(x=[marker_x], y=[marker_y],
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
                                     name= marker_name,
                                     marker_color='red',
                                     marker_size=10,
@@ -384,11 +387,14 @@ def create_duval_p1_multi_results_graph(samples_df):
 if __name__ == "__main__":
     
     # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> O
-    dp2_result = calculate_duval_p1_result(31, 192, 130, 31, 0)
-    print(dp2_result)
+    dp1_coord, dp1_summits = calculate_duval_p1_coordinates(31, 192, 130, 31, 0)
+    print(dp1_coord, dp1_summits)
 
-    duvp2_fig = create_duval_p1_result_graph(31, 192, 130, 31, 0)
-    duvp2_fig.show()
+    dp1_result = calculate_duval_p1_result(31, 192, 130, 31, 0)
+    print(dp1_result)
+
+    duvp1_fig = create_duval_p1_result_graph(31, 192, 130, 31, 0)
+    duvp1_fig.show()
 
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 
@@ -404,8 +410,8 @@ if __name__ == "__main__":
 
     print(df_sample)
 
-    duvp2_multi_fig = create_duval_p1_multi_results_graph(df_sample)
-    duvp2_multi_fig.show()
+    duvp1_multi_fig = create_duval_p1_multi_results_graph(df_sample)
+    duvp1_multi_fig.show()
 
     '''
     test_fig = create_duval_p1_colorized()

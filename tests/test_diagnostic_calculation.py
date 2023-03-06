@@ -3,6 +3,8 @@ from diagnostic import diagnostic_calculation
 from diagnostic import duval_triangle_1
 from diagnostic import duval_triangle_4
 from diagnostic import duval_triangle_5
+from diagnostic import duval_pentagon_1
+from diagnostic import duval_pentagon_2
 
 # ratio tests
 def test_ratio_calculation_nan():
@@ -475,3 +477,13 @@ def test_duval_5_result_calculation_PD_middle():
     assert duval_triangle_5.calculate_duval_5_result(95, 9.5, 0.5) == 'PD'
 
 #TODO add tests for combined diagnostic results from dataframe
+
+# Duval pentagon 1 tests
+#TODO add tests for duval pentagon 1
+def test_duval_p1_coordinates_calculation_1():
+    assert duval_pentagon_1.calculate_duval_p1_coordinates(31, 192, 130, 31, 0) == (-32.3, 10.5)
+
+
+
+# Duval pentagon 2 tests
+#TODO add tests for duval pentagon 2
