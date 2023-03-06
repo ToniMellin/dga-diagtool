@@ -401,6 +401,8 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
             diag_result_list.append(duval5_result)
         else:
             diag_result_list.append('N/A')
+
+        # TODO add duval pentagon 1&2 results
         
     except Exception as e:
         print(f'diag result calculation error!!:\n{e}')

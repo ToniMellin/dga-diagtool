@@ -649,6 +649,8 @@ def update_single_sample_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c
                     
                     ])
 
+    # TODO add duval pentagons 1 & 2 visualizations and results
+
     return ratio_table, diagresults_table, typicals_table, duval_triangles
 
 @app.callback(Output('multi-samples-data', 'data'),

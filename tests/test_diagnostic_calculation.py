@@ -481,9 +481,27 @@ def test_duval_5_result_calculation_PD_middle():
 # Duval pentagon 1 tests
 #TODO add tests for duval pentagon 1
 def test_duval_p1_coordinates_calculation_1():
-    assert duval_pentagon_1.calculate_duval_p1_coordinates(31, 192, 130, 31, 0) == (-32.3, 10.5)
+    assert duval_pentagon_1.calculate_duval_p1_coordinates(31, 130, 192, 31, 0) == (-17.29, -9.09)
 
+def test_duval_p1_coordinates_calculation_2():
+    assert duval_pentagon_1.calculate_duval_p1_coordinates(50, 80, 120, 60, 30) == (-7.36, -5.80)
 
+def test_duval_p1_result_1():
+    assert duval_pentagon_1.calculate_duval_p1_result(31, 130, 192, 31, 0) == 'T1'
+
+def test_duval_p1_result_2():
+    assert duval_pentagon_1.calculate_duval_p1_result(50, 80, 120, 60, 30) == 'T1'
 
 # Duval pentagon 2 tests
 #TODO add tests for duval pentagon 2
+def test_duval_p2_coordinates_calculation_1():
+    assert duval_pentagon_2.calculate_duval_p2_coordinates(31, 130, 192, 31, 0) == (-17.29, -9.09)
+
+def test_duval_p2_coordinates_calculation_2():
+    assert duval_pentagon_2.calculate_duval_p2_coordinates(50, 80, 120, 60, 30) == (-7.36, -5.80)
+
+def test_duval_p2_result_1():
+    assert duval_pentagon_2.calculate_duval_p2_result(31, 130, 192, 31, 0) == 'O'
+
+def test_duval_p2_result_2():
+    assert duval_pentagon_2.calculate_duval_p2_result(50, 80, 120, 60, 30) == 'C'
