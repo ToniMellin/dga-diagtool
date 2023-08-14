@@ -334,6 +334,22 @@ def create_duval_1_marker(ch4, c2h2, c2h4, marker_name, **kwargs):
         except Exception as e:
             print(e)
             pass
+    elif 'timestamp' not in kwargs and 'result' not in kwargs and 'marker_color' in kwargs:
+        try:
+            set_color = kwargs['marker_color']
+            return go.Scatterternary(       a= [marker_coordinates[0]],
+                                            b= [marker_coordinates[1]],
+                                            c= [marker_coordinates[2]],
+                                            name= marker_name,
+                                            mode='markers',
+                                            marker_color=set_color,
+                                            marker_size=10,
+                                            meta= marker_name,
+                                            hovertemplate="Diagnosis: %{meta}<br>CH4: %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"
+                                            )
+        except Exception as e:
+            print(e)
+            pass
     else:  
         return go.Scatterternary(       a= [marker_coordinates[0]],
                                         b= [marker_coordinates[1]],
