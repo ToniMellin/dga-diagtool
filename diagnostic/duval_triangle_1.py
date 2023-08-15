@@ -376,7 +376,10 @@ def create_duval_1_multi_results_graph(samples_df):
     fig = create_duval_1_colorized()
 
     sample_count = len(samples_df)
-    colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
+    if sample_count == 1:
+        colorscale = ['blue']
+    else:
+        colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
 
     try:
         sample_num = 0

@@ -384,10 +384,10 @@ def calculate_diagnostic_results(h2_val, ch4_val, c2h6_val, c2h4_val, c2h2_val, 
             duval1_result = duval_triangle_1.calculate_duval_1_result(ch4_val, c2h2_val, c2h4_val)
             diag_result_list.append(duval1_result)
 
-        # duval triangle 4 result only calculated and shown if triangle 1 result is PD, T1 or T2
+        # duval triangle 4 result only calculated and shown if triangle 1 result is PD, T1 (2020 late revision)
         if pd.isna([h2_val, c2h6_val, ch4_val]).any() is True:
             diag_result_list.append('N/A')
-        elif duval1_result in ['PD', 'T1', 'T2']:
+        elif duval1_result in ['PD', 'T1']:
             duval4_result = duval_triangle_4.calculate_duval_4_result(h2_val, c2h6_val, ch4_val)
             diag_result_list.append(duval4_result)
         else:

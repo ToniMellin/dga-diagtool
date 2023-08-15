@@ -98,25 +98,38 @@ if __name__ == '__main__':
     import duval_triangle_5
 
     test_point = [[100, 100, 100, [0.15]],
+                  [100, 100, 100, [0.3]],
+                  [90, 8, 105, [0.15]],
+                  [90, 8, 105, [0.3]],
+                  [90, 20, 30, [0.15]],
+                  [90, 20, 30, [0.3]],
+                  [100, 10, 8, [0.15]],
+                  [100, 10, 8, [0.3]],
+                  [10, 20, 80, [0.15]],
+                  [10, 20, 80, [0.3]]]
+    
+    test_point2 = [[100, 100, 100, [0.15]],
                   [100, 100, 100, [0.3]]]
 
     fig = duval_triangle_1.create_duval_1_nocolor()
     marker_name = duval_triangle_1.calculate_duval_1_result(100, 100, 100)
     fig.add_trace(duval_triangle_1.create_duval_1_marker(100, 100, 100, marker_name, marker_color='green'))
-    fig = add_ternary_uncertainty_lines(fig, test_point, ['blue', 'red'])
+    fig.add_trace(duval_triangle_1.create_duval_1_marker(90, 8, 105, marker_name, marker_color='green'))
+    fig.add_trace(duval_triangle_1.create_duval_1_marker(90, 20, 30, marker_name, marker_color='green'))
+    fig.add_trace(duval_triangle_1.create_duval_1_marker(100, 10, 8, marker_name, marker_color='green'))
+    fig.add_trace(duval_triangle_1.create_duval_1_marker(10, 20, 80, marker_name, marker_color='green'))
+    fig = add_ternary_uncertainty_lines(fig, test_point, ['blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red'])
     fig.show()
 
+    
     fig4 = duval_triangle_4.create_duval_4_nocolor()
     marker_name = duval_triangle_4.calculate_duval_4_result(100, 100, 100)
     fig4.add_trace(duval_triangle_4.create_duval_4_marker(100, 100, 100, marker_name, marker_color='green'))
-    fig4 = add_ternary_uncertainty_lines(fig4, test_point, ['blue', 'red'])
+    fig4 = add_ternary_uncertainty_lines(fig4, test_point2, ['blue', 'red'])
     fig4.show()
 
     fig5 = duval_triangle_5.create_duval_5_nocolor()
     marker_name = duval_triangle_5.calculate_duval_5_result(100, 100, 100)
     fig5.add_trace(duval_triangle_5.create_duval_5_marker(100, 100, 100, marker_name, marker_color='green'))
-    fig5 = add_ternary_uncertainty_lines(fig5, test_point, ['blue', 'red'])
+    fig5 = add_ternary_uncertainty_lines(fig5, test_point2, ['blue', 'red'])
     fig5.show()
-
-
-# %%

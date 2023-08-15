@@ -620,7 +620,8 @@ def update_single_sample_output(n_clicks, h2_val, ch4_val, c2h6_val, c2h4_val, c
 
     duval1 = dcc.Graph(figure=duval_triangle_1.create_duval_1_result_graph(ch4_val, c2h2_val, c2h4_val))
 
-    if diag_results[3] in ['PD', 'T1', 'T2']:
+    # 2020 revision only prompts triangle 4 if triangle 1 result is PD or T1 
+    if diag_results[3] in ['PD', 'T1']:
         duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_result_graph(h2_val, c2h6_val, ch4_val))
     else:
         duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_colorized())
@@ -932,11 +933,12 @@ def update_multi_duval_diagnostic_output(multi_data):
 
         df_multi_samples_sorted['DuvalResult'] = df_multi_samples_sorted.apply(lambda x: duval_triangle_1.calculate_duval_1_result(x['CH4'], x['C2H2'], x['C2H4']), axis=1)
         
-        found_PDT1T2 = df_multi_samples_sorted[df_multi_samples_sorted['DuvalResult'].str.contains('PD|T1|T2')]
+        # 2020 revision only prompts triangle 4 if triangle 1 result is PD or T1
+        found_PDT1 = df_multi_samples_sorted[df_multi_samples_sorted['DuvalResult'].str.contains('PD|T1')]
         found_T2T3 = df_multi_samples_sorted[df_multi_samples_sorted['DuvalResult'].str.contains('T2|T3')]
 
-        if len(found_PDT1T2) > 0:
-            duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_multi_results_graph(found_PDT1T2))
+        if len(found_PDT1) > 0:
+            duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_multi_results_graph(found_PDT1))
         else:
             duval4 = dcc.Graph(figure=duval_triangle_4.create_duval_4_colorized())
 
