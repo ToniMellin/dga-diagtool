@@ -353,9 +353,22 @@ def create_duval_p2_marker(h2, c2h6, ch4, c2h4, c2h2, marker_name, **kwargs):
                                 mode='markers',
                                 marker_color=set_color,
                                 marker_size=10,
-                                meta= [result, timestamp],
-                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[1]}<extra></extra>")
+                                meta= [result, h2, c2h6, ch4, c2h4, c2h2, timestamp],
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[6]}<extra></extra>")
          except Exception as e:
+            print(e)
+            pass
+    elif 'timestamp' not in kwargs and 'result' not in kwargs and 'marker_color' in kwargs:
+        try:
+            set_color = kwargs['marker_color']
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                name= marker_name,
+                                mode='markers',
+                                marker_color=set_color,
+                                marker_size=10,
+                                meta= [marker_name, h2, c2h6, ch4, c2h4, c2h2],
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br><extra></extra>")
+        except Exception as e:
             print(e)
             pass
     else:
@@ -450,8 +463,11 @@ if __name__ == "__main__":
     dp2_result2 = calculate_duval_p2_result(50, 80, 120, 60, 30)
     print(dp2_result2)
 
-    duvp1_2_fig = create_duval_p2_result_graph(50, 80, 120, 60, 30, include_summit=True)
-    duvp1_2_fig.show()
+    duvp2_2_fig = create_duval_p2_result_graph(50, 80, 120, 60, 30, include_summit=True)
+    duvp2_2_fig = create_duval_p2_colorized()
+    duvp2_2_fig.add_trace(create_duval_p2_marker(50, 80, 120, 60, 30, dp2_result2, timestamp='2021-05-11', result=dp2_result2, marker_color='blue'))
+    duvp2_2_fig.add_trace(draw_duval_p2_summits(50, 80, 120, 60, 30))
+    duvp2_2_fig.show()
 
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 

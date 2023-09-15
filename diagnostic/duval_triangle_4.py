@@ -252,9 +252,9 @@ def create_duval_4_marker(h2, c2h6, ch4, marker_name, **kwargs):
                                         mode='markers',
                                         marker_color=set_color,
                                         marker_size=10,
-                                        meta= [result, timestamp],
-                                        hovertemplate='Diagnosis: %{meta[0]}<br>H2: %{a:.2f}<br>C2H6: %{b:.2f}<br>CH4: %{c:.2f}%<br>%{meta[1]}<extra></extra>'
-                                        )
+                                        meta= [result, h2, c2h6, ch4, timestamp],
+                                        hovertemplate="Diagnosis: %{meta[0]}<br>H2:   %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>CH4:  %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
+                                            )
         except Exception as e:
             print(e)
             pass
@@ -268,8 +268,8 @@ def create_duval_4_marker(h2, c2h6, ch4, marker_name, **kwargs):
                                             mode='markers',
                                             marker_color=set_color,
                                             marker_size=10,
-                                            meta= marker_name,
-                                            hovertemplate='Diagnosis: %{meta}<br>H2: %{a:.2f}<br>C2H6: %{b:.2f}<br>CH4: %{c:.2f}<extra></extra>'
+                                            meta= [marker_name, h2, c2h6, ch4],
+                                            hovertemplate="Diagnosis: %{meta[0]}<br>H2:   %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>CH4:  %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
                                             )
         except Exception as e:
             print(e)
@@ -282,10 +282,10 @@ def create_duval_4_marker(h2, c2h6, ch4, marker_name, **kwargs):
                                         mode='markers',
                                         marker_color='red',
                                         marker_size=10,
-                                        meta= marker_name,
-                                        hovertemplate='Diagnosis: %{meta}<br>H2: %{a:.2f}<br>C2H6: %{b:.2f}<br>CH4: %{c:.2f}<extra></extra>'
+                                        meta= [marker_name, h2, c2h6, ch4],
+                                        hovertemplate="Diagnosis: %{meta[0]}<br>H2:   %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>CH4:  %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
                                         )
-
+    
 def create_duval_4_result_graph(h2, c2h6, ch4):
     fig = create_duval_4_colorized()
 

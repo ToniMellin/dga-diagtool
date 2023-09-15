@@ -351,9 +351,22 @@ def create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, marker_name, **kwargs):
                                 mode='markers',
                                 marker_color=set_color,
                                 marker_size=10,
-                                meta= [result, timestamp],
-                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[1]}<extra></extra>")
+                                meta= [result, h2, c2h6, ch4, c2h4, c2h2, timestamp],
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[6]}<extra></extra>")
          except Exception as e:
+            print(e)
+            pass
+    elif 'timestamp' not in kwargs and 'result' not in kwargs and 'marker_color' in kwargs:
+        try:
+            set_color = kwargs['marker_color']
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                name= marker_name,
+                                mode='markers',
+                                marker_color=set_color,
+                                marker_size=10,
+                                meta= [marker_name, h2, c2h6, ch4, c2h4, c2h2],
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>")
+        except Exception as e:
             print(e)
             pass
     else:
@@ -363,7 +376,7 @@ def create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, marker_name, **kwargs):
                                     marker_color='red',
                                     marker_size=10,
                                     meta= marker_name,
-                                    hovertemplate="Diagnosis: %{meta}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br><extra></extra>")
+                                    hovertemplate="Diagnosis: %{meta}<br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>")
         except Exception as e:
             print(e)
             pass
@@ -447,6 +460,9 @@ if __name__ == "__main__":
     print(dp1_result2)
 
     duvp1_2_fig = create_duval_p1_result_graph(50, 80, 120, 60, 30, include_summit=True)
+    duvp1_2_fig = create_duval_p1_colorized()
+    duvp1_2_fig.add_trace(create_duval_p1_marker(50, 80, 120, 60, 30, dp1_result2, timestamp='2021-05-11', result=dp1_result2, marker_color='blue'))
+    duvp1_2_fig.add_trace(draw_duval_p1_summits(50, 80, 120, 60, 30))
     duvp1_2_fig.show()
 
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
