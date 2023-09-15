@@ -6,6 +6,14 @@ Main program file for the DGA-diagtool, which is a  dash based transformer oil d
 This module contains the functional workings of the user interface.
 
 @Author: https://github.com/ToniMellin
+
+* Copyright (C) 2023 Toni Mellin - All Rights Reserved
+* You may use, distribute and modify this code under the
+* terms of the MIT license.
+*
+* See file LICENSE or go to 
+* https://github.com/ToniMellin/dga-diagtool/blob/master/LICENSE 
+* for full license details.
 """
 
 __version__ = 0.1

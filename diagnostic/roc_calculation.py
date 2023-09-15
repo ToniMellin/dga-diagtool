@@ -4,6 +4,14 @@
 This module makes the calculations of rate-of-change (ROC) for gas readings.
 
 @Author: https://github.com/ToniMellin
+
+* Copyright (C) 2023 Toni Mellin - All Rights Reserved
+* You may use, distribute and modify this code under the
+* terms of the MIT license.
+*
+* See file LICENSE or go to 
+* https://github.com/ToniMellin/dga-diagtool/blob/master/LICENSE 
+* for full license details.
 """
 
 import sys

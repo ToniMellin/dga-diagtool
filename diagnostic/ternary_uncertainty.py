@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+"""ternary_uncertainty.py
+
+This module makes duval triangle uncertainty estimation lines.
+
+@Author: https://github.com/ToniMellin
+
+* Copyright (C) 2023 Toni Mellin - All Rights Reserved
+* You may use, distribute and modify this code under the
+* terms of the MIT license.
+*
+* See file LICENSE or go to 
+* https://github.com/ToniMellin/dga-diagtool/blob/master/LICENSE 
+* for full license details.
+"""
 # %%
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import numpy as np

@@ -4,6 +4,14 @@
 This module calculates duval pentagon 2 related diagnostics and generates duval pentagon visualizations using plotly library.
 
 @Author: https://github.com/ToniMellin
+
+* Copyright (C) 2023 Toni Mellin - All Rights Reserved
+* You may use, distribute and modify this code under the
+* terms of the MIT license.
+*
+* See file LICENSE or go to 
+* https://github.com/ToniMellin/dga-diagtool/blob/master/LICENSE 
+* for full license details.
 """
 
 # %%
