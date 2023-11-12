@@ -456,7 +456,6 @@ def create_duval_1_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
 
     return fig
 
-
 # %%
 if __name__ == "__main__":
     '''
