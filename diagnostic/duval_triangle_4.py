@@ -320,6 +320,57 @@ def create_duval_4_multi_results_graph(samples_df):
     except Exception as e:
         print(e)
         return fig
+    
+def create_duval_4_group_graph(h2_groups, c2h6_groups, ch4_groups, group_names, colorized=True, **kwargs):
+    # https://plotly.com/python/marker-style/
+    marker_symbol_list = ['circle', 'diamond', 'square', 'x-thin', 'cross-thin', 
+                          'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
+                          'circle-open', 'diamond-open', 'square-open', 'star-triangle-up-open', 
+                          'star-triangle-down-open']
+    try:
+        assert len(h2_groups) == len(c2h6_groups)
+        assert len(c2h6_groups) == len(ch4_groups)
+        assert len(h2_groups) == len(ch4_groups)
+        assert len(h2_groups) == len(group_names)
+    except Exception as e:
+        print(e)
+
+    if colorized is True:
+        fig = create_duval_4_colorized()
+    else:
+        fig = create_duval_4_nocolor()
+
+    if 'group_colors' in kwargs:
+        color_list = kwargs['group_colors']
+    else:
+        color_list = pcolors.qualitative.Plotly + pcolors.qualitative.Light24_r
+    
+    try:
+        for i, group_name in enumerate(group_names):
+            coord_list = []
+
+            for h2_value, c2h6_value, ch4_value in zip(h2_groups[i], c2h6_groups[i], ch4_groups[i]):
+                if (h2_value == 0) and (c2h6_value == 0) and (ch4_value == 0):
+                    continue
+                coord_list.append(calculate_duval_4_coordinates(h2_value, c2h6_value, ch4_value))
+
+            
+            coord_list_t = np.transpose(coord_list)
+            print(coord_list_t)
+            fig.add_trace(go.Scatterternary(a= coord_list_t[0],
+                                            b= coord_list_t[1],
+                                            c= coord_list_t[2],
+                                            name= group_name,
+                                            mode='markers',
+                                            marker_symbol=marker_symbol_list[i],
+                                            marker_color=color_list[i],
+                                            marker_size=10,
+                                            meta= [group_name],
+                                            hovertemplate="%{meta[0]}<br>H2:  %{a:.2f}%<br>C2H6: %{b:.2f}%<br>CH4: %{c:.2f}%<extra></extra>"))
+    except Exception as e:
+        print(e)
+
+    return fig
 
 # %%
 if __name__ == "__main__":
@@ -351,3 +402,11 @@ if __name__ == "__main__":
 
     fig4 = create_duval_4_multi_results_graph(df_sample)
     fig4.show()
+
+    #h2_list= [[200, 300, 400, 500], [0, 10, 50, 100, 160, 250], [1000, 1100, 1200]]
+    #c2h6_list= [[10, 20, 30, 40], [0, 60, 121, 172, 200, 207], [100, 200, 500]]
+    #ch4_list= [[400, 500, 600, 1000], [0, 20, 41, 60, 66, 80], [60, 80, 110]]
+    #groups_list= ['Group1', 'Group2', 'Group3']
+
+    #fig5 = create_duval_4_group_graph(h2_list, c2h6_list, ch4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
+    #fig5.show()
