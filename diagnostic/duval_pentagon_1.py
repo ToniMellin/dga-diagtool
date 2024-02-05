@@ -64,7 +64,7 @@ T1_polygon = Polygon(T1_poly)
 
 # S - Stray gassing
 Sx = [0, -35, -38, 0, 0, -1, -1, 0, 0]
-Sy = [1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
+Sy = [1.5, 3.0, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)
