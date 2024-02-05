@@ -5,7 +5,7 @@ This module calculates duval pentagon 2b (Pentagon 2 draft) related diagnostics 
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023 Toni Mellin - All Rights Reserved
+* Copyright (C) 2023-2024 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
