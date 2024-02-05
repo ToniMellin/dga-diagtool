@@ -5,7 +5,7 @@ This module calculates duval triangle 5 related diagnostics and generates duval 
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023 Toni Mellin - All Rights Reserved
+* Copyright (C) 2023-2024 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
