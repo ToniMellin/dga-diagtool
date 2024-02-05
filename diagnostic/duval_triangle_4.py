@@ -208,6 +208,9 @@ def calculate_duval_4_coordinates(h2, c2h6, ch4):
     j = c2h6
     k = ch4
 
+    if (i == 0) and (j == 0) and (k == 0):
+        return [0, 0, 0]
+
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100
