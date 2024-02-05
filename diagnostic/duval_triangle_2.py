@@ -272,6 +272,9 @@ def calculate_duval_2_coordinates(ch4, c2h2, c2h4):
     j = c2h2
     k = c2h4
 
+    if (i == 0) and (j == 0) and (k == 0):
+        return [0, 0, 0]
+
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100

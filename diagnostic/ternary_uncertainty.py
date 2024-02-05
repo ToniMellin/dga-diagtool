@@ -48,7 +48,7 @@ def calculate_ternany_uncertainty_lines(a, b, c , uncertainty_list):
         [(1+uncertainty), (1-uncertainty), (1-uncertainty)]
         ])
 
-    elif len(uncertainty) == 3:
+    elif len(uncertainty_list) == 3:
         unc = np.array([[(1+uncertainty_list[0]), (1-uncertainty_list[1]), (1-uncertainty_list[2])],
                   [(1+uncertainty_list[0]), (1+uncertainty_list[1]), (1-uncertainty_list[2])],
                   [(1-uncertainty_list[0]), (1+uncertainty_list[1]), (1-uncertainty_list[2])],
@@ -74,14 +74,21 @@ def calculate_ternany_uncertainty_lines(a, b, c , uncertainty_list):
 
     return unc_lines
 
-def add_ternary_uncertainty_lines(figure, points_and_uncertainties, colors):
-    if len(points_and_uncertainties) != len(colors):
-        raise Exception('Mismatch between given amount of points and color list!')
+def add_ternary_uncertainty_lines(figure, points_and_uncertainties, colors, names=None):
+    if names is None:
+            names = [f'uncertainty line {x[3]*100}%' for x in points_and_uncertainties]
+
+    pac_len = len(points_and_uncertainties)
+    col_len = len(colors)
+    name_len = len(names)
+
+    if pac_len != col_len or col_len != name_len or pac_len != name_len:
+        raise Exception(f'Mismatch between given amount of points and color list! {pac_len} != {col_len} != {name_len}')
     
     a_text = figure['layout']['ternary']['aaxis']['title']['text']
     b_text = figure['layout']['ternary']['baxis']['title']['text']
-    print(a_text)
-    print(b_text)
+    #print(a_text)
+    #print(b_text)
     
     if a_text == 'H2':
         hover_t = 'H2: %{a:.2f}%<br>C2H6: %{b:.2f}%<br>CH4: %{c:.2f}%<extra></extra>'
@@ -92,12 +99,14 @@ def add_ternary_uncertainty_lines(figure, points_and_uncertainties, colors):
             hover_t = 'CH4: %{a:.2f}%<br>C2H6: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>'
 
     # https://plotly.com/python/shapes/
-    for point_and_uncertainty, color in zip(points_and_uncertainties, colors):
+    for point_and_uncertainty, color, name in zip(points_and_uncertainties, colors, names):
+        
         uncertainty_line = calculate_ternany_uncertainty_lines(point_and_uncertainty[0], point_and_uncertainty[1], point_and_uncertainty[2], point_and_uncertainty[3])
         figure.add_trace(go.Scatterternary(a= uncertainty_line[:, 0],
                                     b= uncertainty_line[:, 1],
                                     c= uncertainty_line[:, 2], 
                                     mode='lines',
+                                    name=name,
                                     hovertemplate=hover_t,
                                     line_color=color,
                                     line_width=0.5

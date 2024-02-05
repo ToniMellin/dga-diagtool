@@ -48,14 +48,14 @@ T3y = [-3, -30, -32.4, -32.4, -4, -3] #-32 as per TB 771 & C57.143-2019 would le
 T3_poly = [(T3x[i], T3y[i]) for i in range(0, len(T3x)-1)]
 T3_polygon = Polygon(T3_poly)
 
-# T2 - Thermal fault T2 300C > T > 700C
+# T2 - Thermal fault T2 300C < T < 700C
 T2x = [-6, 1, -22.5, -6]
 T2y = [-4, -32.4, -32.4, -4]
 
 T2_poly = [(T2x[i], T2y[i]) for i in range(0, len(T2x)-1)]
 T2_polygon = Polygon(T2_poly)
 
-# T1 - Thermal fault T1 >300C
+# T1 - Thermal fault T1 > 300C
 T1x = [-6, -22.5, -23.5, -35, 0, 0, -6] 
 T1y = [-4, -32.4, -32.4, 3, 1.5, -3, -4]
 
@@ -64,7 +64,7 @@ T1_polygon = Polygon(T1_poly)
 
 # S - Stray gassing
 Sx = [0, -35, -38, 0, 0, -1, -1, 0, 0]
-Sy = [1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
+Sy = [1.5, 3.0, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)
