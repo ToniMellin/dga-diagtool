@@ -43,7 +43,7 @@ D2P_polygon = Polygon(D2P_poly)
 
 # D1-H - Discharges of low energy in oil
 D1Hx = [0, 38, 32, 11, 10.2, 0, 0]
-D1Hy = [40, 12.4, -6, 10.5, 17, 20, 40]
+D1Hy = [40, 12.4, -6, 10.5, 17.1, 20, 40]
 
 D1H_poly = [(D1Hx[i], D1Hy[i]) for i in range(0, len(D1Hx)-1)]
 D1H_polygon = Polygon(D1H_poly)
@@ -57,7 +57,7 @@ D1P_orig_polygon = Polygon(D1P_orig_poly)
 
 # D1-P - Discharges of low energy in paper
 D1Px = [0, 0, 10.2, 11, 4, 0]
-D1Py = [1.5, 20, 17, 10.5, 16, 1.5]
+D1Py = [1.5, 20, 17.1, 10.5, 16, 1.5]
 
 D1P_poly = [(D1Px[i], D1Py[i]) for i in range(0, len(D1Px)-1)]
 D1P_polygon = Polygon(D1P_poly)
@@ -99,7 +99,7 @@ S_orig_polygon = Polygon(S_orig_poly)
 
 # S - Stray gassing
 Sx = [0, -35, -38, 0, 0, -1, -1, 0, 0]
-Sy = [1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
+Sy = [1.5, 3.0, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)
