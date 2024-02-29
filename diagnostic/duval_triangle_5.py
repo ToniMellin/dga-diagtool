@@ -21,51 +21,52 @@ import pandas as pd
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import plotly.colors as pcolors
 
-def create_duval_5_colorized():
+# * Triangle 5 fault area ternary coordinate constants (plotly: a, b, c) *
+
+TRIANGLE5_PD_A = [85, 84, 97, 98, 85]
+TRIANGLE5_PD_B = [15, 15, 2, 2, 15]
+TRIANGLE5_PD_C = [0, 1, 1, 0, 0]
+
+TRIANGLE5_S_A = [46, 36, 75, 85, 46]
+TRIANGLE5_S_B = [54, 54, 15, 15, 54]
+TRIANGLE5_S_C = [0, 10, 10, 0, 0]
+
+TRIANGLE5_O_A = [0, 0, 36, 46, 0]
+TRIANGLE5_O_B = [100, 90, 54, 54, 100]
+TRIANGLE5_O_C = [0, 10, 10, 0, 0]
+
+TRIANGLE5_O_2_A = [84, 75, 90, 100, 98, 97, 84]
+TRIANGLE5_O_2_B = [15, 15, 0, 0, 2, 2, 15]
+TRIANGLE5_O_2_C = [1, 10, 10, 0, 0, 1, 1]
+
+TRIANGLE5_C_A = [78, 60, 0, 16, 36, 38, 78]
+TRIANGLE5_C_B = [12, 30, 30, 14, 14, 12, 12]
+TRIANGLE5_C_C = [10, 10, 70, 70, 50, 50, 10]
+
+TRIANGLE5_T2_H_A = [90, 78, 53, 65, 90]
+TRIANGLE5_T2_H_B = [0, 12, 12, 0, 0]
+TRIANGLE5_T2_H_C = [10, 10, 35, 35, 10]
+
+TRIANGLE5_T3_H_A = [0, 0, 35, 0]
+TRIANGLE5_T3_H_B = [65, 30, 30, 65]
+TRIANGLE5_T3_H_C = [35, 70, 35, 35]
+
+TRIANGLE5_T3_H_2_A = [0, 0, 65, 53, 38, 36, 16]
+TRIANGLE5_T3_H_2_B = [30, 0, 0, 12, 12, 14, 14]
+TRIANGLE5_T3_H_2_C = [70, 100, 35, 35, 50, 50, 70 ]
+
+TRIANGLE5_ND_A = [0, 60, 35, 0, 0]
+TRIANGLE5_ND_B = [90, 30, 30, 65, 90]
+TRIANGLE5_ND_C = [10, 10, 35, 35, 10]
+
+def create_duval_5_colorized(legend_show=False):
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
     # https://plotly.com/python/reference/layout/ternary/
     fig = go.Figure(layout=dict(ternary_sum=100))
-    #O
-    fig.add_trace(go.Scatterternary(a= [0, 0, 36, 46, 0],
-                                    b= [100, 90, 54, 54, 100],
-                                    c= [0, 10, 10, 0, 0],
-                                    name='O',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5,
-                                    fill='toself',
-                                    fillcolor='rgba(255,211,37, 0.5)'
-                                    ))
-    #S
-    fig.add_trace(go.Scatterternary(a= [46, 36, 76, 86, 46],
-                                    b= [54, 54, 14, 14, 54],
-                                    c= [0, 10, 10, 0, 0],
-                                    name='S',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5,
-                                    fill='toself',
-                                    fillcolor='rgba(170,156,192, 0.5)'
-                                    ))
-    #O-2
-    fig.add_trace(go.Scatterternary(a= [85, 76, 90, 100, 98, 97, 85, 85],
-                                    b= [14, 14, 0, 0, 2, 2, 14, 14],
-                                    c= [1, 10, 10, 0, 0, 1, 1, 1],
-                                    name='O',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5,
-                                    fill='toself',
-                                    fillcolor='rgba(255,211,37, 0.5)'
-                                    ))
-    
     #PD
-    fig.add_trace(go.Scatterternary(a= [86, 85, 97, 98, 86],
-                                    b= [14, 14, 2, 2, 14],
-                                    c= [0, 1, 1, 0, 0],
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_PD_A,
+                                    b= TRIANGLE5_PD_B,
+                                    c= TRIANGLE5_PD_C,
                                     name='PD',
                                     showlegend=False,
                                     mode='lines',
@@ -74,22 +75,47 @@ def create_duval_5_colorized():
                                     fill='toself',
                                     fillcolor='rgba(178,255,228, 0.5)'
                                     ))
-    #T2-H
-    fig.add_trace(go.Scatterternary(a= [90, 78, 53, 65, 90],
-                                    b= [0, 12, 12, 0, 0],
-                                    c= [10, 10, 35, 35, 10],
-                                    name='T2-H',
+    #S
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_S_A,
+                                    b= TRIANGLE5_S_B,
+                                    c= TRIANGLE5_S_C,
+                                    name='S',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5,
                                     fill='toself',
-                                    fillcolor='rgba(245, 148, 39, 0.5)'
+                                    fillcolor='rgba(170,156,192, 0.5)'
+                                    ))
+    #O
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_O_A,
+                                    b= TRIANGLE5_O_B,
+                                    c= TRIANGLE5_O_C,
+                                    name='O',
+                                    showlegend=False,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(255,211,37, 0.5)'
+                                    ))
+
+    #O_2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_O_2_A,
+                                    b= TRIANGLE5_O_2_B,
+                                    c= TRIANGLE5_O_2_C,
+                                    name='O',
+                                    showlegend=False,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(255,211,37, 0.5)'
                                     ))
     #C
-    fig.add_trace(go.Scatterternary(a= [78, 60, 0, 16, 36, 38, 78],
-                                    b= [12, 30, 30, 14, 14, 12, 12],
-                                    c= [10, 10, 70, 70, 50, 50, 10],
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_C_A,
+                                    b= TRIANGLE5_C_B,
+                                    c= TRIANGLE5_C_C,
                                     name='C',
                                     showlegend=False,
                                     mode='lines',
@@ -98,11 +124,25 @@ def create_duval_5_colorized():
                                     fill='toself',
                                     fillcolor='rgba(92,81,75, 0.6)'
                                     ))
+
+    #T2-H
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_T2_H_A,
+                                    b= TRIANGLE5_T2_H_B,
+                                    c= TRIANGLE5_T2_H_C,
+                                    name='T2-H',
+                                    showlegend=False,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(245, 148, 39, 0.5)'
+                                    ))
+
     
     #T3-H
-    fig.add_trace(go.Scatterternary(a= [0, 0, 35, 0],
-                                    b= [65, 30, 30, 65],
-                                    c= [35, 70, 35, 35],
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_T3_H_A,
+                                    b= TRIANGLE5_T3_H_B,
+                                    c= TRIANGLE5_T3_H_C,
                                     name='T3-H',
                                     showlegend=False,
                                     mode='lines',
@@ -111,10 +151,10 @@ def create_duval_5_colorized():
                                     fill='toself',
                                     fillcolor='rgba(245, 54, 39, 0.5)'
                                     ))
-    #T3-H-2
-    fig.add_trace(go.Scatterternary(a= [0, 0, 65, 53, 38, 36, 16],
-                                    b= [30, 0, 0, 12, 12, 14, 14],
-                                    c= [70, 100, 35, 35, 50, 50, 70 ],
+    #T3-H_2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_T3_H_2_A,
+                                    b= TRIANGLE5_T3_H_2_B,
+                                    c= TRIANGLE5_T3_H_2_C,
                                     name='T3-H',
                                     showlegend=False,
                                     mode='lines',
@@ -123,6 +163,17 @@ def create_duval_5_colorized():
                                     fill='toself',
                                     fillcolor='rgba(245, 54, 39, 0.5)'
                                     ))
+    #ND
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_ND_A,
+                                    b= TRIANGLE5_ND_B,
+                                    c= TRIANGLE5_ND_C,
+                                    name='ND',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+
     fig.add_scatterternary(a=[25, 65, 90, 49, 73, 13, 13], b=[70, 30, 5, 21, 6, 40.5, 9], c=[5, 5, 5, 30, 21, 45.5, 78],
                             mode='text', text=['O', 'S', 'O', 'C', 'T2-H', 'T3-H', 'T3-H'], hoverinfo='none', showlegend=False)
     fig.add_scatterternary(a=[91.5], b=[8], c=[0.5],
@@ -174,90 +225,103 @@ def create_duval_5_colorized():
     
     return fig
 
-def create_duval_5_nocolor():
+def create_duval_5_nocolor(legend_show=False):
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
     # https://plotly.com/python/reference/layout/ternary/
     fig = go.Figure(layout=dict(ternary_sum=100))
-    #O
-    fig.add_trace(go.Scatterternary(a= [0, 0, 36, 46, 0],
-                                    b= [100, 90, 54, 54, 100],
-                                    c= [0, 10, 10, 0, 0],
-                                    name='O',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
-    #S
-    fig.add_trace(go.Scatterternary(a= [46, 36, 76, 86, 46],
-                                    b= [54, 54, 14, 14, 54],
-                                    c= [0, 10, 10, 0, 0],
-                                    name='S',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
-    #O-2
-    fig.add_trace(go.Scatterternary(a= [85, 76, 90, 100, 98, 97, 85, 85],
-                                    b= [14, 14, 0, 0, 2, 2, 14, 14],
-                                    c= [1, 10, 10, 0, 0, 1, 1, 1],
-                                    name='O',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
+    
     #PD
-    fig.add_trace(go.Scatterternary(a= [86, 85, 97, 98, 86],
-                                    b= [14, 14, 2, 2, 14],
-                                    c= [0, 1, 1, 0, 0],
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_PD_A,
+                                    b= TRIANGLE5_PD_B,
+                                    c= TRIANGLE5_PD_C,
                                     name='PD',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
-    #T2-H
-    fig.add_trace(go.Scatterternary(a= [90, 78, 53, 65, 90],
-                                    b= [0, 12, 12, 0, 0],
-                                    c= [10, 10, 35, 35, 10],
-                                    name='T2-H',
+    #S
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_S_A,
+                                    b= TRIANGLE5_S_B,
+                                    c= TRIANGLE5_S_C,
+                                    name='S',
+                                    showlegend=False,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #O
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_O_A,
+                                    b= TRIANGLE5_O_B,
+                                    c= TRIANGLE5_O_C,
+                                    name='O',
+                                    showlegend=False,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+
+    #O_2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_O_2_A,
+                                    b= TRIANGLE5_O_2_B,
+                                    c= TRIANGLE5_O_2_C,
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
     #C
-    fig.add_trace(go.Scatterternary(a= [78, 60, 0, 16, 36, 38, 78],
-                                    b= [12, 30, 30, 14, 14, 12, 12],
-                                    c= [10, 10, 70, 70, 50, 50, 10],
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_C_A,
+                                    b= TRIANGLE5_C_B,
+                                    c= TRIANGLE5_C_C,
                                     name='C',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
+    #T2-H
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_T2_H_A,
+                                    b= TRIANGLE5_T2_H_B,
+                                    c= TRIANGLE5_T2_H_C,
+                                    name='T2-H',
+                                    showlegend=False,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+
     #T3-H
-    fig.add_trace(go.Scatterternary(a= [0, 0, 35, 0],
-                                    b= [65, 30, 30, 65],
-                                    c= [35, 70, 35, 35],
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_T3_H_A,
+                                    b= TRIANGLE5_T3_H_B,
+                                    c= TRIANGLE5_T3_H_C,
                                     name='T3-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
-    #T3-H
-    fig.add_trace(go.Scatterternary(a= [0, 0, 65, 53, 38, 36, 16],
-                                    b= [30, 0, 0, 12, 12, 14, 14],
-                                    c= [70, 100, 35, 35, 50, 50, 70 ],
+    #T3-H_2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_T3_H_2_A,
+                                    b= TRIANGLE5_T3_H_2_B,
+                                    c= TRIANGLE5_T3_H_2_C,
                                     name='T3-H',
                                     showlegend=False,
                                     mode='lines',
                                     line_color='black',
                                     line_width=0.5
                                     ))
+    #ND
+    fig.add_trace(go.Scatterternary(a= TRIANGLE5_ND_A,
+                                    b= TRIANGLE5_ND_B,
+                                    c= TRIANGLE5_ND_C,
+                                    name='ND',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    
     fig.add_scatterternary(a=[25, 65, 90, 49, 73, 13, 13], b=[70, 30, 5, 21, 6, 40.5, 9], c=[5, 5, 5, 30, 21, 45.5, 78],
                             mode='text', text=['O', 'S', 'O', 'C', 'T2-H', 'T3-H', 'T3-H'], hoverinfo='skip',
                             showlegend=False)
@@ -325,15 +389,15 @@ def calculate_duval_5_result(ch4, c2h6, c2h4):
             return 'N/A'
         else:
             x, y, z = calculate_duval_5_coordinates(ch4, c2h6, c2h4)
-            if z <= 1 and y >= 2 and y <= 14:
+            if z <= 1 and y >= 2 and y <= 15:
                 return 'PD'
-            elif (z > 1 and z <10 and y >= 2 and y <= 14) or (z < 1 and y < 2) or (z < 10 and y >= 54):
+            elif (z > 1 and z <10 and y >= 2 and y <= 15) or (z <= 1 and y < 2) or (z < 10 and y >= 54):
                 return 'O'
-            elif z < 10 and y >= 14 and y < 54:
+            elif z < 10 and y > 15 and y < 54:
                 return 'S'
             elif z >= 10 and z <= 35 and y <= 12:
                 return 'T2-H'
-            elif (z > 35 and y <= 12) or (z >= 49 and y >= 12 and y <= 14) or (z > 70 and y >= 14) or (z >= 35 and y >= 30):
+            elif (z > 35 and y <= 12) or (z >= 50 and y >= 12 and y <= 14) or (z > 70 and y >= 14) or (z >= 35 and y >= 30):
                 return 'T3-H'
             elif (z >= 10 and z < 50 and y  > 12 and y <= 14) or (z >= 10 and z <= 70 and y > 14 and y < 30):
                 return 'C'
@@ -346,13 +410,29 @@ def calculate_duval_5_result(ch4, c2h6, c2h4):
         print('{ch4}, {c2h6}, {c2h4}')
         return 'N/A'
     
-def create_duval_5_marker(ch4, c2h6, c2h4, marker_name, **kwargs):
+def create_duval_5_marker(ch4, c2h6, c2h4, **kwargs):
     marker_coordinates = calculate_duval_5_coordinates(ch4, c2h6, c2h4)
+    result = calculate_duval_5_result(ch4, c2h6, c2h4)
 
-    if 'timestamp' in kwargs and 'result' in kwargs and 'marker_color' in kwargs:
+    # check for timestamp
+    if  'timestamp' in kwargs:
+        timestamp = kwargs['timestamp']
+        metalist = [result, ch4, c2h6, c2h4, timestamp]
+    else:
+        timestamp = None
+        metalist = [result, ch4, c2h6, c2h4]
+
+    # formulate a name for the marker if not given
+    if 'marker_name' in kwargs:
+        marker_name = kwargs['marker_name']
+    elif (timestamp is not None) and ('marker_name' not in kwargs):
+        marker_name = f'{result} {timestamp}'
+    
+    else:
+        marker_name = result
+
+    if (timestamp is not None) and 'marker_color' in kwargs:
         try:
-            timestamp = kwargs['timestamp']
-            result = kwargs['result']
             set_color = kwargs['marker_color']
             return go.Scatterternary(   a= [marker_coordinates[0]],
                                         b= [marker_coordinates[1]],
@@ -361,13 +441,13 @@ def create_duval_5_marker(ch4, c2h6, c2h4, marker_name, **kwargs):
                                         mode='markers',
                                         marker_color=set_color,
                                         marker_size=10,
-                                        meta= [result, ch4, c2h6, c2h4, timestamp],
+                                        meta= metalist,
                                         hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
                                         )
         except Exception as e:
             print(e)
             pass
-    elif 'timestamp' not in kwargs and 'result' not in kwargs and 'marker_color' in kwargs:
+    elif (timestamp is None) and 'marker_color' in kwargs:
         try:
             set_color = kwargs['marker_color']
             return go.Scatterternary(       a= [marker_coordinates[0]],
@@ -377,9 +457,23 @@ def create_duval_5_marker(ch4, c2h6, c2h4, marker_name, **kwargs):
                                             mode='markers',
                                             marker_color=set_color,
                                             marker_size=10,
-                                            meta= [marker_name, ch4, c2h6, c2h4],
+                                            meta= metalist,
                                             hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
                                             )
+        except Exception as e:
+            print(e)
+            pass
+    elif (timestamp is not None) and 'marker_color' not in kwargs:
+        try:
+            return go.Scatterternary(   a= [marker_coordinates[0]],
+                                        b= [marker_coordinates[1]],
+                                        c= [marker_coordinates[2]],
+                                        name= marker_name,
+                                        mode='markers',
+                                        marker_size=10,
+                                        meta= metalist,
+                                        hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
+                                        )
         except Exception as e:
             print(e)
             pass
@@ -391,7 +485,7 @@ def create_duval_5_marker(ch4, c2h6, c2h4, marker_name, **kwargs):
                                         mode='markers',
                                         marker_color='red',
                                         marker_size=10,
-                                        meta= [marker_name, ch4, c2h6, c2h4],
+                                        meta= [result, ch4, c2h6, c2h4],
                                         hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
                                         )
 
@@ -424,7 +518,7 @@ def create_duval_5_multi_results_graph(samples_df):
             else:
                 duval_result = calculate_duval_5_result(ch4, c2h6, c2h4)
                 mark_name = f'{duval_result} {time}'
-                fig.add_trace(create_duval_5_marker(ch4, c2h6, c2h4, mark_name, timestamp=time, result=duval_result, marker_color=rowcolor))
+                fig.add_trace(create_duval_5_marker(ch4, c2h6, c2h4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
         return fig
     except Exception as e:
         print(e)
@@ -483,18 +577,16 @@ def create_duval_5_group_graph(ch4_groups, c2h6_groups, c2h4_groups, group_names
 
 # %%
 if __name__ == "__main__":
-    '''
+    
     fig = create_duval_5_nocolor()
-    marker_name = calculate_duval_5_result(10, 26, 64)
-    fig.add_trace(create_duval_5_marker(10, 26, 64, marker_name))
+    fig.add_trace(create_duval_5_marker(10, 26, 64))
     fig.show()
 
     fig2 = create_duval_5_colorized()
-    marker_name2 = calculate_duval_5_result(10, 26, 64)
-    fig2.add_trace(create_duval_5_marker(10, 26, 64, marker_name2))
+    fig2.add_trace(create_duval_5_marker(10, 26, 64, marker_name='test'))
     fig2.show()
+    
     '''
-
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 
                         'CH4': [0, 20, 41, 60, 66, 80], 
@@ -511,6 +603,7 @@ if __name__ == "__main__":
 
     fig4 = create_duval_5_multi_results_graph(df_sample)
     fig4.show()
+    '''
 
     #ch4_list= [[200, 50, 100, 200], [0, 20, 41, 60, 66, 80], [15, 60, 160]]
     #c2h6_list= [[320, 350, 400, 450], [0, 60, 121, 172, 200, 207], [100, 200, 500]]
