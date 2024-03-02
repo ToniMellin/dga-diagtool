@@ -28,46 +28,32 @@ from shapely.geometry.polygon import Polygon
 ## Defining Duval pentagon 2 coordinates and areas
 
 # D2-H - Discharges of high energy in oil
-D2Hx = [0, 0, 24, 32, 11, 10.1, 1, 0]
-D2Hy = [1.5, -3, -30, -6, 10.6, 7.2, 5, 1.5]
+D2Hx = [0,    0,  24, 32,   11, 10.1, 1,   0]
+D2Hy = [1.5, -3, -30, -6, 10.6,  7.2, 5, 1.5]
 
 D2H_poly = [(D2Hx[i], D2Hy[i]) for i in range(0, len(D2Hx)-1)]
 D2H_polygon = Polygon(D2H_poly)
 
 # D2-P - Discharges of high energy in paper
 D2Px = [1, 4, 11, 10.1, 1]
-D2Py = [5, 16, 10.5, 7.2, 5]
+D2Py = [5, 16, 10.5, 7.2, 5] # 10.5 should probably be 10.6
 
 D2P_poly = [(D2Px[i], D2Py[i]) for i in range(0, len(D2Px)-1)]
 D2P_polygon = Polygon(D2P_poly)
 
 # D1-H - Discharges of low energy in oil
 D1Hx = [0, 38, 32, 11, 10.2, 0, 0]
-D1Hy = [40, 12.4, -6, 10.5, 17.1, 20, 40]
+D1Hy = [40, 12.4, -6, 10.5, 17.1, 20, 40] # 10.5 should probably be 10.6
 
 D1H_poly = [(D1Hx[i], D1Hy[i]) for i in range(0, len(D1Hx)-1)]
 D1H_polygon = Polygon(D1H_poly)
 
-# D1-P (original, draft) - Discharges of low energy in paper
-D1P_origx = [0, 0, 19.2, 11, 4, 0] # 19.2 probably should be 10.2
-D1P_origy = [1.5, 20, 17, 10.5, 16, 1.5]
-
-D1P_orig_poly = [(D1P_origx[i], D1P_origy[i]) for i in range(0, len(D1P_origx)-1)]
-D1P_orig_polygon = Polygon(D1P_orig_poly)
-
 # D1-P - Discharges of low energy in paper
 D1Px = [0, 0, 10.2, 11, 4, 0]
-D1Py = [1.5, 20, 17.1, 10.5, 16, 1.5]
+D1Py = [1.5, 20, 17.1, 10.6, 16, 1.5]
 
 D1P_poly = [(D1Px[i], D1Py[i]) for i in range(0, len(D1Px)-1)]
 D1P_polygon = Polygon(D1P_poly)
-
-# C (original, draft) - Carbonization of paper
-C_origx = [0, -3.5, -11, -21.5, 2.5, 0] #(0, -3) is unnecessary overlap
-C_origy = [-3, -3, -8, -32.4, -32.4, -3]
-
-C_orig_poly = [(C_origx[i], C_origy[i]) for i in range(0, len(C_origx)-1)]
-C_orig_polygon = Polygon(C_orig_poly)
 
 # C - Carbonization of paper
 Cx = [-3.5, 2.5, -21.5, -11, -3.5]
@@ -90,15 +76,8 @@ Oy = [1.5, 3, -32.4, -32.4, -8, -3, -3, 1.5]
 O_poly = [(Ox[i], Oy[i]) for i in range(0, len(Ox)-1)]
 O_polygon = Polygon(O_poly)
 
-# S (original, draft) - Stray gassing
-S_origx = [0, -38, -35, 0, 0] # does not create a slot for PD, should be similar to P2
-S_origy = [40, 12.4, 3, 1.5, 40]
-
-S_orig_poly = [(S_origx[i], S_origy[i]) for i in range(0, len(S_origx)-1)]
-S_orig_polygon = Polygon(S_orig_poly)
-
 # S - Stray gassing
-Sx = [0, -35, -38, 0, 0, -1, -1, 0, 0]
+Sx = [0,   -35,  -38,  0,  0, -1,   -1,    0,   0]
 Sy = [1.5, 3.0, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
@@ -122,15 +101,6 @@ def round_half_up(n, decimals=0):
 
 def create_duval_p2b_colorized():
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=S_origx, y=S_origy, 
-                             name='S (original draft)',
-                            showlegend=True,
-                            mode='lines',
-                            line_color='black',
-                            line_width=0.5,
-                            fill="toself",
-                            fillcolor='rgba(170,156,192, 0.5)'
-                            ))
     fig.add_trace(go.Scatter(x=Sx, y=Sy, 
                              name='S',
                             showlegend=True,
@@ -157,15 +127,6 @@ def create_duval_p2b_colorized():
                             line_width=0.5,
                             fill="toself",
                             fillcolor='rgba(255,211,37, 0.5)'
-                            ))
-    fig.add_trace(go.Scatter(x=C_origx, y=C_origy, 
-                             name='C (original draft)',
-                            showlegend=True,
-                            mode='lines',
-                            line_color='black',
-                            line_width=0.5,
-                            fill="toself",
-                            fillcolor='rgba(92,81,75, 0.6)'
                             ))
     fig.add_trace(go.Scatter(x=Cx, y=Cy, 
                              name='C',
@@ -202,15 +163,6 @@ def create_duval_p2b_colorized():
                             line_width=0.5,
                             fill="toself",
                             fillcolor='rgba(178,205,255, 0.5)'
-                            ))
-    fig.add_trace(go.Scatter(x=D1P_origx, y=D1P_origy, 
-                             name='D1-P (original draft)',
-                            showlegend=True,
-                            mode='lines',
-                            line_color='black',
-                            line_width=0.5,
-                            fill="toself",
-                            fillcolor='rgba(0, 217, 255, 0.5)'
                             ))
     fig.add_trace(go.Scatter(x=D1Px, y=D1Py, 
                              name='D1-P',
@@ -550,6 +502,8 @@ if __name__ == "__main__":
     duvp2_fig = create_duval_p2b_result_graph(31, 130, 192, 31, 0)
     duvp2_fig.show()
 
+    duvp2_nocol_fig = create_duval_p2b_nocolor()
+    duvp2_nocol_fig.show()
     '''
     # H2 = 50 ppm, C2H6 = 80 ppm, CH4 = 120 ppm, C2H4 = 60 ppm and C2H2 = 30 ppm  -> xo = -7.35, and yo = -5.79 (C)
     # 50, 120, 80, 60, 30

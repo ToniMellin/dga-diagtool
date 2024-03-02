@@ -42,7 +42,8 @@ D1_poly = [(D1x[i], D1y[i]) for i in range(0, len(D1x)-1)]
 D1_polygon = Polygon(D1_poly)
 
 # T3 - Thermal fault T3 >700C
-T3x = [0, 24.3, 23.5, 1, -6, 0]
+T3x = [0, 24.3, 23.2, 1, -6, 0] # 23.2 causes pentagon to become a hexagon
+#T3x = [0, 24.3, 23.5, 1, -6, 0] # 23.5 keeps a pentagon side C2H4-C2H2 as a straight line
 T3y = [-3, -30, -32.4, -32.4, -4, -3] #-32 as per TB 771 & C57.143-2019 would leave a gap
 
 T3_poly = [(T3x[i], T3y[i]) for i in range(0, len(T3x)-1)]
@@ -56,8 +57,10 @@ T2_poly = [(T2x[i], T2y[i]) for i in range(0, len(T2x)-1)]
 T2_polygon = Polygon(T2_poly)
 
 # T1 - Thermal fault T1 > 300C
-T1x = [-6, -22.5, -23.5, -35, 0, 0, -6] 
-T1y = [-4, -32.4, -32.4, 3, 1.5, -3, -4]
+T1x = [-6, -22.5, -35, 0, 0, -6] # without -23.5 CH4 edge of pentagon differs from others and the picture
+#T1x = [-6, -22.5, -23.5, -35, 0, 0, -6] # -23.5 addition removes lopsideness
+T1y = [-4, -32.4, 3, 1.5, -3, -4] # without -32.4 CH4 edge of pentagon differs from others and the picture
+#T1y = [-4, -32.4, -32.4, 3, 1.5, -3, -4] # -32.4 addition removes lopsideness
 
 T1_poly = [(T1x[i], T1y[i]) for i in range(0, len(T1x)-1)]
 T1_polygon = Polygon(T1_poly)
@@ -84,11 +87,11 @@ def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
 
-def create_duval_p1_colorized():
+def create_duval_p1_colorized(legend_show=False):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=Sx, y=Sy, 
                              name='S',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -97,7 +100,7 @@ def create_duval_p1_colorized():
                             ))
     fig.add_trace(go.Scatter(x=PDx, y=PDy, 
                              name='PD',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -106,7 +109,7 @@ def create_duval_p1_colorized():
                             ))
     fig.add_trace(go.Scatter(x=T1x, y=T1y, 
                              name='T1',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -115,7 +118,7 @@ def create_duval_p1_colorized():
                             ))
     fig.add_trace(go.Scatter(x=T2x, y=T2y, 
                              name='T2',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -124,7 +127,7 @@ def create_duval_p1_colorized():
                             ))
     fig.add_trace(go.Scatter(x=T3x, y=T3y,
                              name='T3',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -133,7 +136,7 @@ def create_duval_p1_colorized():
                             ))
     fig.add_trace(go.Scatter(x=D2x, y=D2y, 
                              name='D2',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -142,7 +145,7 @@ def create_duval_p1_colorized():
                             ))
     fig.add_trace(go.Scatter(x=D1x, y=D1y, 
                              name='D1',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5,
@@ -171,53 +174,53 @@ def create_duval_p1_colorized():
     
     return fig
 
-def create_duval_p1_nocolor():
+def create_duval_p1_nocolor(legend_show=False):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=Sx, y=Sy, 
                              name='S',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
     fig.add_trace(go.Scatter(x=PDx, y=PDy, 
                              name='PD',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
     fig.add_trace(go.Scatter(x=T1x, y=T1y, 
                              name='T1',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
     fig.add_trace(go.Scatter(x=T2x, y=T2y, 
                              name='T2',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
     fig.add_trace(go.Scatter(x=T3x, y=T3y, 
                              name='T3',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
     fig.add_trace(go.Scatter(x=D2x, y=D2y, 
                              name='D2',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
                             ))
     fig.add_trace(go.Scatter(x=D1x, y=D1y, 
                              name='D1',
-                            showlegend=False,
+                            showlegend=legend_show,
                             mode='lines',
                             line_color='black',
                             line_width=0.5
@@ -338,25 +341,40 @@ def calculate_duval_p1_result(h2, c2h6, ch4, c2h4, c2h2):
         print('{h2}, {ch4}, {c2h6}, {c2h4}, {c2h2}')
         return 'N/A'
 
-def create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, marker_name, **kwargs):
+def create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, **kwargs):
     marker_coord, summit_list = calculate_duval_p1_coordinates(h2, c2h6, ch4, c2h4, c2h2)
+    result = calculate_duval_p1_result(h2, c2h6, ch4, c2h4, c2h2)
 
-    if 'timestamp' in kwargs and 'result' in kwargs and 'marker_color' in kwargs:
+    # check for timestamp
+    if  'timestamp' in kwargs:
+        timestamp = kwargs['timestamp']
+        metalist = [result, h2, c2h6, ch4, c2h4, c2h2, timestamp]
+    else:
+        timestamp = None
+        metalist = [result, h2, c2h6, ch4, c2h4, c2h2]
+
+    # formulate a name for the marker if not given
+    if 'marker_name' in kwargs:
+        marker_name = kwargs['marker_name']
+    elif (timestamp is not None) and ('marker_name' not in kwargs):
+        marker_name = f'{result} {timestamp}'
+    else:
+        marker_name = result
+
+    if (timestamp is not None) and 'marker_color' in kwargs:
          try:
-            timestamp = kwargs['timestamp']
-            result = kwargs['result']
             set_color = kwargs['marker_color']
             return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
                                 name= marker_name,
                                 mode='markers',
                                 marker_color=set_color,
                                 marker_size=10,
-                                meta= [result, h2, c2h6, ch4, c2h4, c2h2, timestamp],
+                                meta= metalist,
                                 hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[6]}<extra></extra>")
          except Exception as e:
             print(e)
             pass
-    elif 'timestamp' not in kwargs and 'result' not in kwargs and 'marker_color' in kwargs:
+    elif (timestamp is None) and 'marker_color' in kwargs:
         try:
             set_color = kwargs['marker_color']
             return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
@@ -364,9 +382,20 @@ def create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, marker_name, **kwargs):
                                 mode='markers',
                                 marker_color=set_color,
                                 marker_size=10,
-                                meta= [marker_name, h2, c2h6, ch4, c2h4, c2h2],
+                                meta= metalist,
                                 hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>")
         except Exception as e:
+            print(e)
+            pass
+    elif (timestamp is not None) and 'marker_color' not in kwargs:
+         try:
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                name= marker_name,
+                                mode='markers',
+                                marker_size=10,
+                                meta= metalist,
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[6]}<extra></extra>")
+         except Exception as e:
             print(e)
             pass
     else:
@@ -434,7 +463,7 @@ def create_duval_p1_multi_results_graph(samples_df):
 
 # %%
 if __name__ == "__main__":
-    
+    '''
     # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> (−17.3, −9.1) [T1]
     dp1_coord, dp1_summits = calculate_duval_p1_coordinates(31, 130, 192, 31, 0)
     print(f'centroid_XY:\n{dp1_coord}\nsummit_coordsXY:\n{dp1_summits}')
@@ -444,10 +473,10 @@ if __name__ == "__main__":
 
     dp1_result = calculate_duval_p1_result(31, 130, 192, 31, 0)
     print(dp1_result)
-
-    duvp1_fig = create_duval_p1_result_graph(31, 130, 192, 31, 0, include_summit=True)
+    '''
+    duvp1_fig = create_duval_p1_result_graph(31, 130, 192, 31, 0, include_summit=False)
     duvp1_fig.show()
-    
+    '''
     # H2 = 50 ppm, C2H6 = 80 ppm, CH4 = 120 ppm, C2H4 = 60 ppm and C2H2 = 30 ppm  -> xo = -7.35, and yo = -5.79 (T1)
     # 50, 120, 80, 60, 30
     dp1_coord2, dp1_summits2 = calculate_duval_p1_coordinates(50, 80, 120, 60, 30)
@@ -458,10 +487,11 @@ if __name__ == "__main__":
 
     dp1_result2 = calculate_duval_p1_result(50, 80, 120, 60, 30)
     print(dp1_result2)
+    '''
 
     duvp1_2_fig = create_duval_p1_result_graph(50, 80, 120, 60, 30, include_summit=True)
     duvp1_2_fig = create_duval_p1_colorized()
-    duvp1_2_fig.add_trace(create_duval_p1_marker(50, 80, 120, 60, 30, dp1_result2, timestamp='2021-05-11', result=dp1_result2, marker_color='blue'))
+    duvp1_2_fig.add_trace(create_duval_p1_marker(50, 80, 120, 60, 30, timestamp='2021-05-11', marker_color='blue'))
     duvp1_2_fig.add_trace(draw_duval_p1_summits(50, 80, 120, 60, 30))
     duvp1_2_fig.show()
 
