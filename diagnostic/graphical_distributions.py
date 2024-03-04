@@ -15,6 +15,7 @@ This module calculates graphical diagnostic result related distribution lines & 
 """
 # %%
 import numpy as np
+import scipy
 from ternary_to_cartesian_conversions import plotly_ternary_to_cartesian as ternary_to_cartesian
 from ternary_to_cartesian_conversions import cartesian_to_ternary_plotly as cartesian_to_ternary
 
@@ -36,6 +37,15 @@ def calculate_ternary_coordinates(i, j, k, rounding=False):
     else:
         coordinates = round_up(np.array([x, y, z]), rounding)
         return coordinates
+    
+def euclidian_distance(p1, p2, printout=False):
+    # euclidian distance between points
+    d = np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+    if printout is True:
+        print(f'Euclidian distance between points ({p1[0]}, {p1[1]}) and ({p2[0]}, {p2[1]}) is:\n{d}')
+
+    return d
 
 def calculate_group_centerpoint(group_coord_a, group_coord_b, group_coord_c, input_ternary_coordinates=False):
 
@@ -125,8 +135,8 @@ def create_group_distribution_data(a_groups, b_groups, c_groups, percentiles=[0,
         distances = []
         for coordinates in group_cartesian_coordinates:
             # euclidian distance between points
-            d = np.sqrt((group_center[0] - coordinates[0])**2 + (group_center[1] - coordinates[1])**2)
-            distances.append(d)
+            distance_from_center = euclidian_distance(group_center, coordinates)
+            distances.append(distance_from_center)
         distances_array = np.array([distances]).transpose()
 
         group_percentiles = []
@@ -136,7 +146,11 @@ def create_group_distribution_data(a_groups, b_groups, c_groups, percentiles=[0,
             percentile_value_low = np.percentile(distances_array, percentiles[l-1])
             percentile_value_high = np.percentile(distances_array, perc)
 
+            # TODO select percentile relevant points with scipy convexhull
+            # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html
+            #scipy.spatial.ConvexHull(points, incremental=False, qhull_options=None)
             group_percentiles.append(group_coordinates[np.where((distances_array[..., 0] <= percentile_value_high) & (distances_array[..., 0] >= percentile_value_low))])
+            
 
         group_data_full.append(group_percentiles)
         
