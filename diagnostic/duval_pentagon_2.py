@@ -245,8 +245,20 @@ def create_duval_p2_nocolor():
 
     return fig
 
-def calculate_duval_p2_coordinates(h2, c2h6, ch4, c2h4, c2h2):
+def calculate_duval_p2_coordinates(h2, c2h6, ch4, c2h4, c2h2, rounding=False):
 
+    # change zero values to 10^(-10)
+    if h2 == 0:
+        h2 = 10**(-10)
+    if c2h6 == 0:
+        c2h6 = 10**(-10)
+    if ch4 == 0:
+        ch4 = 10**(-10)
+    if c2h4 == 0:
+        c2h4 = 10**(-10)
+    if c2h2 == 0:
+        c2h2 = 10**(-10)
+    
     gas_sum = h2 + c2h6 + ch4 + c2h4 + c2h2
 
     h2_perc = (h2 / gas_sum)*100
@@ -299,9 +311,15 @@ def calculate_duval_p2_coordinates(h2, c2h6, ch4, c2h4, c2h2):
         else:
             numerator_y += ((y_list[i] + y_list[i+1]) * (x_list[i] * y_list[i+1] - x_list[i+1] * y_list[i]))
 
-    centroid_x = round_half_up((numerator_x / denominator_xy), 2)
-
-    centroid_y = round_half_up((numerator_y / denominator_xy), 2)
+    if rounding is False:
+        centroid_x = numerator_x / denominator_xy
+        centroid_y = numerator_y / denominator_xy
+    elif type(rounding) is int:
+        centroid_x = round_half_up((numerator_x / denominator_xy), rounding)
+        centroid_y = round_half_up((numerator_y / denominator_xy), rounding)
+    else:
+        centroid_x = round_half_up((numerator_x / denominator_xy), 2)
+        centroid_y = round_half_up((numerator_y / denominator_xy), 2)
 
     centroid_list = [centroid_x, centroid_y]
 

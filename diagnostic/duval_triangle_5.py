@@ -367,20 +367,26 @@ def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
 
-def calculate_duval_5_coordinates(ch4, c2h6, c2h4):
+def calculate_duval_5_coordinates(ch4, c2h6, c2h4, rounding=False):
 
     i = ch4
     j = c2h6
     k = c2h4
 
     if (i == 0) and (j == 0) and (k == 0):
-        return [0, 0, 0]
+        return [100/3, 100/3, 100/3]
 
     x = (i / (i + j + k))*100
     y = (j / (i + j + k))*100
     z = (k / (i + j + k))*100
-    coordinates = round_half_up(np.array([x, y, z]), 2)
 
+    if rounding is False:
+       coordinates = np.array([x, y, z])
+    elif type(rounding) is int:
+        coordinates = round_half_up(np.array([x, y, z]), rounding)
+    else:
+        coordinates = round_half_up(np.array([x, y, z]), 2)
+    
     return coordinates
 
 def calculate_duval_5_result(ch4, c2h6, c2h4):
@@ -427,7 +433,6 @@ def create_duval_5_marker(ch4, c2h6, c2h4, **kwargs):
         marker_name = kwargs['marker_name']
     elif (timestamp is not None) and ('marker_name' not in kwargs):
         marker_name = f'{result} {timestamp}'
-    
     else:
         marker_name = result
 
