@@ -297,11 +297,13 @@ def calculate_duval_2_coordinates(ch4, c2h2, c2h4, rounding=False):
     k = c2h4
 
     if (i == 0) and (j == 0) and (k == 0):
-        return [100/3, 100/3, 100/3]
-
-    x = (i / (i + j + k))*100
-    y = (j / (i + j + k))*100
-    z = (k / (i + j + k))*100
+        x = 100/3
+        y = 100/3
+        z = 100/3
+    else:
+        x = (i / (i + j + k))*100
+        y = (j / (i + j + k))*100
+        z = (k / (i + j + k))*100
 
     if rounding is False:
        coordinates = np.array([x, y, z])
@@ -313,11 +315,11 @@ def calculate_duval_2_coordinates(ch4, c2h2, c2h4, rounding=False):
     return coordinates
     
 
-def calculate_duval_2_result(ch4, c2h2, c2h4):
+def calculate_duval_2_result(ch4, c2h2, c2h4, cutoff=False):
     try:
         if (isna(ch4) is True) or (isna(c2h2) is True) or (isna(c2h4) is True):
             return 'N/A'
-        if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
+        if (cutoff != False) and (ch4 < cutoff[0]) and (c2h2 < cutoff[1]) and (c2h4 < cutoff[2]):
             return 'N/A'
         else:
             x, y, z = calculate_duval_2_coordinates(ch4, c2h2, c2h4)
@@ -337,7 +339,7 @@ def calculate_duval_2_result(ch4, c2h2, c2h4):
                 return 'ND'
     except TypeError:
         print('Duval result calculation error!')
-        print('{ch4}, {c2h2}, {c2h4}')
+        print(f'{ch4}, {c2h2}, {c2h4}')
         return 'N/A'
  
 def create_duval_2_marker(ch4, c2h2, c2h4, **kwargs):
@@ -418,8 +420,11 @@ def create_duval_2_marker(ch4, c2h2, c2h4, **kwargs):
                                         hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
                                         )
 
-def create_duval_2_result_graph(ch4, c2h2, c2h4):
-    fig = create_duval_2_colorized()
+def create_duval_2_result_graph(ch4, c2h2, c2h4, colorized=True):
+    if colorized is True:
+        fig = create_duval_2_colorized()
+    else:
+        fig = create_duval_2_nocolor()
 
     try:
         result_name = calculate_duval_2_result(ch4, c2h2, c2h4)
@@ -428,8 +433,11 @@ def create_duval_2_result_graph(ch4, c2h2, c2h4):
     except:
         return fig
 
-def create_duval_2_multi_results_graph(samples_df):
-    fig = create_duval_2_colorized()
+def create_duval_2_multi_results_graph(samples_df, colorized=True):
+    if colorized is True:
+        fig = create_duval_2_colorized()
+    else:
+        fig = create_duval_2_nocolor()
 
     sample_count = len(samples_df)
     if sample_count == 1:
@@ -453,7 +461,7 @@ def create_duval_2_multi_results_graph(samples_df):
         print(e)
         return fig
     
-def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=True, **kwargs):
+def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=False, **kwargs):
     # https://plotly.com/python/marker-style/
     marker_symbol_list = ['circle', 'diamond', 'square', 'x-thin', 'cross-thin', 
                           'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
@@ -476,18 +484,27 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
         color_list = kwargs['group_colors']
     else:
         color_list = pcolors.qualitative.Plotly + pcolors.qualitative.Light24_r
+
+    if 'cutoff' in kwargs:
+        cutoff = kwargs['cutoff']
+    else:
+        cutoff = False
     
     try:
         for i, group_name in enumerate(group_names):
             coord_list = []
 
-            for ch4_value, c2h2_value, c2h4_value in zip(ch4_groups[i], c2h2_groups[i], ch4_groups[i]):
+            for ch4_value, c2h2_value, c2h4_value in zip(ch4_groups[i], c2h2_groups[i], c2h4_groups[i]):
                 if ('discard_zeros' in kwargs) and (ch4_value == 0) and (c2h2_value == 0) and (c2h4_value == 0):
+                    continue
+                elif (cutoff != False) and (ch4_value < cutoff[0]) and (c2h2_value < cutoff[1]) and (c2h4_value < cutoff[2]):
                     continue
                 coord_list.append(calculate_duval_2_coordinates(ch4_value, c2h2_value, c2h4_value))
 
             
             coord_list_t = np.transpose(coord_list)
+            print(f'\nDuval triangle {group_name} graph coordinates')
+            print(coord_list)
             print(coord_list_t)
             fig.add_trace(go.Scatterternary(a= coord_list_t[0],
                                             b= coord_list_t[1],
@@ -538,8 +555,8 @@ if __name__ == "__main__":
 
     print(df_sample)
 
-    #fig4 = create_duval_2_multi_results_graph(df_sample)
-    #fig4.show()
+    fig4 = create_duval_2_multi_results_graph(df_sample)
+    fig4.show()
 
     ch4_list= [[200, 50, 100, 200], [0, 20, 41, 60, 66, 80], [15, 60, 160]]
     c2h2_list= [[10, 20, 30, 40], [0, 1, 2, 5, 6, 10], [100, 200, 500]]
@@ -548,3 +565,5 @@ if __name__ == "__main__":
 
     fig5 = create_duval_2_group_graph(ch4_list, c2h2_list, c2h4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
     fig5.show()
+
+# %%
