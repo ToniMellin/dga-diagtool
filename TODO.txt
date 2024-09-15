@@ -1,0 +1,4 @@
+- add cutoff for dropping graphed points and including them in the distributions (False ignores this and let's everything through)
+- C.1 Minimum values for identifying faults functionality
+- add logging?
+- change zero values to 10^(-10) for triangles?

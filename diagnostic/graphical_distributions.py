@@ -128,9 +128,9 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
         assert len(group_coord_b) == len(group_coord_c), 'b coordinates and c coordinates have different lengths!'
         assert len(group_coord_a) == len(group_coord_c), 'a coordinates and c coordinates have different lengths!'
 
-        assert sum(len(x) for x in a_values) == sum(len(x) for x in b_values), 'Sum of a values and b values have different lengths!'
-        assert sum(len(x) for x in b_values) == sum(len(x) for x in c_values), 'Sum of b values and c values have different lengths!'
-        assert sum(len(x) for x in a_values) == sum(len(x) for x in c_values), 'Sum of a values and c values have different lengths!'
+        assert sum(len(x) for x in group_coord_a) == sum(len(x) for x in group_coord_b), 'Sum of a values and b values have different lengths!'
+        assert sum(len(x) for x in group_coord_b) == sum(len(x) for x in group_coord_c), 'Sum of b values and c values have different lengths!'
+        assert sum(len(x) for x in group_coord_a) == sum(len(x) for x in group_coord_c), 'Sum of a values and c values have different lengths!'
     
         assert np.array(group_coord_a).max() <= 100, 'a coordinate values higher than 100!'
         assert np.array(group_coord_b).max() <= 100, 'b coordinate values higher than 100!'
@@ -172,10 +172,15 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
         g+=1
     
     
-    return centerpoint_array, centerpoint_ternary_array, cartesian_coordinates_array
+    return centerpoint_array.tolist(), centerpoint_ternary_array.tolist(), cartesian_coordinates_array
 
+# TODO test and fix ternary group disribution data function
+def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverted_percentiles=[100, 75, 50, 25, 10, 0], edge_result_in_ternary=True):
 
-def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, percentiles=[0, 25, 50, 75, 90, 100], edge_result_in_ternary=True):
+    if type(a_groups[0]) is not list:
+        a_groups = [a_groups]
+        b_groups = [b_groups]
+        c_groups = [c_groups]
 
     a_groups_len = [len(x) for x in a_groups]
     b_groups_len = [len(x) for x in b_groups]
@@ -183,37 +188,71 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, percent
 
     if a_groups_len != b_groups_len or b_groups_len != c_groups_len or a_groups_len != c_groups_len:
         raise Exception('Uneven group coordinates')
+    
+    if 100 not in inverted_percentiles:
+        perc_100 = [0]
+        perc_100.extend(percentiles)
+        percentiles = perc_100
 
-    centerpoints = []
-    group_ternary_data_full = []
-    group_data_lines_full = []
-    for m, n in enumerate(a_groups_len):
-        group_coordinates = np.array([calculate_ternary_coordinates(a_ppm, b_ppm, c_ppm) for a_ppm, b_ppm, c_ppm in zip(a_groups[m], b_groups[m], c_groups[m])])
-        group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(group_coordinates[..., 0], group_coordinates[..., 1], group_coordinates[..., 2], input_ternary_coordinates=True)
-        centerpoints.append(group_center_ternary)
+    if 0 not in percentiles:
+        percentiles.extend([0])
+    
+    # TODO groups don't need to loop if functions can handle groups...
+    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, input_ternary_coordinates=True)
+
+    # create groups with distances data
+    distances_groups = []
+    for centerpoint, coordinates_array in zip(group_center, group_cartesian_coordinates):
+        coordinates = coordinates_array.tolist()
 
         distances = []
-        for coordinates in group_cartesian_coordinates:
-            # euclidian distance between points
-            distance_from_center = euclidian_distance(group_center, coordinates)
+        # euclidian distance between points
+        for coord in coordinates:
+            distance_from_center = euclidian_distance(centerpoint, coord)
             distances.append(distance_from_center)
-        distances_array = np.array([distances]).transpose()
+        distances_groups.append(distances)
+
+    # create percentile separated groups of data
+    all_groups_data_grouped_in_percentiles = []
+    all_groups_distances_in_percentiles = []
+    all_groups_cartesian_in_percentiles = []
+    for dist_list, a_group, b_group, c_group, cartesian_group in zip(distances_groups, a_groups, b_groups, c_groups, group_cartesian_coordinates):
+        distances_array = np.array(dist_list)
+        group_ternary_coord = calculate_ternary_coordinates_multi_ppm(a_group, b_group, c_group)
 
         data_grouped_in_percentiles = []
-        for l, perc in enumerate(percentiles):
+        distances_in_percentiles = []
+        cartesian_in_percentiles = []
+        for l, perc in enumerate(inverted_percentiles):
             if l == 0:
                 continue
-            percentile_value_low = np.percentile(distances_array, percentiles[l-1])
-            percentile_value_high = np.percentile(distances_array, perc)
+            else:
+                percentile_value_high = np.percentile(distances_array, inverted_percentiles[l-1])
+                percentile_value_low = np.percentile(distances_array, perc)
 
-            data_grouped_in_percentiles.append(group_coordinates[np.where((distances_array[..., 0] <= percentile_value_high) & (distances_array[..., 0] >= percentile_value_low))])
-            
+            data_grouped_in_percentiles.append(group_ternary_coord[0][np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))])
+            distances_in_percentiles.append(distances_array[np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))])
+            cartesian_in_percentiles.append(cartesian_group[np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))])
+        all_groups_data_grouped_in_percentiles.append(data_grouped_in_percentiles)
+        all_groups_distances_in_percentiles.append(distances_in_percentiles)
+        all_groups_cartesian_in_percentiles.append(cartesian_in_percentiles)
+
+
+    # TODO build the data line creation with the information about distances etc in the percentile classification included
+    group_ternary_data_full = []
+    group_data_lines_full = []
+    #for m, n in enumerate(a_groups_len):
+    for a_group, b_group, c_group in zip(a_groups, b_groups, c_groups):
+        group_coordinates = np.array([calculate_ternary_coordinates(a_ppm, b_ppm, c_ppm) for a_ppm, b_ppm, c_ppm in zip(a_group, b_group, c_group)])
+
+        # TODO fix outer edge calculation
         group_outer_edges_all = []
         for perc_data_group in data_grouped_in_percentiles:
+            print(perc_data_group)
             group_outer_edge = calculate_group_outer_edges(perc_data_group)
             if edge_result_in_ternary is True:
-                ternary_outer_edge = np.empty(shape=(outer_edge.shape[0], 3))
-                for a, arr in enumerate(outer_edge):
+                ternary_outer_edge = np.empty(shape=(group_outer_edge.shape[0], 3))
+                for a, arr in enumerate(group_outer_edge):
                     ternary_outer_edge[a] = cartesian_to_ternary(arr[0], arr[1])
                 
                 group_outer_edges_all.append(ternary_outer_edge)
@@ -233,44 +272,64 @@ def calculate_group_outer_edges(group_array):
     # copy first point to last point for a fully connecting outer edge
     outer_edge = np.empty(shape=(len(hull.vertices)+1, 2))
     for v, vert in enumerate(hull.vertices):
-        outer_edge[v] = points[vert]
+        outer_edge[v] = group_array[vert]
     outer_edge[-1] = outer_edge[0]
 
     return outer_edge
 
-# %%
-if __name__ == '__main__':
-    
+def simple_cartesian_outer_edge_test(points, mark_size=15):
 
-    points = np.array([[10, 10], [-10, -10], [-10, 10], [10, -10], [5, 5], [-5, 5], [-5, -5], [5, -5]])
-    hull = scipy.spatial.ConvexHull(points)
-    outer_edge = np.empty(shape=(len(hull.vertices)+1, 2))
-    for v, vert in enumerate(hull.vertices):
-        outer_edge[v] = points[vert]
-    outer_edge[-1] = outer_edge[0]
+    outer_edge = calculate_group_outer_edges(points)
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=points[...,0], y=points[...,1], mode='markers', name='test points', marker_size=15, marker_color='red'))
+    fig.add_trace(go.Scatter(x=points[...,0], y=points[...,1], mode='markers', name='test points', marker_size=mark_size, marker_color='red'))
     fig.add_trace(go.Scatter(x=outer_edge[...,0], y=outer_edge[...,1], mode='lines', name='outer edge of points', marker_color='green'))
-    fig.show()
 
-    cartesian_array = np.array([[10, 10], [60, 40], [40, 50]])
+    return fig
+
+def simple_cartesian_triangle_outer_edge_with_center_test(cartesian_array, mark_size=15):
+    
     centerpoint_x = np.average(cartesian_array[..., 0])
     centerpoint_y = np.average(cartesian_array[..., 1])
-    hull = scipy.spatial.ConvexHull(cartesian_array)
-    outer_edge = np.empty(shape=(len(hull.vertices)+1, 2))
-    for v, vert in enumerate(hull.vertices):
-        outer_edge[v] = cartesian_array[vert]
-    outer_edge[-1] = outer_edge[0]
+
+    outer_edge = calculate_group_outer_edges(cartesian_array)
 
     fig2 = go.Figure()
     fig2.add_trace(go.Scatter(x=[0, 50], y=[0, 86.6], mode='lines', name='side a', marker_color='black'))
     fig2.add_trace(go.Scatter(x=[50, 100], y=[86.6, 0], mode='lines', name='side b', marker_color='black'))
     fig2.add_trace(go.Scatter(x=[100, 0], y=[0, 0], mode='lines', name='side c', marker_color='black'))
-    fig2.add_trace(go.Scatter(x=cartesian_array[...,0], y=cartesian_array[...,1], mode='markers', name='test points', marker_size=15, marker_color='red'))
-    fig2.add_trace(go.Scatter(x=[centerpoint_x], y=[centerpoint_y], mode='markers', name='center point', marker_size=15, marker_color='green'))
+    fig2.add_trace(go.Scatter(x=cartesian_array[...,0], y=cartesian_array[...,1], mode='markers', name='test points', marker_size=mark_size, marker_color='red'))
+    fig2.add_trace(go.Scatter(x=[centerpoint_x], y=[centerpoint_y], mode='markers', name='center point', marker_size=mark_size, marker_color='green'))
     fig2.add_trace(go.Scatter(x=outer_edge[...,0], y=outer_edge[...,1], mode='lines', name='outer edge of points', marker_color='green'))
-    fig2.show()
+
+    return fig2
+
+# %%
+if __name__ == '__main__':
+    # TODO make examples and testing to functions
+
+    '''
+    points = np.array([[10, 10], [-10, -10], [-10, 10], [10, -10], [5, 5], [-5, 5], [-5, -5], [5, -5]])
+    
+    test_fig = simple_cartesian_outer_edge_test(points)
+    test_fig.show()
+    '''
+
+    cartesian_array = np.array([[10, 10], [60, 40], [40, 50]])
+    #cartesian_array = np.array([[10, 10], [60, 40], [40, 50], [50, 60], [50, 10], [40, 20], [30, 10], [25, 20]])
+    test_fig2 = simple_cartesian_triangle_outer_edge_with_center_test(cartesian_array)
+    test_fig2.show()
+
+    cartesian_array_big = np.array([[10, 10], [60, 40], [40, 50], [50, 60], [50, 10], 
+                            [40, 20], [35, 15], [30, 10], [25, 20], [20, 20], 
+                            [20, 15], [30, 20], [30, 30], [47, 26], [30, 30],
+                            [40, 40], [45, 50], [47, 51], [55, 42], [56, 40],
+                            [43, 38], [50, 37], [45, 35], [35, 38], [40, 27],
+                            [46, 15], [25, 12], [50, 25], [33, 20], [15, 12]])
+    
+    test_fig3 = simple_cartesian_triangle_outer_edge_with_center_test(cartesian_array_big, mark_size=10)
+    test_fig3.update_layout(modebar_add='togglespikelines')
+    test_fig3.show()
 
     ternary_array = np.empty(shape=(len(cartesian_array), 3))
     for p, point in enumerate(cartesian_array):
@@ -304,8 +363,6 @@ if __name__ == '__main__':
 
     centerpoints, centerpoint_ternary, cartesian_group = calculate_ternary_group_centerpoint(ch4_list, c2h2_list, c2h4_list)
 
-    # TODO fix the addition of all centerpoints, stuck on g=0
-
     fig4 = duval_triangle_2.create_duval_2_group_graph(ch4_list, c2h2_list, c2h4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
     for centerpoint, group_name in zip(centerpoint_ternary, groups_list):
         fig4.add_trace(go.Scatterternary(a= [centerpoint[0]],
@@ -318,6 +375,18 @@ if __name__ == '__main__':
                                             hovertemplate="Center point: %{meta[0]}<br>CH4: %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"
                                             ))
     fig4.show()
+
+    ch4_long = [11.55, 46.19, 57.74, 69.28, 11.55, 23.09, 17.32, 11.55, 23.09, 23.09, 17.32, 
+                23.09, 34.64, 30.02, 34.64, 46.19, 57.74, 58.89, 48.5, 46.19, 43.88, 42.72, 
+                40.41, 43.88, 31.18, 17.32, 13.86, 28.87, 23.09, 13.86]
+    
+    c2h2_long = [84.22, 16.9, 31.13, 15.36, 44.22, 48.46, 56.34, 64.22, 63.46, 68.46, 71.34, 
+                 58.46, 52.68, 37.99, 52.68, 36.9, 26.13, 23.55, 20.75, 20.9, 35.06, 28.64, 
+                 34.8, 43.06, 44.41, 45.34, 68.07, 35.56, 55.46, 78.07]
+    
+    c2h4_long = [4.23, 36.91, 11.13, 15.36, 44.23, 28.45, 26.34, 24.23, 13.45, 8.45, 11.34, 
+                 18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
+                 24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
     
 
 # %%

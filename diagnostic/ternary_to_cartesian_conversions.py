@@ -160,6 +160,29 @@ if __name__ == '__main__':
 
         return
 
-    comparison_plots(10, 25, 65, 1)
+    #comparison_plots(10, 25, 65, 1)
+
+    cartesian_array = np.array([[10, 10], [60, 40], [40, 50]])
+
+    ternary_array = np.empty(shape=(len(cartesian_array), 3))
+    for p, point in enumerate(cartesian_array):
+        ternary_array[p][0], ternary_array[p][1], ternary_array[p][2] = cartesian_to_ternary_plotly(point[0], point[1])
+
+    fig3 = go.Figure()
+    fig3.add_trace(go.Scatter(x=[0, 50], y=[0, 86.6], mode='lines', name='side a', marker_color='black'))
+    fig3.add_trace(go.Scatter(x=[50, 100], y=[86.6, 0], mode='lines', name='side b', marker_color='black'))
+    fig3.add_trace(go.Scatter(x=[100, 0], y=[0, 0], mode='lines', name='side c', marker_color='black'))
+    fig3.add_trace(go.Scatter(x=cartesian_array[..., 0], y=cartesian_array[..., 1], mode='markers', name='cartesian points', marker_color='red'))
+    fig3.show()
+
+    fig4 = go.Figure(layout=dict(ternary_sum=100))
+    fig4.add_trace(go.Scatterternary(a= ternary_array[..., 0],
+                                        b= ternary_array[..., 1],
+                                        c= ternary_array[..., 2],
+                                        name= 'ternary points',
+                                        mode='markers',
+                                        marker_color='red',
+                                        marker_size=10))
+    fig4.show()
 
 # %%
