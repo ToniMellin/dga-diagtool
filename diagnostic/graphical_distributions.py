@@ -191,11 +191,11 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
     
     if 100 not in inverted_percentiles:
         perc_100 = [0]
-        perc_100.extend(percentiles)
-        percentiles = perc_100
+        perc_100.extend(inverted_percentiles)
+        inverted_percentiles = perc_100
 
-    if 0 not in percentiles:
-        percentiles.extend([0])
+    if 0 not in inverted_percentiles:
+        inverted_percentiles.extend([0])
     
     # TODO groups don't need to loop if functions can handle groups...
     group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, input_ternary_coordinates=True)
@@ -220,6 +220,7 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         distances_array = np.array(dist_list)
         group_ternary_coord = calculate_ternary_coordinates_multi_ppm(a_group, b_group, c_group)
 
+        # TODO if a percentile group only has 2 or less points append the points to the previous percentile group
         data_grouped_in_percentiles = []
         distances_in_percentiles = []
         cartesian_in_percentiles = []
@@ -230,15 +231,31 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
                 percentile_value_high = np.percentile(distances_array, inverted_percentiles[l-1])
                 percentile_value_low = np.percentile(distances_array, perc)
 
-            data_grouped_in_percentiles.append(group_ternary_coord[0][np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))])
-            distances_in_percentiles.append(distances_array[np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))])
-            cartesian_in_percentiles.append(cartesian_group[np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))])
+            data_sequence = np.where((distances_array <= percentile_value_high) & (distances_array > percentile_value_low))
+            data_seq_len = data_sequence[0].size
+
+            if data_seq_len < 3:
+                raise Exception(f"One percentile group has < 3 data sequence length [{inverted_percentiles[l-1]}, {perc}])")
+
+            data_grouped_in_percentiles.append(group_ternary_coord[0][data_sequence])
+            distances_in_percentiles.append(distances_array[data_sequence])
+            cartesian_in_percentiles.append(cartesian_group[data_sequence])
         all_groups_data_grouped_in_percentiles.append(data_grouped_in_percentiles)
         all_groups_distances_in_percentiles.append(distances_in_percentiles)
         all_groups_cartesian_in_percentiles.append(cartesian_in_percentiles)
 
+    # TODO finish group outer edges + minimum of 3 points requirement
+    group_edges_all=[]
+    group_edges_all_ternary=[]
+    for group in all_groups_cartesian_in_percentiles:
+        for perc_group in group:
+            group_outer_edge = calculate_group_outer_edges(perc_group)
+            group_edges_all.append(group_outer_edge)
+            #TODO append ternary values to list by either converting all or determining their index values
+
 
     # TODO build the data line creation with the information about distances etc in the percentile classification included
+    '''
     group_ternary_data_full = []
     group_data_lines_full = []
     #for m, n in enumerate(a_groups_len):
@@ -261,6 +278,7 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
 
         group_ternary_data_full.append(group_coordinates)
         group_data_lines_full.append(group_outer_edges_all)
+    '''
         
     return centerpoints, group_data_lines_full, group_ternary_data_full
 
@@ -388,5 +406,16 @@ if __name__ == '__main__':
                  18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
                  24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
     
+    a_groups = [11.55, 46.19, 57.74, 69.28, 11.55, 23.09, 17.32, 11.55, 23.09, 23.09, 17.32, 
+                23.09, 34.64, 30.02, 34.64, 46.19, 57.74, 58.89, 48.5, 46.19, 43.88, 42.72, 
+                40.41, 43.88, 31.18, 17.32, 13.86, 28.87, 23.09, 13.86]
+
+    b_groups = [84.22, 16.9, 31.13, 15.36, 44.22, 48.46, 56.34, 64.22, 63.46, 68.46, 71.34, 
+                58.46, 52.68, 37.99, 52.68, 36.9, 26.13, 23.55, 20.75, 20.9, 35.06, 28.64, 
+                34.8, 43.06, 44.41, 45.34, 68.07, 35.56, 55.46, 78.07]
+
+    c_groups = [4.23, 36.91, 11.13, 15.36, 44.23, 28.45, 26.34, 24.23, 13.45, 8.45, 11.34, 
+                18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
+                24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
 
 # %%
