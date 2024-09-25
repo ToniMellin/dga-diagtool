@@ -18,7 +18,7 @@ import numpy as np
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import scipy
 from ternary_to_cartesian_conversions import plotly_ternary_to_cartesian as ternary_to_cartesian
-from ternary_to_cartesian_conversions import cartesian_to_ternary_plotly as cartesian_to_ternary
+from ternary_to_cartesian_conversions import cartesian_to_ternary_plotly_rounded as cartesian_to_ternary_rounded
 
 def round_up(n, decimals=2):
     multiplier = 10 ** decimals
@@ -80,6 +80,25 @@ def calculate_ternary_coordinates_multi_ppm(i_list, j_list, k_list, rounding=Fal
         for coord in coordinates_list:
             rounded_coordinates_list.append(round_up(coord, rounding))
         return rounded_coordinates_list
+    
+def transform_multi_array_cartesian_to_ternary(array_groups_list, rounding=2):
+
+    transformed_list = []
+
+    for group in array_groups_list:
+        group_arr_list = []
+        for array in group:
+            array_section = np.empty(shape=(len(array), 3))
+            k = 0
+            for coord in array:
+                array_section[k][0], array_section[k][1], array_section[k][2] = cartesian_to_ternary_rounded(coord[0], coord[1], rounding) 
+                k+=1
+
+            group_arr_list.append(array_section)
+        
+        transformed_list.append(group_arr_list)
+
+    return transformed_list
 
     
 def euclidian_distance(p1, p2, printout=False):
@@ -91,7 +110,7 @@ def euclidian_distance(p1, p2, printout=False):
 
     return d
 
-def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coord_c, input_ternary_coordinates=False):
+def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coord_c, input_ternary_coordinates=False, ternary_rounding=2):
 
     # if given ppm values in groups, convert to ternary coordinates
     if input_ternary_coordinates is False:
@@ -154,7 +173,7 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
         centerpoint_x = np.average(cartesian_group[..., 0])
         centerpoint_y = np.average(cartesian_group[..., 1])
 
-        centerpoint_a, centerpoint_b, centerpoint_c = cartesian_to_ternary(centerpoint_x, centerpoint_y)
+        centerpoint_a, centerpoint_b, centerpoint_c = cartesian_to_ternary_rounded(centerpoint_x, centerpoint_y, ternary_rounding)
 
         if g == 0:
             centerpoint_array = np.array([[centerpoint_x, centerpoint_y]])
@@ -175,7 +194,7 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
     return centerpoint_array.tolist(), centerpoint_ternary_array.tolist(), cartesian_coordinates_array
 
 # TODO test and fix ternary group disribution data function
-def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverted_percentiles=[100, 75, 50, 25, 10, 0], edge_result_in_ternary=True):
+def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverted_percentiles=[100, 75, 50, 25, 0], ternary_rounding=2):
 
     if type(a_groups[0]) is not list:
         a_groups = [a_groups]
@@ -198,7 +217,7 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         inverted_percentiles.extend([0])
     
     # TODO groups don't need to loop if functions can handle groups...
-    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, input_ternary_coordinates=True)
+    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, True, ternary_rounding)
 
     # create groups with distances data
     distances_groups = []
@@ -244,43 +263,20 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         all_groups_distances_in_percentiles.append(distances_in_percentiles)
         all_groups_cartesian_in_percentiles.append(cartesian_in_percentiles)
 
-    # TODO finish group outer edges + minimum of 3 points requirement
-    group_edges_all=[]
-    group_edges_all_ternary=[]
+    all_groups_edges_cartesian = []
+    all_groups_edges_ternary = []
     for group in all_groups_cartesian_in_percentiles:
+        group_edges_all=[]
         for perc_group in group:
             group_outer_edge = calculate_group_outer_edges(perc_group)
             group_edges_all.append(group_outer_edge)
-            #TODO append ternary values to list by either converting all or determining their index values
 
+        all_groups_edges_cartesian.append(group_edges_all)
 
-    # TODO build the data line creation with the information about distances etc in the percentile classification included
-    '''
-    group_ternary_data_full = []
-    group_data_lines_full = []
-    #for m, n in enumerate(a_groups_len):
-    for a_group, b_group, c_group in zip(a_groups, b_groups, c_groups):
-        group_coordinates = np.array([calculate_ternary_coordinates(a_ppm, b_ppm, c_ppm) for a_ppm, b_ppm, c_ppm in zip(a_group, b_group, c_group)])
-
-        # TODO fix outer edge calculation
-        group_outer_edges_all = []
-        for perc_data_group in data_grouped_in_percentiles:
-            print(perc_data_group)
-            group_outer_edge = calculate_group_outer_edges(perc_data_group)
-            if edge_result_in_ternary is True:
-                ternary_outer_edge = np.empty(shape=(group_outer_edge.shape[0], 3))
-                for a, arr in enumerate(group_outer_edge):
-                    ternary_outer_edge[a] = cartesian_to_ternary(arr[0], arr[1])
-                
-                group_outer_edges_all.append(ternary_outer_edge)
-            else:
-                group_outer_edges_all.append(group_outer_edge)
-
-        group_ternary_data_full.append(group_coordinates)
-        group_data_lines_full.append(group_outer_edges_all)
-    '''
+    # TODO fix rounding bug
+    all_groups_edges_ternary = transform_multi_array_cartesian_to_ternary(all_groups_edges_cartesian, ternary_rounding)
         
-    return centerpoints, group_data_lines_full, group_ternary_data_full
+    return group_center_ternary, all_groups_edges_ternary, all_groups_edges_cartesian
 
 
 def calculate_group_outer_edges(group_array):
@@ -351,7 +347,7 @@ if __name__ == '__main__':
 
     ternary_array = np.empty(shape=(len(cartesian_array), 3))
     for p, point in enumerate(cartesian_array):
-        ternary_array[p][0], ternary_array[p][1], ternary_array[p][2] = cartesian_to_ternary(point[0], point[1])
+        ternary_array[p][0], ternary_array[p][1], ternary_array[p][2] = cartesian_to_ternary_rounded(point[0], point[1], 2)
 
     centerpoint_array, centerpoint_ternary_array, cartesian_group = calculate_ternary_group_centerpoint(ternary_array[..., 0].tolist(), ternary_array[..., 1].tolist(), ternary_array[..., 2].tolist(), input_ternary_coordinates=True)
 
@@ -417,5 +413,8 @@ if __name__ == '__main__':
     c_groups = [4.23, 36.91, 11.13, 15.36, 44.23, 28.45, 26.34, 24.23, 13.45, 8.45, 11.34, 
                 18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
                 24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
+    
+
+    center, ternary_edge, cartesian_edge = create_ternary_group_distribution_data(ch4_long, c2h2_long, c2h4_long, [100, 75, 50, 25, 0], 3)
 
 # %%

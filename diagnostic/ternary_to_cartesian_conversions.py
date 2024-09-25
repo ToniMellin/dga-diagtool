@@ -88,17 +88,25 @@ def cartesian_to_ternary_plotly(x, y):
 
 def cartesian_to_ternary_plotly_rounded(x, y, rounding=False):
 
+    # cartesian (x,y) coordinates to ternary (a, b, c) coordinates, with side length 100 and even sided triangle 
+    x1, x2, x3 = 0.5, 1,  0
+    y1, y2, y3 = np.sin(np.pi/3), 0, 0 # alternatively (np.sqrt(3) / 2)
+
+    a_raw = ((y2-y3)*(x-x3) + (x3-x2)*(y-y3)) / ((y2-y3)*(x1+x3) + (x3-x2)*(y1-y3))
     
-    # swap abc to acb as plotly uses counter-clockwise ternary coordinates
-    a, c, b = cartesian_to_ternary_wiki(x, y)
+
+    b_raw = ((y3-y1)*(x-x3) + (x1-x3)*(y-y3)) / ((y2-y3)*(x1-x3) + (x3-x2)*(y1-y3))
+    
+    # side length 100
+    c_raw = (100 - a_raw - b_raw) 
 
     if rounding is False:
-        return a, b, c
+        return a_raw, c_raw, b_raw
     else:
-        rounded_a = round_up(a, rounding)
-        rounded_b = round_up(b, rounding)
-        rounded_c = round_up(c, rounding)
-        return rounded_a, rounded_b, rounded_c
+        a = round_up(a_raw, rounding)
+        b = round_up(b_raw, rounding)
+        c = round_up((100 - a - b), rounding)
+        return a, c, b
 
 def plotly_abc_to_clockwise_acb(a, b, c):
     # plotly ternary is counter-clockwise abc, with side a on the left
