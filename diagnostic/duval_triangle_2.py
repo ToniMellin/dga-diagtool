@@ -21,6 +21,8 @@ import pandas as pd
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import plotly.colors as pcolors
 
+from graphical_distributions import create_ternary_group_distribution_data as ternary_distribution_data
+
 # * Triangle 2 fault area ternary coordinate constants (plotly: a, b, c) *
 TRIANGLE2_N_A = [19, 19, 2, 2, 19]
 TRIANGLE2_N_B = [58, 75, 92, 75, 58]
@@ -516,6 +518,77 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
                                             marker_size=10,
                                             meta= [group_name],
                                             hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+    except Exception as e:
+        print(e)
+
+    return fig
+
+def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=False, **kwargs):
+
+    center_marker_symbol_list = ['diamond', 'square', 'x-thin', 'cross-thin', 
+                          'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
+                          'circle-open', 'diamond-open', 'square-open', 'star-triangle-up-open', 
+                          'star-triangle-down-open']
+
+    if colorized is True:
+        fig = create_duval_2_colorized()
+    else:
+        fig = create_duval_2_nocolor()
+
+    if 'group_colors' in kwargs:
+        color_list = kwargs['group_colors']
+    else:
+        color_list = pcolors.qualitative.Plotly + pcolors.qualitative.Light24_r
+
+    if 'invertered_percentiles' in kwargs:
+        dist_perc = kwargs['invertered_percentiles']
+    else:
+        dist_perc = [100, 75, 50, 25, 0]
+
+    if 'ternary_rounding' in kwargs:
+        ter_rnd = kwargs['ternary_rounding']
+    else:
+        ter_rnd = 2
+
+    if 'cutoff' in kwargs:
+        cutoff = kwargs['cutoff']
+    else:
+        cutoff = False
+
+    # TODO implement cutoff and discard zeros for cleaning up data
+    # TODO implement proper group coloring and fade colors
+    # TODO fix ternary rounding
+    try:
+        center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
+
+        g = 0
+        for cent, ter_edge, grp_name in zip(center, ternary_edge, group_names):
+        
+            # centerpoint
+            fig.add_trace(go.Scatterternary(a= [cent[0]],
+                                            b= [cent[1]],
+                                            c= [cent[2]],
+                                            name= f'{grp_name} - center',
+                                            mode='markers',
+                                            marker_symbol=center_marker_symbol_list[g],
+                                            marker_color=color_list[g],
+                                            marker_size=10,
+                                            meta= [f'{grp_name} - center'],
+                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+
+            for arr_edge, perc in zip(ter_edge, dist_perc):
+
+                # contour/distribution lines
+                fig.add_trace(go.Scatterternary(a= arr_edge[:, 0],
+                                                b= arr_edge[:, 1],
+                                                c= arr_edge[:, 2],
+                                                name= f'{grp_name} - {perc}%',
+                                                mode='lines',
+                                                marker_color=color_list[g],
+                                                marker_size=10,
+                                                meta= [f'{grp_name} - {perc}%'],
+                                                hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+            g+=1
     except Exception as e:
         print(e)
 
