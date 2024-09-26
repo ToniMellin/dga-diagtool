@@ -529,22 +529,21 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
                           'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
                           'circle-open', 'diamond-open', 'square-open', 'star-triangle-up-open', 
                           'star-triangle-down-open']
+    
+    colorscale_list = ['Teal', 'Peach', 'Mint', 'Magenta']
 
     if colorized is True:
         fig = create_duval_2_colorized()
     else:
         fig = create_duval_2_nocolor()
 
-    if 'group_colors' in kwargs:
-        color_list = kwargs['group_colors']
-    else:
-        color_list = pcolors.qualitative.Plotly + pcolors.qualitative.Light24_r
-
     if 'invertered_percentiles' in kwargs:
         dist_perc = kwargs['invertered_percentiles']
     else:
         dist_perc = [100, 75, 50, 25, 0]
 
+    sample_count=len(dist_perc)
+    
     if 'ternary_rounding' in kwargs:
         ter_rnd = kwargs['ternary_rounding']
     else:
@@ -556,13 +555,14 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
         cutoff = False
 
     # TODO implement cutoff and discard zeros for cleaning up data
-    # TODO implement proper group coloring and fade colors
     # TODO fix ternary rounding
     try:
         center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
 
         g = 0
         for cent, ter_edge, grp_name in zip(center, ternary_edge, group_names):
+
+            colorscale = pcolors.sample_colorscale(colorscale_list[g], sample_count, low=1.0, high=0.0, colortype='rgb')
         
             # centerpoint
             fig.add_trace(go.Scatterternary(a= [cent[0]],
@@ -571,11 +571,12 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
                                             name= f'{grp_name} - center',
                                             mode='markers',
                                             marker_symbol=center_marker_symbol_list[g],
-                                            marker_color=color_list[g],
+                                            marker_color=colorscale[0],
                                             marker_size=10,
                                             meta= [f'{grp_name} - center'],
                                             hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
 
+            c = sample_count - 1
             for arr_edge, perc in zip(ter_edge, dist_perc):
 
                 # contour/distribution lines
@@ -584,10 +585,12 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
                                                 c= arr_edge[:, 2],
                                                 name= f'{grp_name} - {perc}%',
                                                 mode='lines',
-                                                marker_color=color_list[g],
+                                                marker_color=colorscale[c],
                                                 marker_size=10,
                                                 meta= [f'{grp_name} - {perc}%'],
                                                 hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                c-=1
+
             g+=1
     except Exception as e:
         print(e)
@@ -638,5 +641,27 @@ if __name__ == "__main__":
 
     fig5 = create_duval_2_group_graph(ch4_list, c2h2_list, c2h4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
     fig5.show()
+
+
+    ch4_long = [11.55, 46.19, 57.74, 69.28, 11.55, 23.09, 17.32, 11.55, 23.09, 23.09, 17.32, 
+                23.09, 34.64, 30.02, 34.64, 46.19, 57.74, 58.89, 48.5, 46.19, 43.88, 42.72, 
+                40.41, 43.88, 31.18, 17.32, 13.86, 28.87, 23.09, 13.86]
+    
+    c2h2_long = [84.22, 16.9, 31.13, 15.36, 44.22, 48.46, 56.34, 64.22, 63.46, 68.46, 71.34, 
+                 58.46, 52.68, 37.99, 52.68, 36.9, 26.13, 23.55, 20.75, 20.9, 35.06, 28.64, 
+                 34.8, 43.06, 44.41, 45.34, 68.07, 35.56, 55.46, 78.07]
+    
+    c2h4_long = [4.23, 36.91, 11.13, 15.36, 44.23, 28.45, 26.34, 24.23, 13.45, 8.45, 11.34, 
+                 18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
+                 24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
+    
+    ch4_long2 = (np.random.random_sample(size = 100)*100).tolist()
+
+    c2h2_long2 = (np.random.random_sample(size = 100)*100).tolist()
+
+    c2h4_long2 = (np.random.random_sample(size = 100)*100).tolist()
+    
+    figD = create_duval_2_group_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'])
+    figD.show()
 
 # %%

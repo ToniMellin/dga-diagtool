@@ -263,6 +263,8 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         all_groups_distances_in_percentiles.append(distances_in_percentiles)
         all_groups_cartesian_in_percentiles.append(cartesian_in_percentiles)
 
+    # TODO append values to higher percentiles if those values are outside the higher percentile convex hull
+    # https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl
     all_groups_edges_cartesian = []
     all_groups_edges_ternary = []
     for group in all_groups_cartesian_in_percentiles:
