@@ -146,13 +146,17 @@ if __name__ == '__main__':
 
     pio.templates.default = 'plotly_white+custom_theme'
     import duval_triangle_1
+    import duval_triangle_2
     import duval_triangle_4
     import duval_triangle_5
 
-    def comparison_plots(a, b, c, triangle=1):
+    def comparison_plots(a, b, c, triangle=2):
         if triangle == 1:
             fig = duval_triangle_1.create_duval_1_colorized()
             fig.add_trace(duval_triangle_1.create_duval_1_marker(a, c, b, marker_name='ternary'))
+        elif triangle == 2:
+            fig = duval_triangle_2.create_duval_2_colorized()
+            fig.add_trace(duval_triangle_2.create_duval_2_marker(a, c, b, marker_name='ternary'))
         elif triangle == 4:
             fig = duval_triangle_4.create_duval_4_colorized()
             fig.add_trace(duval_triangle_4.create_duval_4_marker(a, c, b, marker_name='ternary'))
@@ -182,7 +186,7 @@ if __name__ == '__main__':
 
         return
 
-    #comparison_plots(10, 25, 65, 1)
+    comparison_plots(10, 25, 65, 1)
 
     cartesian_array = np.array([[10, 10], [60, 40], [40, 50]])
 

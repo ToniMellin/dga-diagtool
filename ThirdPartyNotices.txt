@@ -11,6 +11,7 @@ This project incorporates components from the projects listed below. The origina
 5. numpy/numpy (https://github.com/numpy/numpy)
 6. pallets/flask (https://github.com/pallets/flask)
 7. shapely/shapely (https://github.com/shapely/shapely)
+8. scipy/scipy (https://github.com/scipy/scipy)
 
 %% plotly/plotly.py NOTICES AND INFORMATION BEGIN HERE
 =========================================

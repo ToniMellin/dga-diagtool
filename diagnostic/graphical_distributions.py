@@ -17,8 +17,13 @@ This module calculates graphical diagnostic result related distribution lines & 
 import numpy as np
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import scipy
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
 from ternary_to_cartesian_conversions import plotly_ternary_to_cartesian as ternary_to_cartesian
 from ternary_to_cartesian_conversions import cartesian_to_ternary_plotly_rounded as cartesian_to_ternary_rounded
+
+# point & polygon comparison accuracy
+EPSILON = 1e-15
 
 def round_up(n, decimals=2):
     multiplier = 10 ** decimals
@@ -269,8 +274,38 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
     all_groups_edges_ternary = []
     for group in all_groups_cartesian_in_percentiles:
         group_edges_all=[]
-        for perc_group in group:
+        group_size = len(group)
+
+        for p, perc_group in enumerate(group):
             group_outer_edge = calculate_group_outer_edges(perc_group)
+            
+
+            # checking for points left out of the current outer edge in the next groups outer edge
+            
+            if p < (group_size-1):
+                next_group_outer_edge = calculate_group_outer_edges(group[p+1])
+                grp_polygon = Polygon(group_outer_edge)
+                
+                outside_points = np.array([])
+                for n, nxt_point in enumerate(next_group_outer_edge):
+
+                    if n > (len(next_group_outer_edge) - 2):
+                        continue
+
+                    point = Point(nxt_point)
+
+                    if ((grp_polygon.contains(point) is False) or (point.distance(grp_polygon) > EPSILON)):
+                        if outside_points.size == 0:
+                            outside_points = np.array([nxt_point])
+                        else:
+                            outside_points = np.append(outside_points, [nxt_point], axis=0)
+
+                # adding points left outside the current groups outer edge and recalculating outer edge
+                if outside_points.shape[0] > 0:
+                    new_perc_group = np.append(perc_group, outside_points, axis=0)
+                    group_outer_edge = calculate_group_outer_edges(new_perc_group)
+
+
             group_edges_all.append(group_outer_edge)
 
         all_groups_edges_cartesian.append(group_edges_all)
@@ -322,7 +357,6 @@ def simple_cartesian_triangle_outer_edge_with_center_test(cartesian_array, mark_
 
 # %%
 if __name__ == '__main__':
-    # TODO make examples and testing to functions
 
     '''
     points = np.array([[10, 10], [-10, -10], [-10, 10], [10, -10], [5, 5], [-5, 5], [-5, -5], [5, -5]])
