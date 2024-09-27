@@ -477,6 +477,8 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
     except Exception as e:
         print(e)
 
+    # TODO handle usage of lists not list of groups
+
     if colorized is True:
         fig = create_duval_2_colorized()
     else:
@@ -556,6 +558,7 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
 
     # TODO implement cutoff and discard zeros for cleaning up data
     # TODO fix ternary rounding
+    # TODO add alternative line types (dashes, etc)
     try:
         center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
 
