@@ -515,7 +515,7 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
                                             c= coord_list_t[2],
                                             name= group_name,
                                             mode='markers',
-                                            marker_symbol=marker_symbol_list[i],
+                                            marker_symbol=marker_symbol_list[i%13],
                                             marker_color=color_list[i],
                                             marker_size=10,
                                             meta= [group_name],
@@ -532,7 +532,15 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
                           'circle-open', 'diamond-open', 'square-open', 'star-triangle-up-open', 
                           'star-triangle-down-open']
     
-    colorscale_list = ['Teal', 'Peach', 'Mint', 'Magenta']
+    dash_type = ["solid", "longdash", "longdashdot", "dash", "dashdot", "dot"]
+    
+    colorscale_list = ['Teal', 'Peach', 'algae', 'turbid', 'Mint', 'Magenta']
+    cscale_len = len(colorscale_list)
+ 
+    if 'dash_mode' in kwargs:
+        dash_mode = kwargs['dash_mode']
+    else:
+        dash_mode = False
 
     if colorized is True:
         fig = create_duval_2_colorized()
@@ -558,14 +566,13 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
 
     # TODO implement cutoff and discard zeros for cleaning up data
     # TODO fix ternary rounding
-    # TODO add alternative line types (dashes, etc)
     try:
         center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
 
         g = 0
         for cent, ter_edge, grp_name in zip(center, ternary_edge, group_names):
 
-            colorscale = pcolors.sample_colorscale(colorscale_list[g], sample_count, low=1.0, high=0.0, colortype='rgb')
+            colorscale = pcolors.sample_colorscale(colorscale_list[g%cscale_len], sample_count, low=1.0, high=0.0, colortype='rgb')
         
             # centerpoint
             fig.add_trace(go.Scatterternary(a= [cent[0]],
@@ -573,7 +580,7 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
                                             c= [cent[2]],
                                             name= f'{grp_name} - center',
                                             mode='markers',
-                                            marker_symbol=center_marker_symbol_list[g],
+                                            marker_symbol=center_marker_symbol_list[g%13],
                                             marker_color=colorscale[0],
                                             marker_size=10,
                                             meta= [f'{grp_name} - center'],
@@ -582,16 +589,33 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
             c = sample_count - 1
             for arr_edge, perc in zip(ter_edge, dist_perc):
 
-                # contour/distribution lines
-                fig.add_trace(go.Scatterternary(a= arr_edge[:, 0],
-                                                b= arr_edge[:, 1],
-                                                c= arr_edge[:, 2],
-                                                name= f'{grp_name} - {perc}%',
-                                                mode='lines',
-                                                marker_color=colorscale[c],
-                                                marker_size=10,
-                                                meta= [f'{grp_name} - {perc}%'],
-                                                hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                if dash_mode is True:
+
+                    # contour/distribution lines
+                    fig.add_trace(go.Scatterternary(a= arr_edge[:, 0],
+                                                    b= arr_edge[:, 1],
+                                                    c= arr_edge[:, 2],
+                                                    name= f'{grp_name} - {perc}%',
+                                                    mode='lines',
+                                                    marker_color=colorscale[c],
+                                                    marker_size=10,
+                                                    line=dict(dash=dash_type[(c+1)%6]), # %6 for the 6 different dash types
+                                                    meta= [f'{grp_name} - {perc}%'],
+                                                    hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                    
+                else:
+                                    # contour/distribution lines
+                    fig.add_trace(go.Scatterternary(a= arr_edge[:, 0],
+                                                    b= arr_edge[:, 1],
+                                                    c= arr_edge[:, 2],
+                                                    name= f'{grp_name} - {perc}%',
+                                                    mode='lines',
+                                                    marker_color=colorscale[c],
+                                                    marker_size=10,
+                                                    meta= [f'{grp_name} - {perc}%'],
+                                                    hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                
+
                 c-=1
 
             g+=1
