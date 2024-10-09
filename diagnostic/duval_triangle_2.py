@@ -559,15 +559,30 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
     else:
         ter_rnd = 2
 
+    if 'discard_zeros' in kwargs:
+        discard_zeros = kwargs['discard_zeros']
+    else:
+        discard_zeros = False
+
     if 'cutoff' in kwargs:
         cutoff = kwargs['cutoff']
     else:
         cutoff = False
 
-    # TODO implement cutoff and discard zeros for cleaning up data
+    if 'cutoff_direction' in kwargs:
+        cutoff_direction = kwargs['cutoff_direction']
+    else:
+        cutoff_direction = '>'
+
+    # TODO implement plotting of points as per percentile grouping
     # TODO fix ternary rounding
     try:
-        center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
+        if cutoff != False:
+            center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd, cutoff=cutoff, cutoff_direction=cutoff_direction)
+        elif discard_zeros != False:
+            center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd, discard_zeros=discard_zeros)
+        else:
+            center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
 
         g = 0
         for cent, ter_edge, grp_name in zip(center, ternary_edge, group_names):

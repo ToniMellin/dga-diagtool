@@ -49,9 +49,10 @@ def calculate_ternary_coordinates_multi_ppm(i_list, j_list, k_list, rounding=Fal
         assert len(i_list) == len(j_list), 'a values and b values have different lengths!'
         assert len(j_list) == len(k_list), 'b values and c values have different lengths!'
         assert len(i_list) == len(k_list), 'a values and c values have different lengths!'
-        assert sum(len(x) for x in i_list) == sum(len(x) for x in j_list), 'Sum of a values and b values have different lengths!'
-        assert sum(len(x) for x in j_list) == sum(len(x) for x in k_list), 'Sum of b values and c values have different lengths!'
-        assert sum(len(x) for x in i_list) == sum(len(x) for x in k_list), 'Sum of a values and c values have different lengths!'
+        if type(i_list[0]) is list:
+            assert sum(len(x) for x in i_list) == sum(len(x) for x in j_list), 'Sum of a values and b values have different lengths!'
+            assert sum(len(x) for x in j_list) == sum(len(x) for x in k_list), 'Sum of b values and c values have different lengths!'
+            assert sum(len(x) for x in i_list) == sum(len(x) for x in k_list), 'Sum of a values and c values have different lengths!'
     except Exception as e:
         print(e)
 
@@ -126,7 +127,7 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
         # Check for a multilevel list
         coordinates_list = calculate_ternary_coordinates_multi_ppm(a_values, b_values, c_values, ternary_rounding)
 
-        print(coordinates_list)
+        #print(coordinates_list)
 
         ternary_group_a = []
         ternary_group_b = []
@@ -199,7 +200,7 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
     return centerpoint_array.tolist(), centerpoint_ternary_array.tolist(), cartesian_coordinates_array
 
 # TODO test and fix ternary group disribution data function
-def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverted_percentiles=[100, 75, 50, 25, 0], ternary_rounding=2):
+def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverted_percentiles=[100, 75, 50, 25, 0], ternary_rounding=2, **kwargs):
 
     if type(a_groups[0]) is not list:
         a_groups = [a_groups]
@@ -220,9 +221,74 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
 
     if 0 not in inverted_percentiles:
         inverted_percentiles.extend([0])
+
+    if 'discard_zeros' in kwargs:
+        discard_zeros = kwargs['discard_zeros']
+    else:
+        discard_zeros = False
+
+    if 'cutoff' in kwargs:
+        cutoff = kwargs['cutoff']
+    else:
+        cutoff = False
+
+    if 'cutoff_direction' in kwargs:
+        cutoff_direction = kwargs['cutoff_direction']
+    else:
+        cutoff_direction = '>'
+
+    # data cleanup by cutoff or discard zeros
+    # if cutoff active discard zeros is skipped
+    if  cutoff != False:
+        new_a = []
+        new_b = []
+        new_c = []
+
+        for a_grp, b_grp, c_grp in zip(a_groups, b_groups, c_groups):
+            grp_data = np.array((a_grp, b_grp, c_grp))
+            grp_data_t = np.transpose(grp_data)
+
+            # if smaller than direction, the cutoff will drop based on if ALL are smaller than
+            if cutoff_direction == '<':
+                clean_grp_data = grp_data_t[~np.all(grp_data_t < cutoff, axis=1)]
+
+            elif cutoff_direction == '<=':
+                clean_grp_data = grp_data_t[~np.all(grp_data_t <= cutoff, axis=1)]
+
+            # if greater than direction, the cutoff will drop based on if ANY of the values isn't greater than 
+            elif cutoff_direction == '>=':
+                clean_grp_data = grp_data_t[np.any(grp_data_t >= cutoff, axis=1)]
+
+            else:
+                clean_grp_data = grp_data_t[np.any(grp_data_t > cutoff, axis=1)]
+
+            new_a.append(clean_grp_data[:, 0].tolist())
+            new_b.append(clean_grp_data[:, 1].tolist())
+            new_c.append(clean_grp_data[:, 2].tolist())
+
+        a_groups = new_a
+        b_groups = new_b
+        c_groups = new_c
+
+    elif discard_zeros != False:
+        new_a = []
+        new_b = []
+        new_c = []
+
+        for a_grp, b_grp, c_grp in zip(a_groups, b_groups, c_groups):
+            grp_data = np.array((a_grp, b_grp, c_grp))
+            grp_data_t = np.transpose(grp_data)
+
+            clean_grp_data = grp_data_t[~np.all(grp_data_t == 0, axis=1)]
+
+        a_groups = new_a
+        b_groups = new_b
+        c_groups = new_c
+
+
     
     # TODO groups don't need to loop if functions can handle groups...
-    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, False, ternary_rounding)
+    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, False, False)
 
     # create groups with distances data
     distances_groups = []

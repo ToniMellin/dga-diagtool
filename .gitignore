@@ -10,3 +10,4 @@ dga_diagtool_env/
 
 # development
 development/
+diagnostic/debug.py

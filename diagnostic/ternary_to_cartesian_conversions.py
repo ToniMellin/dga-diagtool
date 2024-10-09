@@ -49,10 +49,10 @@ def ternary_to_cartesian_wiki(a, b, c):
 def ternary_to_cartesian_wiki_rounded(a, b, c, rounding=2):
 
     wiki_x, wiki_y = ternary_to_cartesian_wiki(a, b, c)
-    print(f'Wiki:\n({wiki_x}, {wiki_y})')
+    #print(f'Wiki:\n({wiki_x}, {wiki_y})')
     wiki_x_rounded = round_up(wiki_x, rounding)
     wiki_y_rounded = round_up(wiki_y, rounding)
-    print(f'Rounded:\n({wiki_x_rounded}, {wiki_y_rounded})')
+    #print(f'Rounded:\n({wiki_x_rounded}, {wiki_y_rounded})')
 
     return wiki_x_rounded, wiki_y_rounded
 
