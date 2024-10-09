@@ -691,4 +691,7 @@ if __name__ == "__main__":
     figD = create_duval_2_group_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'])
     figD.show()
 
+    figD = create_duval_2_group_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'], dash_mode = True)
+    figD.show()
+
 # %%

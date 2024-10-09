@@ -124,7 +124,7 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
         c_values = group_coord_c
 
         # Check for a multilevel list
-        coordinates_list = calculate_ternary_coordinates_multi_ppm(a_values, b_values, c_values)
+        coordinates_list = calculate_ternary_coordinates_multi_ppm(a_values, b_values, c_values, ternary_rounding)
 
         print(coordinates_list)
 
@@ -222,7 +222,7 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         inverted_percentiles.extend([0])
     
     # TODO groups don't need to loop if functions can handle groups...
-    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, True, ternary_rounding)
+    group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, False, ternary_rounding)
 
     # create groups with distances data
     distances_groups = []
