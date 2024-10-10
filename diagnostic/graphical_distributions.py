@@ -338,18 +338,22 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
     # https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl
     all_groups_edges_cartesian = []
     all_groups_edges_ternary = []
-    for group in all_groups_cartesian_in_percentiles:
+    for p_groups, full_group in zip(all_groups_cartesian_in_percentiles, group_cartesian_coordinates):
         group_edges_all=[]
-        group_size = len(group)
+        group_size = len(p_groups)
 
-        for p, perc_group in enumerate(group):
+        total_group_outer_edge = calculate_group_outer_edges(full_group)
+        # TODO change the check at 100% to include total outer edge calculated from all values
+        # TODO change the check for lower percentile points out of current outer edge bounds to go through the whole stack of lower percentile groups left
+
+        for p, perc_group in enumerate(p_groups):
             group_outer_edge = calculate_group_outer_edges(perc_group)
             
 
             # checking for points left out of the current outer edge in the next groups outer edge
             
             if p < (group_size-1):
-                next_group_outer_edge = calculate_group_outer_edges(group[p+1])
+                next_group_outer_edge = calculate_group_outer_edges(p_groups[p+1])
                 grp_polygon = Polygon(group_outer_edge)
                 
                 outside_points = np.array([])
