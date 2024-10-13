@@ -16,7 +16,8 @@ This module calculates graphical diagnostic result related distribution lines & 
 # %%
 import numpy as np
 import plotly.graph_objects as go   # plotly is an interactive plotting library
-import scipy
+from scipy.spatial import ConvexHull
+from scipy.stats import gaussian_kde
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from ternary_to_cartesian_conversions import plotly_ternary_to_cartesian as ternary_to_cartesian
@@ -115,6 +116,59 @@ def euclidian_distance(p1, p2, printout=False):
         print(f'Euclidian distance between points ({p1[0]}, {p1[1]}) and ({p2[0]}, {p2[1]}) is:\n{d}')
 
     return d
+
+def check_points_needed_for_percentile_division(points, perc_list, min_allowed_points):
+    if points < (2*min_allowed_points):
+        return False
+
+    relative_sizes = []
+    for i, curr_perc in enumerate(perc_list):
+        if i == 0:
+            continue
+        relative_size = perc_list[i-1] - curr_perc
+        relative_sizes.append(relative_size)
+
+    smallest_divider = np.min(relative_sizes)
+    min_point_count = np.floor(points / (100/smallest_divider))
+
+    
+
+    if min_point_count < min_allowed_points:
+        return False
+    else:
+        return True
+
+def percentile_validity_check(dataset_size, percentile_list, min_req_size):
+
+    perc_length = len(percentile_list)
+    acceptable_perc_list = False
+
+    if check_points_needed_for_percentile_division(dataset_size, percentile_list, min_req_size) is True:
+        return percentile_list
+
+    current_percentile_partition_size = (len(percentile_list) - 1)
+    perc_length = len(percentile_list)
+
+    if perc_length <= 2:
+        print(f'Unable to generate valid percentile list for {dataset_size} points!\n')
+        return False
+
+    percentile_list = np.flip(np.arange(0, 101, 100/current_percentile_partition_size)).tolist()
+
+    if check_points_needed_for_percentile_division(dataset_size, percentile_list, min_req_size) is True:
+        return percentile_list
+
+    while (perc_length > 2) and (acceptable_perc_list is False):
+        new_percentile_size = (len(percentile_list) - 2)
+        percentile_list = np.flip(np.arange(0, 101, 100/new_percentile_size)).tolist()
+        perc_length = len(percentile_list)
+        acceptable_perc_list = check_points_needed_for_percentile_division(dataset_size, percentile_list, min_req_size)
+
+    if acceptable_perc_list is True:
+        return percentile_list
+    else:
+        print(f'Unable to generate valid percentile list for {dataset_size} points!\n')
+        return False
 
 def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coord_c, input_ternary_coordinates=False, ternary_rounding=2):
 
@@ -222,6 +276,14 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
     if 0 not in inverted_percentiles:
         inverted_percentiles.extend([0])
 
+    for a_grp in a_groups:
+        points = len(a_grp)
+        percentile_check = percentile_validity_check(points, inverted_percentiles, 3) # distribution edge calculation requires at least 3 points per percentile group
+        if percentile_check is False:
+            return False
+        else:
+            inverted_percentiles = percentile_check
+
     if 'discard_zeros' in kwargs:
         discard_zeros = kwargs['discard_zeros']
     else:
@@ -310,7 +372,6 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         distances_array = np.array(dist_list)
         group_ternary_coord = calculate_ternary_coordinates_multi_ppm(a_group, b_group, c_group)
 
-        # TODO if a percentile group only has 2 or less points append the points to the previous percentile group
         data_grouped_in_percentiles = []
         distances_in_percentiles = []
         cartesian_in_percentiles = []
@@ -343,10 +404,12 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         group_size = len(p_groups)
 
         total_group_outer_edge = calculate_group_outer_edges(full_group)
-        # TODO change the check at 100% to include total outer edge calculated from all values
         # TODO change the check for lower percentile points out of current outer edge bounds to go through the whole stack of lower percentile groups left
-
         for p, perc_group in enumerate(p_groups):
+            if p == 0:
+                group_edges_all.append(total_group_outer_edge)
+                continue
+
             group_outer_edge = calculate_group_outer_edges(perc_group)
             
 
@@ -387,7 +450,7 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
 
 
 def calculate_group_outer_edges(group_array):
-    hull = scipy.spatial.ConvexHull(group_array)
+    hull = ConvexHull(group_array)
 
     # Get the outer edges of the hull from vertices of the original points
     # copy first point to last point for a fully connecting outer edge
@@ -424,6 +487,18 @@ def simple_cartesian_triangle_outer_edge_with_center_test(cartesian_array, mark_
     fig2.add_trace(go.Scatter(x=outer_edge[...,0], y=outer_edge[...,1], mode='lines', name='outer edge of points', marker_color='green'))
 
     return fig2
+
+def point_density_calculation(xy_tuple_array):
+
+    x = xy_tuple_array[:, 0]
+    y = xy_tuple_array[:, 1]
+
+    # https://stackoverflow.com/questions/20105364/how-can-i-make-a-scatter-plot-colored-by-density
+    xy = np.vstack([x,y])
+    z = gaussian_kde(xy)(xy)
+
+    return z
+
 
 # %%
 if __name__ == '__main__':
@@ -508,17 +583,17 @@ if __name__ == '__main__':
                  18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
                  24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
     
-    a_groups = [11.55, 46.19, 57.74, 69.28, 11.55, 23.09, 17.32, 11.55, 23.09, 23.09, 17.32, 
+    a_groups = [[11.55, 46.19, 57.74, 69.28, 11.55, 23.09, 17.32, 11.55, 23.09, 23.09, 17.32, 
                 23.09, 34.64, 30.02, 34.64, 46.19, 57.74, 58.89, 48.5, 46.19, 43.88, 42.72, 
-                40.41, 43.88, 31.18, 17.32, 13.86, 28.87, 23.09, 13.86]
+                40.41, 43.88, 31.18, 17.32, 13.86, 28.87, 23.09, 13.86]]
 
-    b_groups = [84.22, 16.9, 31.13, 15.36, 44.22, 48.46, 56.34, 64.22, 63.46, 68.46, 71.34, 
+    b_groups = [[84.22, 16.9, 31.13, 15.36, 44.22, 48.46, 56.34, 64.22, 63.46, 68.46, 71.34, 
                 58.46, 52.68, 37.99, 52.68, 36.9, 26.13, 23.55, 20.75, 20.9, 35.06, 28.64, 
-                34.8, 43.06, 44.41, 45.34, 68.07, 35.56, 55.46, 78.07]
+                34.8, 43.06, 44.41, 45.34, 68.07, 35.56, 55.46, 78.07]]
 
-    c_groups = [4.23, 36.91, 11.13, 15.36, 44.23, 28.45, 26.34, 24.23, 13.45, 8.45, 11.34, 
+    c_groups = [[4.23, 36.91, 11.13, 15.36, 44.23, 28.45, 26.34, 24.23, 13.45, 8.45, 11.34, 
                 18.45, 12.68, 31.99, 12.68, 16.91, 16.13, 17.56, 30.75, 32.91, 21.06, 28.64, 
-                24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]
+                24.79, 13.06, 24.41, 37.34, 18.07, 35.57, 21.45, 8.07]]
     
 
     center, ternary_edge, cartesian_edge = create_ternary_group_distribution_data(ch4_long, c2h2_long, c2h4_long, [100, 75, 50, 25, 0], 3)
