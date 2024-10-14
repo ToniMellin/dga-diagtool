@@ -435,7 +435,7 @@ def create_duval_2_result_graph(ch4, c2h2, c2h4, colorized=True):
     except:
         return fig
 
-def create_duval_2_multi_results_graph(samples_df, colorized=True):
+def create_duval_2_multi_results_graph(samples_df, values_pos=[1, 5, 3, 6], colorized=True, **kwargs):
     if colorized is True:
         fig = create_duval_2_colorized()
     else:
@@ -447,17 +447,38 @@ def create_duval_2_multi_results_graph(samples_df, colorized=True):
     else:
         colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
 
+    if type(values_pos[0]) == str:
+        positions = []
+        for pos in values_pos:
+            pos_n = samples_df.columns.get_indexer([pos])[0] + 1
+            positions.append(pos_n)
+
+        values_pos = positions
+    else:
+        positions = values_pos
+
+    time_pos = positions[0]
+    ch4_pos = positions[1]
+    c2h2_pos = positions[2]
+    c2h4_pos = positions[3]
+
+    if 'discard_zeros' in kwargs:
+        discard_zeros = kwargs['discard_zeros']
+    else:
+        discard_zeros = False
+
+    if discard_zeros is True:
+        samples_df = samples_df.loc[(samples_df[[df_sample.columns[ch4_pos-1], df_sample.columns[c2h2_pos-1], df_sample.columns[c2h4_pos-1]]] != 0).all(axis=1)]
+
+    # TODO add possibility to include metatext
     try:
         sample_num = 0
         for row in samples_df.itertuples(name=None):
-            time, ch4, c2h4, c2h2, rowcolor = row[1], row[3], row[5], row[6], colorscale[sample_num]
+            time, ch4, c2h2, c2h4, rowcolor = row[time_pos], row[ch4_pos], row[c2h2_pos], row[c2h4_pos], colorscale[sample_num]
             sample_num+=1
-            if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
-                continue
-            else:
-                duval_result = calculate_duval_2_result(ch4, c2h2, c2h4)
-                mark_name = f'{duval_result} {time}'
-                fig.add_trace(create_duval_2_marker(ch4, c2h2, c2h4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
+            duval_result = calculate_duval_2_result(ch4, c2h2, c2h4)
+            mark_name = f'{duval_result} {time}'
+            fig.add_trace(create_duval_2_marker(ch4, c2h2, c2h4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
         return fig
     except Exception as e:
         print(e)
