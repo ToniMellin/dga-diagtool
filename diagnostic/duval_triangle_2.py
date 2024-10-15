@@ -461,8 +461,6 @@ def create_duval_2_multi_results_graph(samples_df, values_pos=[0, 2, 5, 4], colo
     c2h2_pos = positions[2] + 1
     c2h4_pos = positions[3] + 1
 
-    print(time_pos, ch4_pos, c2h2_pos, c2h4_pos)
-
     if 'discard_zeros' in kwargs:
         discard_zeros = kwargs['discard_zeros']
     else:
@@ -482,7 +480,6 @@ def create_duval_2_multi_results_graph(samples_df, values_pos=[0, 2, 5, 4], colo
         sample_num = 0
         for row in samples_df.itertuples(name=None):
             time, ch4, c2h2, c2h4, rowcolor = row[time_pos], row[ch4_pos], row[c2h2_pos], row[c2h4_pos], colorscale[sample_num]
-            print(time, ch4, c2h2, c2h4)
             if meta_text_cols is not None:
                 if type(meta_text_cols) == list:
                     meta = []
