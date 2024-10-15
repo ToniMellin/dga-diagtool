@@ -356,6 +356,32 @@ def create_duval_2_marker(ch4, c2h2, c2h4, **kwargs):
         timestamp = None
         metalist = [result, ch4, c2h2, c2h4]
 
+    # add additional meta text
+    if 'meta_text' in kwargs:
+        meta_text = kwargs['meta_text']
+        meta_type = type(meta_text)
+        if meta_type == str:
+            metalist.append(meta_text)
+        elif meta_type == list:
+            for meta in meta_text:
+                metalist.append(meta)
+        elif meta_type == type(None):
+            print(f'meta_text type is {meta_type}')
+            pass
+        else:
+            raise Exception(f'Erroneous additional metatext input type {meta_type} for meta_text {meta_text}')
+
+    # formulate hover template string
+    if len(metalist) > 4:
+        hover_temp = "Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)"
+        for m in range(4, len(metalist)):
+            hover_temp = hover_temp + '<br>%{meta[' + str(m) + ']}'
+
+        hover_temp = hover_temp + "<extra></extra>"
+
+    else:
+        hover_temp = "Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
+
     # formulate a name for the marker if not given
     if 'marker_name' in kwargs:
         marker_name = kwargs['marker_name']
@@ -364,63 +390,26 @@ def create_duval_2_marker(ch4, c2h2, c2h4, **kwargs):
     else:
         marker_name = result
 
-    if (timestamp is not None) and 'marker_color' in kwargs:
-        try:
-            set_color = kwargs['marker_color']
-            return go.Scatterternary(       a= [marker_coordinates[0]],
-                                            b= [marker_coordinates[1]],
-                                            c= [marker_coordinates[2]],
-                                            name= marker_name,
-                                            mode='markers',
-                                            marker_color=set_color,
-                                            marker_size=10,
-                                            meta= metalist,
-                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
-                                            )
-        except Exception as e:
-            print(e)
-            pass
-    elif (timestamp is None) and 'marker_color' in kwargs:
-        try:
-            set_color = kwargs['marker_color']
-            return go.Scatterternary(       a= [marker_coordinates[0]],
-                                            b= [marker_coordinates[1]],
-                                            c= [marker_coordinates[2]],
-                                            name= marker_name,
-                                            mode='markers',
-                                            marker_color=set_color,
-                                            marker_size=10,
-                                            meta= metalist,
-                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
-                                            )
-        except Exception as e:
-            print(e)
-            pass
-    elif (timestamp is not None) and 'marker_color' not in kwargs:
-        try:
-            return go.Scatterternary(       a= [marker_coordinates[0]],
-                                            b= [marker_coordinates[1]],
-                                            c= [marker_coordinates[2]],
-                                            name= marker_name,
-                                            mode='markers',
-                                            marker_size=10,
-                                            meta= metalist,
-                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
-                                            )
-        except Exception as e:
-            print(e)
-            pass
-    else:  
+    if 'marker_color' in kwargs:
+        set_color = kwargs['marker_color']
+    else:
+        set_color = 'red'
+    
+    try:
         return go.Scatterternary(       a= [marker_coordinates[0]],
                                         b= [marker_coordinates[1]],
                                         c= [marker_coordinates[2]],
                                         name= marker_name,
                                         mode='markers',
-                                        marker_color='red',
+                                        marker_color=set_color,
                                         marker_size=10,
-                                        meta= [result, ch4, c2h2, c2h4],
-                                        hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
+                                        meta= metalist,
+                                        hovertemplate=hover_temp
                                         )
+    except Exception as e:
+        print(e)
+        return None
+        pass
 
 def create_duval_2_result_graph(ch4, c2h2, c2h4, colorized=True):
     if colorized is True:
@@ -435,7 +424,7 @@ def create_duval_2_result_graph(ch4, c2h2, c2h4, colorized=True):
     except:
         return fig
 
-def create_duval_2_multi_results_graph(samples_df, values_pos=[1, 5, 3, 6], colorized=True, **kwargs):
+def create_duval_2_multi_results_graph(samples_df, values_pos=[0, 2, 5, 4], colorized=True, **kwargs):
     if colorized is True:
         fig = create_duval_2_colorized()
     else:
@@ -447,20 +436,32 @@ def create_duval_2_multi_results_graph(samples_df, values_pos=[1, 5, 3, 6], colo
     else:
         colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
 
+    # metatext kwarg handling
+    if 'meta_text' in kwargs:
+        meta_text = kwargs['meta_text']
+        if type(meta_text) == str:
+            meta_text_cols = [meta_text]
+        elif type(meta_text) == int:
+            meta_text_cols = [meta_text]
+        elif type(meta_text) == list:
+            meta_text_cols = meta_text
+    else:
+        meta_text_cols = None
+
     if type(values_pos[0]) == str:
         positions = []
         for pos in values_pos:
-            pos_n = samples_df.columns.get_indexer([pos])[0] + 1
+            pos_n = samples_df.columns.get_indexer([pos])[0]
             positions.append(pos_n)
-
-        values_pos = positions
     else:
         positions = values_pos
 
-    time_pos = positions[0]
-    ch4_pos = positions[1]
-    c2h2_pos = positions[2]
-    c2h4_pos = positions[3]
+    time_pos = positions[0] + 1
+    ch4_pos = positions[1] + 1
+    c2h2_pos = positions[2] + 1
+    c2h4_pos = positions[3] + 1
+
+    print(time_pos, ch4_pos, c2h2_pos, c2h4_pos)
 
     if 'discard_zeros' in kwargs:
         discard_zeros = kwargs['discard_zeros']
@@ -470,15 +471,42 @@ def create_duval_2_multi_results_graph(samples_df, values_pos=[1, 5, 3, 6], colo
     if discard_zeros is True:
         samples_df = samples_df.loc[(samples_df[[df_sample.columns[ch4_pos-1], df_sample.columns[c2h2_pos-1], df_sample.columns[c2h4_pos-1]]] != 0).all(axis=1)]
 
-    # TODO add possibility to include metatext
+    # sort per timestamp if possible
+    try:
+        samples_df = samples_df.sort_values(by=samples_df.columns[time_pos-1])
+    except Exception as e:
+        print(f'Issue with timestamp sorting!\n time_pos: {time_pos}, column: {samples_df.columns[time_pos-1]}\n')
+        print(e)
+
     try:
         sample_num = 0
         for row in samples_df.itertuples(name=None):
             time, ch4, c2h2, c2h4, rowcolor = row[time_pos], row[ch4_pos], row[c2h2_pos], row[c2h4_pos], colorscale[sample_num]
+            print(time, ch4, c2h2, c2h4)
+            if meta_text_cols is not None:
+                if type(meta_text_cols) == list:
+                    meta = []
+                    for meta_col in meta_text_cols:
+                        if type(meta_col) == str:
+                            meta_pos = samples_df.columns.get_indexer([meta_col])[0] + 1
+                            meta.append(meta_col + ': ' + str(row[meta_pos]))
+                        else:
+                            meta_pos = meta_col + 1
+                            meta.append(str(row[meta_pos]))
+                elif type(meta_text_cols) == str:
+                    meta_pos = samples_df.columns.get_indexer([meta_text_cols])[0] + 1
+                    meta = str(row[meta_pos])
+                else:
+                    meta_pos = meta_text_cols + 1
+                    meta = str(row[meta_pos])
+            else:
+                meta = None
+
             sample_num+=1
             duval_result = calculate_duval_2_result(ch4, c2h2, c2h4)
             mark_name = f'{duval_result} {time}'
-            fig.add_trace(create_duval_2_marker(ch4, c2h2, c2h4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
+            fig.add_trace(create_duval_2_marker(ch4, c2h2, c2h4, marker_name=mark_name, timestamp=time, marker_color=rowcolor, meta_text=meta))
+        
         return fig
     except Exception as e:
         print(e)
@@ -684,8 +712,8 @@ if __name__ == "__main__":
                         'H2': [0, 10, 50, 100, 160, 250], 
                         'CH4': [0, 20, 41, 60, 66, 80], 
                         'C2H6': [0, 60, 121, 172, 200, 207], 
-                        'C2H4': [0, 5, 50, 60, 66, 67], 
-                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'C2H4': [0, 5, 50, 70, 100, 120], 
+                        'C2H2': [0, 1, 5, 10, 16, 20], 
                         'CO': [0, 150, 200, 400, 500, 600], 
                         'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
                         'O2': [0, 19000, 20005, 20100, 21000, 21010], 
@@ -694,7 +722,7 @@ if __name__ == "__main__":
 
     print(df_sample)
 
-    fig4 = create_duval_2_multi_results_graph(df_sample)
+    fig4 = create_duval_2_multi_results_graph(df_sample, meta_text=['Transformer age'])
     fig4.show()
 
     ch4_list= [[200, 50, 100, 200], [0, 20, 41, 60, 66, 80], [15, 60, 160]]
