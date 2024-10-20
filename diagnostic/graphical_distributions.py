@@ -16,6 +16,7 @@ This module calculates graphical diagnostic result related distribution lines & 
 # %%
 import numpy as np
 import plotly.graph_objects as go   # plotly is an interactive plotting library
+import plotly.figure_factory as ff
 from scipy.spatial import ConvexHull
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point
@@ -498,6 +499,117 @@ def point_density_calculation(xy_tuple_array):
     z = gaussian_kde(xy)(xy)
 
     return z
+
+def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis_names, **kwargs):
+
+    if 'show_centerpoint' in kwargs:
+        show_centerpoint = kwargs['show_centerpoint']
+    else:
+        show_centerpoint = False
+
+    if 'colorscale' in kwargs:
+        color_scale = kwargs['colorscale']
+    else:
+        color_scale = 'Bluered'
+
+    if 'show_markers' in kwargs:
+        show_markers = kwargs['show_markers']
+    else:
+        show_markers = False
+
+    if 'contour_n' in kwargs:
+        contour_n = kwargs['contour_n']
+    else:
+        contour_n = 20
+
+    if 'discard_zeros' in kwargs:
+        discard_zeros = kwargs['discard_zeros']
+    else:
+        discard_zeros = False
+
+    if 'cutoff' in kwargs:
+        cutoff = kwargs['cutoff']
+    else:
+        cutoff = False
+
+    if 'cutoff_direction' in kwargs:
+        cutoff_direction = kwargs['cutoff_direction']
+    else:
+        cutoff_direction = '>'
+
+    # data cleanup by cutoff or discard zeros
+    # if cutoff active discard zeros is skipped
+    if  cutoff != False:
+        new_a = []
+        new_b = []
+        new_c = []
+
+        for a_grp, b_grp, c_grp in zip(a_groups, b_groups, c_groups):
+            grp_data = np.array((a_grp, b_grp, c_grp))
+            grp_data_t = np.transpose(grp_data)
+
+            # if smaller than direction, the cutoff will drop based on if ALL are smaller than
+            if cutoff_direction == '<':
+                clean_grp_data = grp_data_t[~np.all(grp_data_t < cutoff, axis=1)]
+
+            elif cutoff_direction == '<=':
+                clean_grp_data = grp_data_t[~np.all(grp_data_t <= cutoff, axis=1)]
+
+            # if greater than direction, the cutoff will drop based on if ANY of the values isn't greater than 
+            elif cutoff_direction == '>=':
+                clean_grp_data = grp_data_t[np.any(grp_data_t >= cutoff, axis=1)]
+
+            else:
+                clean_grp_data = grp_data_t[np.any(grp_data_t > cutoff, axis=1)]
+
+            new_a.append(clean_grp_data[:, 0].tolist())
+            new_b.append(clean_grp_data[:, 1].tolist())
+            new_c.append(clean_grp_data[:, 2].tolist())
+
+        a_groups = new_a
+        b_groups = new_b
+        c_groups = new_c
+
+    elif discard_zeros != False:
+        new_a = []
+        new_b = []
+        new_c = []
+
+        for a_grp, b_grp, c_grp in zip(a_groups, b_groups, c_groups):
+            grp_data = np.array((a_grp, b_grp, c_grp))
+            grp_data_t = np.transpose(grp_data)
+
+            clean_grp_data = grp_data_t[~np.all(grp_data_t == 0, axis=1)]
+
+        a_groups = new_a
+        b_groups = new_b
+        c_groups = new_c
+
+    centerpoints, centerpoint_ternary, cartesian_group = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups)
+
+    z_data = point_density_calculation(cartesian_group[0])
+
+    fig = ff.create_ternary_contour(np.array([a_groups[0], b_groups[0], c_groups[0]]), z_data,
+                                    pole_labels=axis_names,
+                                    ncontours=contour_n,
+                                    coloring='lines',
+                                    colorscale=color_scale,
+                                    showmarkers=show_markers)
+    
+    if show_centerpoint is True:
+        fig.add_trace(go.Scatterternary(a= [centerpoint_ternary[0][0]],
+                                            b= [centerpoint_ternary[0][1]],
+                                            c= [centerpoint_ternary[0][2]],
+                                            name= f'centerpoint',
+                                            mode='markers',
+                                            marker_symbol='marker',
+                                            marker_color='red',
+                                            marker_size=10,
+                                            meta= [f'centerpoint'],
+                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+
+    fig.update_layout(template=None, ternary_sum=100)
+    return fig
 
 
 # %%
