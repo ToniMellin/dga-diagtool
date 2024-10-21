@@ -21,8 +21,8 @@ import pandas as pd
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import plotly.colors as pcolors
 
-from graphical_distributions import create_ternary_group_distribution_data as ternary_distribution_data
-from graphical_distributions import create_ternary_density_distribution_graph
+from graphical_distributions import create_ternary_group_distribution_data as ternary_distance_distribution_data
+from graphical_distributions import create_ternary_density_distribution_graph as ternary_density_distribution_graph
 
 # * Triangle 2 fault area ternary coordinate constants (plotly: a, b, c) *
 TRIANGLE2_N_A = [19, 19, 2, 2, 19]
@@ -288,7 +288,7 @@ def create_duval_2_nocolor(legend_show=False):
     
     return fig
 
-def round_half_up(n, decimals=0):
+def round_up(n, decimals=0):
     # rounding values
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
@@ -311,9 +311,9 @@ def calculate_duval_2_coordinates(ch4, c2h2, c2h4, rounding=False):
     if rounding is False:
        coordinates = np.array([x, y, z])
     elif type(rounding) is int:
-        coordinates = round_half_up(np.array([x, y, z]), rounding)
+        coordinates = round_up(np.array([x, y, z]), rounding)
     else:
-        coordinates = round_half_up(np.array([x, y, z]), 2)
+        coordinates = round_up(np.array([x, y, z]), 2)
     
     return coordinates
     
@@ -554,9 +554,7 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
 
             
             coord_list_t = np.transpose(coord_list)
-            print(f'\nDuval triangle {group_name} graph coordinates')
-            print(coord_list)
-            print(coord_list_t)
+            #print(f'\nDuval triangle {group_name} graph coordinates')
             fig.add_trace(go.Scatterternary(a= coord_list_t[0],
                                             b= coord_list_t[1],
                                             c= coord_list_t[2],
@@ -572,7 +570,7 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
 
     return fig
 
-def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=False, **kwargs):
+def create_duval_2_group_distance_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=False, **kwargs):
 
     center_marker_symbol_list = ['diamond', 'square', 'x-thin', 'cross-thin', 
                           'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
@@ -621,15 +619,14 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
     else:
         cutoff_direction = '>'
 
-    # TODO implement plotting of points as per percentile grouping
     # TODO fix ternary rounding
     try:
         if cutoff != False:
-            center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd, cutoff=cutoff, cutoff_direction=cutoff_direction)
+            center, ternary_edge, cartesian_edge = ternary_distance_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd, cutoff=cutoff, cutoff_direction=cutoff_direction)
         elif discard_zeros != False:
-            center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd, discard_zeros=discard_zeros)
+            center, ternary_edge, cartesian_edge = ternary_distance_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd, discard_zeros=discard_zeros)
         else:
-            center, ternary_edge, cartesian_edge = ternary_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
+            center, ternary_edge, cartesian_edge = ternary_distance_distribution_data(ch4_groups, c2h2_groups, c2h4_groups, dist_perc, ter_rnd)
 
         g = 0
         for cent, ter_edge, grp_name in zip(center, ternary_edge, group_names):
@@ -686,7 +683,7 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
 
     return fig
 
-def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, **kwargs):
+def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, **kwargs):
 
     if 'ternary_rounding' in kwargs:
         ter_rnd = kwargs['ternary_rounding']
@@ -708,11 +705,6 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
     else:
         cutoff_direction = '>'
 
-    if 'show_centerpoint' in kwargs:
-        show_centerpoint = kwargs['show_centerpoint']
-    else:
-        show_centerpoint = False
-
     if 'colorscale' in kwargs:
         color_scale = kwargs['colorscale']
     else:
@@ -728,82 +720,239 @@ def create_duval_2_group_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups
     else:
         contour_n = 20
 
+    if 'group_names' in kwargs:
+        group_names = kwargs['group_names']
+    else:
+        group_names = False
 
-    fig = create_ternary_density_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, axis_names=['CH4', 'C2H2', 'C2H4'], color_scale=color_scale, cutoff=cutoff, cutoff_direction=cutoff_direction, discard_zeros=discard_zeros, show_centerpoint=show_centerpoint, show_markers=show_markers, contour_n=contour_n)
+    if 'marker_compare' in kwargs:
+        marker_compare = kwargs['marker_compare']
+    else:
+        marker_compare = False
 
-    #N
-    fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
-                                    b= TRIANGLE2_N_B,
-                                    c= TRIANGLE2_N_C,
-                                    name='N',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
-    #T2
-    fig.add_trace(go.Scatterternary(a= TRIANGLE2_T2_A,
-                                    b= TRIANGLE2_T2_B,
-                                    c= TRIANGLE2_T2_C,
-                                    name='T2',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
-    #T3
-    fig.add_trace(go.Scatterternary(a= TRIANGLE2_T3_A,
-                                    b= TRIANGLE2_T3_B,
-                                    c= TRIANGLE2_T3_C,
-                                    name='T3',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
 
-    #X1
-    fig.add_trace(go.Scatterternary(a= TRIANGLE2_X1_A,
-                                    b= TRIANGLE2_X1_B,
-                                    c= TRIANGLE2_X1_C,
-                                    name='X1',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
-    #D1
-    fig.add_trace(go.Scatterternary(a= TRIANGLE2_D1_A,
-                                    b= TRIANGLE2_D1_B,
-                                    c= TRIANGLE2_D1_C,
-                                    name='D1',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
-    #X3
-    fig.add_trace(go.Scatterternary(a= TRIANGLE2_X3_A,
-                                    b= TRIANGLE2_X3_B,
-                                    c= TRIANGLE2_X3_C,
-                                    name='X3',
-                                    showlegend=False,
-                                    mode='lines',
-                                    line_color='black',
-                                    line_width=0.5
-                                    ))
+    fig = ternary_density_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, axis_names=['CH4', 'C2H2', 'C2H4'], color_scale=color_scale, cutoff=cutoff, cutoff_direction=cutoff_direction, discard_zeros=discard_zeros, show_markers=show_markers, contour_n=contour_n, group_names=group_names, marker_compare=marker_compare)
+
+    if len(ch4_groups) > 1:
+        for g in range(1, len(ch4_groups)+1):
+            row_n = int(round_up(g/2, 0)) 
+            col_n = 1 + (g % 2)
+            #N
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
+                                            b= TRIANGLE2_N_B,
+                                            c= TRIANGLE2_N_C,
+                                            name='N',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=row_n, col=col_n)
+            #T2
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_T2_A,
+                                            b= TRIANGLE2_T2_B,
+                                            c= TRIANGLE2_T2_C,
+                                            name='T2',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=row_n, col=col_n)
+            #T3
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_T3_A,
+                                            b= TRIANGLE2_T3_B,
+                                            c= TRIANGLE2_T3_C,
+                                            name='T3',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=row_n, col=col_n)
+            #X1
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_X1_A,
+                                            b= TRIANGLE2_X1_B,
+                                            c= TRIANGLE2_X1_C,
+                                            name='X1',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=row_n, col=col_n)
+            #D1
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_D1_A,
+                                            b= TRIANGLE2_D1_B,
+                                            c= TRIANGLE2_D1_C,
+                                            name='D1',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=row_n, col=col_n)
+            #X3
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_X3_A,
+                                            b= TRIANGLE2_X3_B,
+                                            c= TRIANGLE2_X3_C,
+                                            name='X3',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=row_n, col=col_n)
+            
+            # Annotations
+            fig.add_trace(go.Scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+                                    mode='text', text=['D1', 'N'], hoverinfo='skip',
+                                    showlegend=False), row=row_n, col=col_n)
+            fig.add_trace(go.Scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+                                    mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
+                                    showlegend=False), row=row_n, col=col_n)
+
+    elif marker_compare is True:
+        for c in range(1, 3):
+            #N
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
+                                            b= TRIANGLE2_N_B,
+                                            c= TRIANGLE2_N_C,
+                                            name='N',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=1, col=c)
+            #T2
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_T2_A,
+                                            b= TRIANGLE2_T2_B,
+                                            c= TRIANGLE2_T2_C,
+                                            name='T2',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=1, col=c)
+            #T3
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_T3_A,
+                                            b= TRIANGLE2_T3_B,
+                                            c= TRIANGLE2_T3_C,
+                                            name='T3',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=1, col=c)
+            #X1
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_X1_A,
+                                            b= TRIANGLE2_X1_B,
+                                            c= TRIANGLE2_X1_C,
+                                            name='X1',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=1, col=c)
+            #D1
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_D1_A,
+                                            b= TRIANGLE2_D1_B,
+                                            c= TRIANGLE2_D1_C,
+                                            name='D1',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=1, col=c)
+            #X3
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_X3_A,
+                                            b= TRIANGLE2_X3_B,
+                                            c= TRIANGLE2_X3_C,
+                                            name='X3',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ), row=1, col=c)
+            
+            # Annotations
+            fig.add_trace(go.Scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+                                    mode='text', text=['D1', 'N'], hoverinfo='skip',
+                                    showlegend=False), row=1, col=c)
+            fig.add_trace(go.Scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+                                    mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
+                                    showlegend=False), row=1, col=c)
+
+    else:
+
+        #N
+        fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
+                                        b= TRIANGLE2_N_B,
+                                        c= TRIANGLE2_N_C,
+                                        name='N',
+                                        showlegend=False,
+                                        mode='lines',
+                                        line_color='black',
+                                        line_width=0.5
+                                        ))
+        #T2
+        fig.add_trace(go.Scatterternary(a= TRIANGLE2_T2_A,
+                                        b= TRIANGLE2_T2_B,
+                                        c= TRIANGLE2_T2_C,
+                                        name='T2',
+                                        showlegend=False,
+                                        mode='lines',
+                                        line_color='black',
+                                        line_width=0.5
+                                        ))
+        #T3
+        fig.add_trace(go.Scatterternary(a= TRIANGLE2_T3_A,
+                                        b= TRIANGLE2_T3_B,
+                                        c= TRIANGLE2_T3_C,
+                                        name='T3',
+                                        showlegend=False,
+                                        mode='lines',
+                                        line_color='black',
+                                        line_width=0.5
+                                        ))
+
+        #X1
+        fig.add_trace(go.Scatterternary(a= TRIANGLE2_X1_A,
+                                        b= TRIANGLE2_X1_B,
+                                        c= TRIANGLE2_X1_C,
+                                        name='X1',
+                                        showlegend=False,
+                                        mode='lines',
+                                        line_color='black',
+                                        line_width=0.5
+                                        ))
+        #D1
+        fig.add_trace(go.Scatterternary(a= TRIANGLE2_D1_A,
+                                        b= TRIANGLE2_D1_B,
+                                        c= TRIANGLE2_D1_C,
+                                        name='D1',
+                                        showlegend=False,
+                                        mode='lines',
+                                        line_color='black',
+                                        line_width=0.5
+                                        ))
+        #X3
+        fig.add_trace(go.Scatterternary(a= TRIANGLE2_X3_A,
+                                        b= TRIANGLE2_X3_B,
+                                        c= TRIANGLE2_X3_C,
+                                        name='X3',
+                                        showlegend=False,
+                                        mode='lines',
+                                        line_color='black',
+                                        line_width=0.5
+                                        ))
+        
+        # Annotations
+        fig.add_scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+                                mode='text', text=['D1', 'N'], hoverinfo='skip',
+                                showlegend=False)
+        fig.add_scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+                                mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
+                                showlegend=False)
     
-    # Annotations
-    fig.add_scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
-                            mode='text', text=['D1', 'N'], hoverinfo='skip',
-                            showlegend=False)
-    fig.add_scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
-                            mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
-                            showlegend=False)
     fig.update_ternaries(bgcolor='#FFFFFF', 
-                    aaxis=dict(linecolor='#000000', gridcolor='#FFFFFF', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
-                    baxis=dict(linecolor='#000000', gridcolor='#FFFFFF', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
-                    caxis=dict(linecolor='#000000', gridcolor='#FFFFFF', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                    aaxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                    baxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                    caxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
                     aaxis_title_text='CH4',
                     baxis_title_text='C2H2',
                     caxis_title_text='C2H4')
@@ -873,11 +1022,15 @@ if __name__ == "__main__":
     c2h2_long2 = (np.random.random_sample(size = 100)*100).tolist()
 
     c2h4_long2 = (np.random.random_sample(size = 100)*100).tolist()
-    
-    figD = create_duval_2_group_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'])
+
+
+    figD = create_duval_2_group_density_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], axis_names=['CH4', 'C2H2', 'C2H4'], group_names=['grp1', 'grp2'], show_markers=True)
     figD.show()
 
-    figD = create_duval_2_group_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'], dash_mode = True)
-    figD.show()
+    figD2 = create_duval_2_group_distance_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'])
+    figD2.show()
+
+    figP3 = create_duval_2_group_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'])
+    figP3.show()
 
 # %%

@@ -17,6 +17,7 @@ This module calculates graphical diagnostic result related distribution lines & 
 import numpy as np
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import plotly.figure_factory as ff
+from plotly.subplots import make_subplots
 from scipy.spatial import ConvexHull
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point
@@ -254,7 +255,6 @@ def calculate_ternary_group_centerpoint(group_coord_a, group_coord_b, group_coor
     
     return centerpoint_array.tolist(), centerpoint_ternary_array.tolist(), cartesian_coordinates_array
 
-# TODO test and fix ternary group disribution data function
 def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverted_percentiles=[100, 75, 50, 25, 0], ternary_rounding=2, **kwargs):
 
     if type(a_groups[0]) is not list:
@@ -349,8 +349,6 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         c_groups = new_c
 
 
-    
-    # TODO groups don't need to loop if functions can handle groups...
     group_center, group_center_ternary, group_cartesian_coordinates = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups, False, False)
 
     # create groups with distances data
@@ -396,7 +394,6 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         all_groups_distances_in_percentiles.append(distances_in_percentiles)
         all_groups_cartesian_in_percentiles.append(cartesian_in_percentiles)
 
-    # TODO append values to higher percentiles if those values are outside the higher percentile convex hull
     # https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl
     all_groups_edges_cartesian = []
     all_groups_edges_ternary = []
@@ -405,7 +402,7 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
         group_size = len(p_groups)
 
         total_group_outer_edge = calculate_group_outer_edges(full_group)
-        # TODO change the check for lower percentile points out of current outer edge bounds to go through the whole stack of lower percentile groups left
+        
         for p, perc_group in enumerate(p_groups):
             if p == 0:
                 group_edges_all.append(total_group_outer_edge)
@@ -417,22 +414,28 @@ def create_ternary_group_distribution_data(a_groups, b_groups, c_groups, inverte
             # checking for points left out of the current outer edge in the next groups outer edge
             
             if p < (group_size-1):
-                next_group_outer_edge = calculate_group_outer_edges(p_groups[p+1])
                 grp_polygon = Polygon(group_outer_edge)
-                
+
+                smaller_percentile_edges = []
+                for r in range(p+1, group_size):
+                    next_group_outer_edge = calculate_group_outer_edges(p_groups[r])
+                    smaller_percentile_edges.append(next_group_outer_edge)
+                    
                 outside_points = np.array([])
-                for n, nxt_point in enumerate(next_group_outer_edge):
+                for small_p_edge in smaller_percentile_edges:
+                
+                    for n, nxt_point in enumerate(small_p_edge):
 
-                    if n > (len(next_group_outer_edge) - 2):
-                        continue
+                        if n > (len(small_p_edge) - 2):
+                            continue
 
-                    point = Point(nxt_point)
+                        point = Point(nxt_point)
 
-                    if ((grp_polygon.contains(point) is False) or (point.distance(grp_polygon) > EPSILON)):
-                        if outside_points.size == 0:
-                            outside_points = np.array([nxt_point])
-                        else:
-                            outside_points = np.append(outside_points, [nxt_point], axis=0)
+                        if ((grp_polygon.contains(point) is False) or (point.distance(grp_polygon) > EPSILON)):
+                            if outside_points.size == 0:
+                                outside_points = np.array([nxt_point])
+                            else:
+                                outside_points = np.append(outside_points, [nxt_point], axis=0)
 
                 # adding points left outside the current groups outer edge and recalculating outer edge
                 if outside_points.shape[0] > 0:
@@ -502,10 +505,17 @@ def point_density_calculation(xy_tuple_array):
 
 def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis_names, **kwargs):
 
-    if 'show_centerpoint' in kwargs:
-        show_centerpoint = kwargs['show_centerpoint']
-    else:
-        show_centerpoint = False
+    if type(a_groups[0]) is not list:
+        a_groups = [a_groups]
+        b_groups = [b_groups]
+        c_groups = [c_groups]
+
+    a_groups_len = [len(x) for x in a_groups]
+    b_groups_len = [len(x) for x in b_groups]
+    c_groups_len = [len(x) for x in c_groups]
+
+    if a_groups_len != b_groups_len or b_groups_len != c_groups_len or a_groups_len != c_groups_len:
+        raise Exception('Uneven group coordinates')
 
     if 'colorscale' in kwargs:
         color_scale = kwargs['colorscale']
@@ -536,6 +546,24 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
         cutoff_direction = kwargs['cutoff_direction']
     else:
         cutoff_direction = '>'
+
+    if 'group_names' in kwargs:
+        group_names = kwargs['group_names']
+        if group_names is False:
+            group_names = []
+            group_range= len(a_groups) + 1
+            for grp in range(1, group_range):
+                group_names.append(f'group_{grp}')
+    else:
+        group_names = []
+        group_range= len(a_groups) + 1
+        for grp in range(1, group_range):
+            group_names.append(f'group_{grp}')
+
+    if 'marker_compare' in kwargs:
+        marker_compare = kwargs['marker_compare']
+    else:
+        marker_compare = False
 
     # data cleanup by cutoff or discard zeros
     # if cutoff active discard zeros is skipped
@@ -587,28 +615,86 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
 
     centerpoints, centerpoint_ternary, cartesian_group = calculate_ternary_group_centerpoint(a_groups, b_groups, c_groups)
 
-    z_data = point_density_calculation(cartesian_group[0])
+    group_ternary_coords = calculate_ternary_coordinates_multi_ppm(a_groups, b_groups, c_groups)
 
-    fig = ff.create_ternary_contour(np.array([a_groups[0], b_groups[0], c_groups[0]]), z_data,
-                                    pole_labels=axis_names,
-                                    ncontours=contour_n,
-                                    coloring='lines',
-                                    colorscale=color_scale,
-                                    showmarkers=show_markers)
+    if len(a_groups) > 1:
+        rows_needed = int(round_up(len(a_groups)/2, 0))
+
+        if rows_needed == 1:
+            fig = make_subplots(rows=rows_needed, cols=2, start_cell="top-left", 
+                                specs=[[{"type": "scatterternary"}, {"type": "scatterternary"}]]
+            )
+            
+        elif rows_needed == 2:
+            fig = make_subplots(rows=rows_needed, cols=2, start_cell="top-left", 
+                                specs=[[{"type": "scatterternary"}, {"type": "scatterternary"}], 
+                                        [{"type": "scatterternary"}, {"type": "scatterternary"}]]
+            )
+            
+
+        for g, group_name, group_data, cart_group in zip(range(1, len(a_groups)+1), group_names, group_ternary_coords, cartesian_group):
+            z_data = point_density_calculation(cart_group)
+            
+            row_n = int(round_up(g/2, 0)) 
+            col_n = 1 + ((g - 1) % 2)
+            fig_c = ff.create_ternary_contour(np.array([group_data[:, 0], group_data[:, 1], group_data[:, 2]]), z_data,
+                                        pole_labels=axis_names,
+                                        ncontours=contour_n,
+                                        coloring='lines',
+                                        colorscale=color_scale,
+                                        showmarkers=show_markers)
+
+                
+            for trace_data in fig_c['data']:
+                fig.append_trace(trace_data, row=row_n, col=col_n)
+
+            t_x = ((g - 1) % 2) * 0.5
+            t_y = 0.98 / row_n
+            fig.add_annotation(dict(x=t_x, y=t_y,   ax=0, ay=0,
+                    xref = "paper", yref = "paper",
+                    font_size=18, 
+                    text= f"{group_name}"
+                  ))
     
-    if show_centerpoint is True:
-        fig.add_trace(go.Scatterternary(a= [centerpoint_ternary[0][0]],
-                                            b= [centerpoint_ternary[0][1]],
-                                            c= [centerpoint_ternary[0][2]],
-                                            name= f'centerpoint',
-                                            mode='markers',
-                                            marker_symbol='marker',
-                                            marker_color='red',
-                                            marker_size=10,
-                                            meta= [f'centerpoint'],
-                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+    elif marker_compare is True:
+        z_data = point_density_calculation(cartesian_group[0])
 
-    fig.update_layout(template=None, ternary_sum=100)
+        fig = make_subplots(rows=1, cols=2, start_cell="top-left", 
+                            specs=[[{"type": "scatterternary"}, {"type": "scatterternary"}]])
+
+        fig_c1 = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
+                                        pole_labels=axis_names,
+                                        ncontours=contour_n,
+                                        coloring='lines',
+                                        colorscale=color_scale,
+                                        showmarkers=False)
+            
+        fig_c2 = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
+                                        pole_labels=axis_names,
+                                        ncontours=contour_n,
+                                        coloring='lines',
+                                        colorscale=color_scale,
+                                        showmarkers=True)
+            
+        for fig_s1 in fig_c1['data']:
+            fig.append_trace(fig_s1, 1, 1)
+        
+        for fig_s2 in fig_c2['data']:
+            fig.append_trace(fig_s2, 1, 2)
+            
+    
+    else:
+        z_data = point_density_calculation(cartesian_group[0])
+
+        fig = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
+                                        pole_labels=axis_names,
+                                        ncontours=contour_n,
+                                        coloring='lines',
+                                        colorscale=color_scale,
+                                        showmarkers=show_markers)
+        
+
+    fig.update_layout(template=None, ternary_sum=100, showlegend=False)
     return fig
 
 
