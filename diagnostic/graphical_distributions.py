@@ -515,7 +515,12 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
     c_groups_len = [len(x) for x in c_groups]
 
     if a_groups_len != b_groups_len or b_groups_len != c_groups_len or a_groups_len != c_groups_len:
-        raise Exception('Uneven group coordinates')
+        raise Exception(f'Uneven group coordinates!! {a_groups_len}, {b_groups_len}, {c_groups_len}')
+
+    group_n = len(a_groups)
+
+    if group_n > 4:
+        raise Exception(f'Max 4 groups allowed for ternanry density plotting!! Given {group_n} groups!')
 
     if 'colorscale' in kwargs:
         color_scale = kwargs['colorscale']
