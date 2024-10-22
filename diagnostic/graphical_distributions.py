@@ -622,6 +622,8 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
 
     group_ternary_coords = calculate_ternary_coordinates_multi_ppm(a_groups, b_groups, c_groups)
 
+    no_issues_with_data = True
+
     if len(a_groups) > 1:
         rows_needed = int(round_up(len(a_groups)/2, 0))
 
@@ -638,10 +640,39 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
             
 
         for g, group_name, group_data, cart_group in zip(range(1, len(a_groups)+1), group_names, group_ternary_coords, cartesian_group):
-            z_data = point_density_calculation(cart_group)
-            
+
             row_n = int(round_up(g/2, 0)) 
             col_n = 1 + ((g - 1) % 2)
+
+            try:
+                z_data = point_density_calculation(cart_group)
+
+            except np.linalg.LinAlgError:
+                print(f'Incompatible data for density calculation! {cartesian_group[g-1]}')
+                no_issues_with_data = False
+
+                fig_issue = go.Figure(layout=dict(ternary_sum=100, template=None))
+                fig_issue.add_trace(go.Scatterternary(a=group_data[:, 0],
+                                            b=group_data[:, 1],
+                                            c=group_data[:, 2],
+                                            name= f'{group_name}',
+                                            mode='markers',
+                                            marker_color='blue',
+                                            marker_size=10,
+                                            meta= [f'{group_name}'],
+                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                fig_issue.add_trace(go.Scatterternary(a=[34], b=[33], c=[33],
+                                                    mode='text', text=['DATA ISSUE'], textfont=dict(size=30, color='red'),  hoverinfo='skip',
+                                                    showlegend=False))
+                
+                for trace_data in fig_issue['data']:
+                    fig.append_trace(trace_data, row=row_n, col=col_n)
+                continue
+
+            except Exception as e:
+                print(e)
+                return
+
             fig_c = ff.create_ternary_contour(np.array([group_data[:, 0], group_data[:, 1], group_data[:, 2]]), z_data,
                                         pole_labels=axis_names,
                                         ncontours=contour_n,
@@ -662,10 +693,49 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                   ))
     
     elif marker_compare is True:
-        z_data = point_density_calculation(cartesian_group[0])
 
         fig = make_subplots(rows=1, cols=2, start_cell="top-left", 
                             specs=[[{"type": "scatterternary"}, {"type": "scatterternary"}]])
+        
+        try:
+            z_data = point_density_calculation(cartesian_group[0])
+        except np.linalg.LinAlgError:
+            print(f'Incompatible data for density calculation! {cartesian_group[0]}')
+            no_issues_with_data = False
+
+            for cl in range(1, 3):
+                fig_issue = go.Figure(layout=dict(ternary_sum=100, template=None))
+                fig_issue.add_trace(go.Scatterternary(a=group_ternary_coords[0][:, 0],
+                                            b=group_ternary_coords[0][:, 1],
+                                            c=group_ternary_coords[0][:, 2],
+                                            name= f'Data',
+                                            mode='markers',
+                                            marker_color='blue',
+                                            marker_size=10,
+                                            meta= [f'Data'],
+                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                fig_issue.add_trace(go.Scatterternary(a=[34], b=[33], c=[33],
+                                                    mode='text', text=['DATA ISSUE'], textfont=dict(size=30, color='red'),  hoverinfo='skip',
+                                                    showlegend=False))
+                
+                for trace_data in fig_issue['data']:
+                    fig.append_trace(trace_data, row=1, col=cl)
+
+            fig.update_layout(template=None, ternary_sum=100, showlegend=False)
+
+            fig.add_annotation(dict(x=0.5, y=0.5,
+                        xref = "paper", yref = "paper",
+                        textangle=-30,
+                        font=dict(size=50, color='red'), 
+                        text= f"Incompatible data",
+                        clicktoshow='onout'
+                    ))
+                
+            return fig
+        
+        except Exception as e:
+            print(e)
+            return
 
         fig_c1 = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
                                         pole_labels=axis_names,
@@ -689,7 +759,38 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
             
     
     else:
-        z_data = point_density_calculation(cartesian_group[0])
+        try:
+            z_data = point_density_calculation(cartesian_group[0])
+        except np.linalg.LinAlgError:
+            print(f'Incompatible data for density calculation! {cartesian_group[0]}')
+            no_issues_with_data = False
+
+            fig_issue = go.Figure(layout=dict(ternary_sum=100, template=None))
+            fig_issue.add_trace(go.Scatterternary(a=group_ternary_coords[0][:, 0],
+                                        b=group_ternary_coords[0][:, 1],
+                                        c=group_ternary_coords[0][:, 2],
+                                        name= f'Data',
+                                        mode='markers',
+                                        marker_color='blue',
+                                        marker_size=10,
+                                        meta= [f'Data'],
+                                        hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+        
+            fig_issue.add_annotation(dict(x=0.5, y=0.5,
+                    xref = "paper", yref = "paper",
+                    textangle=-30,
+                    font=dict(size=50, color='red'), 
+                    text= f"Incompatible data",
+                    clicktoshow='onout'
+                  ))
+            
+            fig_issue.update_layout(template=None, ternary_sum=100, showlegend=False)
+
+            return fig_issue
+
+        except Exception as e:
+            print(e)
+            return
 
         fig = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
                                         pole_labels=axis_names,
@@ -700,6 +801,16 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
         
 
     fig.update_layout(template=None, ternary_sum=100, showlegend=False)
+
+    if no_issues_with_data is False:
+        fig.add_annotation(dict(x=0.5, y=0.5,
+                    xref = "paper", yref = "paper",
+                    textangle=-30,
+                    font=dict(size=50, color='red'), 
+                    text= f"Incompatible data",
+                    clicktoshow='onout'
+                  ))
+        
     return fig
 
 
@@ -800,5 +911,12 @@ if __name__ == '__main__':
     
 
     center, ternary_edge, cartesian_edge = create_ternary_group_distribution_data(ch4_long, c2h2_long, c2h4_long, [100, 75, 50, 25, 0], 3)
+
+    issue_ch4 = [1, 7, 10, 10]
+    issue_c2h2 = [0, 0, 0, 0]
+    issue_c2h4 = [0, 0, 0, 1]
+
+    issue_centerpoints, issue_centerpoint_ternary, issue_cartesian_group = calculate_ternary_group_centerpoint(issue_ch4, issue_c2h2, issue_c2h4)
+    create_ternary_density_distribution_graph([issue_ch4, issue_ch4], [issue_c2h2, issue_c2h2], [issue_c2h4, issue_c2h4], ['CH4', 'C2H2', 'C2H4'])
 
 # %%

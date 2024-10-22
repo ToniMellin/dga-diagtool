@@ -128,9 +128,9 @@ def create_duval_2_colorized(legend_show=False):
                                     ))
     
     # Annotations
-    fig.add_scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+    fig.add_scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
                             mode='text', text=['D1', 'N'], hoverinfo='none', showlegend=legend_show)
-    fig.add_scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+    fig.add_scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                             mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='none',
                             showlegend=legend_show)
     
@@ -248,10 +248,10 @@ def create_duval_2_nocolor(legend_show=False):
                                     ))
     
     # Annotations
-    fig.add_scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+    fig.add_scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
                             mode='text', text=['D1', 'N'], hoverinfo='skip',
                             showlegend=legend_show)
-    fig.add_scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+    fig.add_scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                             mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                             showlegend=legend_show)
     
@@ -799,10 +799,10 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
                                             ), row=row_n, col=col_n)
             
             # Annotations
-            fig.add_trace(go.Scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+            fig.add_trace(go.Scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
                                     mode='text', text=['D1', 'N'], hoverinfo='skip',
                                     showlegend=False), row=row_n, col=col_n)
-            fig.add_trace(go.Scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+            fig.add_trace(go.Scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                                     mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                                     showlegend=False), row=row_n, col=col_n)
 
@@ -870,10 +870,10 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
                                             ), row=1, col=c)
             
             # Annotations
-            fig.add_trace(go.Scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+            fig.add_trace(go.Scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
                                     mode='text', text=['D1', 'N'], hoverinfo='skip',
                                     showlegend=False), row=1, col=c)
-            fig.add_trace(go.Scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+            fig.add_trace(go.Scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                                     mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                                     showlegend=False), row=1, col=c)
 
@@ -942,10 +942,10 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
                                         ))
         
         # Annotations
-        fig.add_scatterternary(a=[10, 11], b=[87, 73], c=[3, 14],
+        fig.add_scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
                                 mode='text', text=['D1', 'N'], hoverinfo='skip',
                                 showlegend=False)
-        fig.add_scatterternary(a=[50, 30, 55, 20], b=[38, 30, 8, 7.5], c=[12, 40, 37, 72.5],
+        fig.add_scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                                 mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                                 showlegend=False)
     
@@ -1025,6 +1025,13 @@ if __name__ == "__main__":
 
 
     figD = create_duval_2_group_density_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], axis_names=['CH4', 'C2H2', 'C2H4'], group_names=['grp1', 'grp2'], show_markers=True)
+    figD.show()
+
+    issue_ch4 = [1, 7, 10, 10]
+    issue_c2h2 = [0, 0, 0, 0]
+    issue_c2h4 = [0, 0, 0, 1]
+
+    figD = create_duval_2_group_density_distribution_graph([ch4_long, issue_ch4], [c2h2_long, issue_c2h2], [c2h4_long, issue_c2h4], axis_names=['CH4', 'C2H2', 'C2H4'], group_names=['grp1', 'grp2'], show_markers=True)
     figD.show()
 
     figD2 = create_duval_2_group_distance_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], ['grp1', 'grp2'])
