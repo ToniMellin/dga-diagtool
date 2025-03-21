@@ -5,7 +5,7 @@ This module calculates graphical diagnostic result related distribution lines & 
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2024 Toni Mellin - All Rights Reserved
+* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
@@ -24,6 +24,28 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from ternary_to_cartesian_conversions import plotly_ternary_to_cartesian as ternary_to_cartesian
 from ternary_to_cartesian_conversions import cartesian_to_ternary_plotly_rounded as cartesian_to_ternary_rounded
+
+import plotly.io as pio
+import plotly.colors as pcolors
+import binascii
+
+# plotly custom theme as default
+pio.templates['custom_theme'] = pio.templates['plotly_white']
+pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
+pio.templates["custom_theme"].layout.annotations = [
+    dict(
+        name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
+        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        opacity=0.3,
+        font=dict(color="#FFFAFA", size=20),
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=-0.1,
+        showarrow=False,
+    )
+]
+pio.templates.default = 'custom_theme'
 
 # point & polygon comparison accuracy
 EPSILON = 1e-15

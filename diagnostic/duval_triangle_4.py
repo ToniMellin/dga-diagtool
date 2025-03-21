@@ -5,7 +5,7 @@ This module calculates duval triangle 4 related diagnostics and generates duval 
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2024 Toni Mellin - All Rights Reserved
+* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
@@ -20,6 +20,27 @@ from pandas import isna
 import pandas as pd
 import plotly.graph_objects as go   # plotly is an interactive plotting library
 import plotly.colors as pcolors
+
+import plotly.io as pio
+import binascii
+
+# plotly custom theme as default
+pio.templates['custom_theme'] = pio.templates['plotly_white']
+pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
+pio.templates["custom_theme"].layout.annotations = [
+    dict(
+        name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
+        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        opacity=0.3,
+        font=dict(color="#FFFAFA", size=20),
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=-0.1,
+        showarrow=False,
+    )
+]
+pio.templates.default = 'custom_theme'
 
 # * Triangle 4 fault area ternary coordinate constants (plotly: a, b, c) *
 

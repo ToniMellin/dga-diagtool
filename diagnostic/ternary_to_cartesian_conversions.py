@@ -5,7 +5,7 @@ This module makes ternary coordinate conversions to cartesian coordinates
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2024 Toni Mellin - All Rights Reserved
+* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *

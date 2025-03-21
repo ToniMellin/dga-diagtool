@@ -5,7 +5,7 @@ This module calculates duval triangle 2 (LTC) related diagnostics and generates 
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2024 Toni Mellin - All Rights Reserved
+* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
@@ -23,6 +23,27 @@ import plotly.colors as pcolors
 
 from graphical_distributions import create_ternary_group_distribution_data as ternary_distance_distribution_data
 from graphical_distributions import create_ternary_density_distribution_graph as ternary_density_distribution_graph
+
+import plotly.io as pio
+import binascii
+
+# plotly custom theme as default
+pio.templates['custom_theme'] = pio.templates['plotly_white']
+pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
+pio.templates["custom_theme"].layout.annotations = [
+    dict(
+        name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
+        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        opacity=0.3,
+        font=dict(color="#FFFAFA", size=20),
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=-0.1,
+        showarrow=False,
+    )
+]
+pio.templates.default = 'custom_theme'
 
 # * Triangle 2 fault area ternary coordinate constants (plotly: a, b, c) *
 TRIANGLE2_N_A = [19, 19, 2, 2, 19]
