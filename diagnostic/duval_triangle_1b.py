@@ -479,6 +479,14 @@ def calculate_duval_1b_result(ch4, c2h2, c2h4):
             x, y, z = calculate_duval_1b_coordinates(ch4, c2h2, c2h4)
             if x >= 98:
                 return 'PD'
+            elif z <= 23 and z >= 20 and x >= ((-4/3)*z+(131/3)) and x<= 39:
+                return 'D1-P'
+            elif z > 23  and x >= ((1/4)*z+(29/4)) and z <= ((-2/25)*x+(907/25)) and x <= ((-1/5)*z+(238/5)):
+                return 'D2-P'
+            elif (z <= 23 and y >= 13 and x > 39) or (z < 20 and x <= 39) or (z <= 23 and z >= 20 and x < ((-4/3)*z+(131/3))):
+                return 'D1-H'
+            elif (z >= 40 and y >= 29) or (z > 23 and x < ((1/4)*z+(29/4)) and z <= ((-2/25)*x+(907/25))) or (z > ((-2/25)*x+(907/25)) and z < 40 and y >= 13) or (y >= 13 and z <= ((-2/25)*x+(907/25)) and x > ((-1/5)*z+(238/5)) and z > 23):
+                return 'D2-H'
             elif z <= 23 and y >= 13:
                 return 'D1'
             elif (z <= 40 and z > 23 and y >= 13) or (z >= 40 and y >= 29):
