@@ -70,6 +70,8 @@ PD_H2_L2 = 1234
 
 
 def duval_limit_condition(fault_type, h2_ppm, ch4_ppm, c2h6_ppm, c2h4_ppm, c2h2_ppm):
+    # ch4_ppm used in C1, C2, C3 requires result from triangle 5b
+
     if (fault_type == 'N/A') or (fault_type == 'N/D'):
         return '-'
     
@@ -150,12 +152,39 @@ def duval_limit_condition(fault_type, h2_ppm, ch4_ppm, c2h6_ppm, c2h4_ppm, c2h2_
     
 def duval_limit_condition_series(h2_s, ch4_s, c2h6_s, c2h4_s, c2h2_s):
 
-    #TODO add triangle 1, 4 & 5 workflow
-    #TODO loop over all data and return series of results
     if (h2_s is None) or (c2h6_s is None) or (c2h4_s is None) or (c2h2_s is None):
-        result_series = None
+        return None
 
-    
+    limit_condition_list = []
+
+    for h2, ch4, c2h6, c2h4, c2h2 in zip(h2_s, ch4_s, c2h6_s, c2h4_s, c2h2_s):
+        d1b_result = duval_triangle_1b.calculate_duval_1b_result(ch4, c2h2, c2h4)
+
+        if d1b_result == 'PD' or d1b_result == 'T1':
+            d4_result = duval_triangle_4.calculate_duval_4_result(h2, c2h6, ch4)
+            
+            if d4_result == 'ND':
+                duval_result = d1b_result
+            else:
+                duval_result = d4_result
+
+        elif d1b_result == 'T2' or d1b_result == 'T3':
+            d5_result = duval_triangle_5.calculate_duval_5_result(ch4, c2h6, c2h4)
+
+            if d5_result == 'ND':
+                duval_result = d1b_result
+            else:
+                duval_result = d5_result
+        
+        else:
+            duval_result = d1b_result
+
+        limit_condition = duval_limit_condition(duval_result, h2, ch4, c2h6, c2h4, c2h2)
+        limit_condition_list.append(limit_condition)
+
+        #print(d1b_result, duval_result)
+        
+    result_series = pd.Series(limit_condition_list)
 
     return result_series
 
@@ -164,7 +193,7 @@ if __name__ == '__main__':
     df_sample3 = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                     'H2': [0, 10, 50, 100, 160, 250], 
                     'CH4': [0, 20, 41, 60, 66, 80], 
-                    'C2H6': [0, 60, 121, 172, 200, 207], 
+                    'C2H6': [0, 10, 21, 27, 30, 40], 
                     'C2H4': [0, 5, 50, 60, 66, 67], 
                     'C2H2': [0, 1, 2, 5, 6, 10], 
                     'CO': [0, 150, 200, 400, 500, 600], 
@@ -172,3 +201,7 @@ if __name__ == '__main__':
                     'O2': [0, 19000, 20005, 20100, 21000, 21010], 
                     'N2': [0, 51000, 52500, 53780, 54900, 55620], 
                     'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+    
+    cond_list = duval_limit_condition_series(df_sample3['H2'], df_sample3['CH4'], df_sample3['C2H6'], df_sample3['C2H4'], df_sample3['C2H2'])
+    print(cond_list)
+    
