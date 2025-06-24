@@ -82,58 +82,37 @@ def mann_kendall_method(gas_data, x_series, iii_a_rule=False, timeseries=None, s
     if len(gas_data) < 4:
         return None, None
     
-    # forward sequential
+    # segmentation loop
     segment_list = []
     i = 0
+    j = 0
     k = 0
     m = 4
-    while m < (len(gas_data)):
+    minimum_exists = False
+    maximum_exists = False
 
-        if m+2 == (len(gas_data)-1):
-            m=(len(gas_data)-1)
-            j = i
-            while j <= (m-3):
-                backward_gas_data = gas_data[i:j]
-                backward_gas_data_1 = gas_data[i:j-1]
-                backward_gas_data_2 = gas_data[i:j-2]
+    while i <= (len(gas_data)-3):
 
-                trend_b,h_b,p_b,z_b,tau_b,s_b,var_s_b,slope_b,intercept_b = pymannkendall.original_test(backward_gas_data)
-                trend_b1,h_b1,p_b1,z_b1,tau_b1,s_b1,var_s_b1,slope_b1,intercept_b1 = pymannkendall.original_test(backward_gas_data_1)
-                trend_b2,h_b2,p_b2,z_b2,tau_b2,s_b2,var_s_b2,slope_b2,intercept_b2 = pymannkendall.original_test(backward_gas_data_2)
+        for n in range(m, len(gas_data)+1):
+            forward_gas_data = gas_data[i:n]
+            forward_gas_data_1 = gas_data[i:n+1]
+            forward_gas_data_2 = gas_data[i:n+2]
 
-                if (p_b < 0.05) and (p_b < p_b1) and (p_b1 < p_b2):
-                    segment_list.append(gas_data[i:j-1])
-                    segment_list.append(gas_data[j:m])
+            trend,h,p,z,tau,s,var_s,slope,intercept = pymannkendall.original_test(forward_gas_data)
+            trend_1,h_1,p_1,z_1,tau_1,s_1,var_s_1,slope_1,intercept_1 = pymannkendall.original_test(forward_gas_data_1)
+            trend_2,h_2,p_2,z_2,tau_2,s_2,var_s_2,slope_2,intercept_2 = pymannkendall.original_test(forward_gas_data_2)
+            
+            if (p < 0.05) and (p < p_1) and (p < p_2):
+                minimum_exists = True
+                j = i
+                m=n
+                break
 
-                    i = i + 1
-                    k = k + 2
-                    break
+        if minimum_exists is False:
+            m=len(gas_data)
 
-                if j == (m-3):
-                    j = i
-                    i = i + 1
-                    k = k + 1
-                    segment_list.append(gas_data[i:m])
 
-                j+=1
-
-            break
-
-        forward_gas_data = gas_data[i:m]
-        forward_gas_data_1 = gas_data[i:m+1]
-        forward_gas_data_2 = gas_data[i:m+2]
-
-        trend,h,p,z,tau,s,var_s,slope,intercept = pymannkendall.original_test(forward_gas_data)
-        trend_1,h_1,p_1,z_1,tau_1,s_1,var_s_1,slope_1,intercept_1 = pymannkendall.original_test(forward_gas_data_1)
-        trend_2,h_2,p_2,z_2,tau_2,s_2,var_s_2,slope_2,intercept_2 = pymannkendall.original_test(forward_gas_data_2)
-        
-        if (p < 0.05) and (p < p_1) and (p_1 < p_2):
-            j = i
-
-        else:
-            continue
-
-        while j <= (m-3):
+        for j in range(i+4, m-3+1):
             backward_gas_data = gas_data[i:j]
             backward_gas_data_1 = gas_data[i:j-1]
             backward_gas_data_2 = gas_data[i:j-2]
@@ -142,25 +121,30 @@ def mann_kendall_method(gas_data, x_series, iii_a_rule=False, timeseries=None, s
             trend_b1,h_b1,p_b1,z_b1,tau_b1,s_b1,var_s_b1,slope_b1,intercept_b1 = pymannkendall.original_test(backward_gas_data_1)
             trend_b2,h_b2,p_b2,z_b2,tau_b2,s_b2,var_s_b2,slope_b2,intercept_b2 = pymannkendall.original_test(backward_gas_data_2)
 
-            if (p_b < 0.05) and (p_b < p_b1) and (p_b1 < p_b2):
+            if (p_b < 0.05) and (p_b < p_b1) and (p_b < p_b2):
                 segment_list.append(gas_data[i:j-1])
                 segment_list.append(gas_data[j:m])
+                maximum_exists = True
 
-                i = i + 1
-                k = k + 2
-                break
-            if j == (m-3):
-                j = i
-                i = i + 1
+                i = m + 1
                 k = k + 1
-                segment_list.append(gas_data[i:m])
+                k= k + 1
+                break
 
-            j+=1
+        if maximum_exists is False:
+            segment_list.append(gas_data[i:m])
 
-        m+=1
+            j = i
+            i = m + 1
+            k = k + 1
+            
+
+        minimum_exists = False
+        maximum_exists = False
 
     segment_start = 0
     segment_trends = []
+    segment_trend_lines_y = []
     for segment in segment_list:
         segment_size = len(segment)
         if timeseries != None:
@@ -170,15 +154,17 @@ def mann_kendall_method(gas_data, x_series, iii_a_rule=False, timeseries=None, s
             x_segment = x_series[segment_start:segment_size]
             seg_m, seg_c = fit_least_squares_line(x_segment, segment)
             y_segment = seg_m * x_segment + seg_c
-            segment_trends.append(seg_m)
+
+            segment_trends.append([seg_m, seg_c])
+            segment_trend_lines_y.append(y_segment)
+
+            segment_start = segment_start + (segment_size-1)
 
     # TODO check linear fitting for segments + calculate trends
 
     # TODO check confidence levels
 
-    return segment_list, segment_trends
-
-
+    return segment_list, segment_trends, segment_trend_lines_y
 
 
 if __name__ == '__main__':
@@ -193,3 +179,8 @@ if __name__ == '__main__':
                     'O2': [0, 19000, 20005, 20100, 21000, 21010], 
                     'N2': [0, 51000, 52500, 53780, 54900, 55620]}, index=[0, 1, 2, 3, 4, 5])
     
+    seg_list, seg_trends, seg_y_lines = mann_kendall_method(df_sample3['H2'], df_sample3.index)
+
+    print(seg_list)
+    print(seg_trends)
+    print(seg_y_lines)
