@@ -93,7 +93,7 @@ def mann_kendall_method(gas_data, x_series, iii_a_rule=False, timeseries=None, s
 
     while i <= (len(gas_data)-3):
 
-        for n in range(m, len(gas_data)+1):
+        for n in range(m, len(gas_data)-1):
             forward_gas_data = gas_data[i:n]
             forward_gas_data_1 = gas_data[i:n+1]
             forward_gas_data_2 = gas_data[i:n+2]
@@ -104,7 +104,6 @@ def mann_kendall_method(gas_data, x_series, iii_a_rule=False, timeseries=None, s
             
             if (p < 0.05) and (p < p_1) and (p < p_2):
                 minimum_exists = True
-                j = i
                 m=n
                 break
 
@@ -112,10 +111,10 @@ def mann_kendall_method(gas_data, x_series, iii_a_rule=False, timeseries=None, s
             m=len(gas_data)
 
 
-        for j in range(i+4, m-3+1):
-            backward_gas_data = gas_data[i:j]
-            backward_gas_data_1 = gas_data[i:j-1]
-            backward_gas_data_2 = gas_data[i:j-2]
+        for j in range(m-3, i-1, -1):
+            backward_gas_data = gas_data[j:m][::-1]
+            backward_gas_data_1 = gas_data[j-1:m]
+            backward_gas_data_2 = gas_data[j-2:m]
 
             trend_b,h_b,p_b,z_b,tau_b,s_b,var_s_b,slope_b,intercept_b = pymannkendall.original_test(backward_gas_data)
             trend_b1,h_b1,p_b1,z_b1,tau_b1,s_b1,var_s_b1,slope_b1,intercept_b1 = pymannkendall.original_test(backward_gas_data_1)
