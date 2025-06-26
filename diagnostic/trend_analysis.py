@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """trend_analysis.py
 
-This module makes the calculations of rate-of-change (ROC) for gas readings.
+This module makes the calculations trend analysis of gas readings.
 
 @Author: https://github.com/ToniMellin
 
@@ -300,11 +300,11 @@ if __name__ == '__main__':
     fig_saw_r.show()
 
     # %%
-    a = np.append(np.arange(5, 66, 4), np.arange(64, 30, -2))
-    b = np.append(a, np.repeat(30, 10))
+    a = np.append(np.arange(5, 74, 4), np.arange(70, 32, -2))
+    b = np.append(a, np.repeat(30, 30))
     c = np.append(b, np.arange(33, 66, 2))
 
-    y_saw_ext = np.tile(np.array([10, 15, 5]), 20) + c
+    y_saw_ext = np.tile(np.array([5, 15]), 42) + c
     print(y_saw_ext)
     x_saw_ext = np.arange(1, len(y_saw_ext)+1)
 
@@ -329,4 +329,30 @@ if __name__ == '__main__':
 
     fig_saw_ext.update_layout(title='Mann-Kendall fit test for simulated trending with data variance')
     fig_saw_ext.show()
+
+    # %%
+    y_flat = np.tile(np.array([8, 12]), 20)
+    x_flat = np.arange(1, len(y_flat)+1)
+
+    seg_flat_list, seg_flat_confs, seg_flat_trends, seg_flat_x_lines, seg_flat_y_lines = mann_kendall_method(y_flat, x_flat)
+
+    fig_flat = go.Figure()
+    fig_flat.add_trace(go.Scatter(
+                        x=x_flat,
+                        y=y_flat,
+                        mode='markers',
+                        name='test data'))
+
+    for s, trend_line_xy in enumerate(zip(seg_flat_x_lines, seg_flat_y_lines)):
+        fig_flat.add_trace(go.Scatter(
+                            x=trend_line_xy[0],
+                            y=trend_line_xy[1],
+                            mode='lines',
+                            line=go.scatter.Line(color=px.colors.qualitative.D3[1]),
+                            text=f'Confidence: {seg_flat_confs[s]}%<br>Trend: {seg_flat_trends[s][2]}<br>Slope: {seg_flat_trends[s][4]}<br>m: {seg_flat_trends[s][0]}',
+                            name=f'trendline {s}'))
+
+
+    fig_flat.update_layout(title='Mann-Kendall fit test for flat data')
+    fig_flat.show()
 # %%
