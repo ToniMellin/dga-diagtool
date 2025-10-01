@@ -731,6 +731,11 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
     else:
         color_scale = 'Bluered'
 
+    if 'show_scale' in kwargs:
+        show_scale = kwargs['show_scale']
+    else:
+        show_scale = False
+
     if 'show_markers' in kwargs:
         show_markers = kwargs['show_markers']
     else:
@@ -752,7 +757,7 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
         marker_compare = False
 
 
-    fig = ternary_density_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, axis_names=['CH4', 'C2H2', 'C2H4'], color_scale=color_scale, cutoff=cutoff, cutoff_direction=cutoff_direction, discard_zeros=discard_zeros, show_markers=show_markers, contour_n=contour_n, group_names=group_names, marker_compare=marker_compare)
+    fig = ternary_density_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, axis_names=['CH4', 'C2H2', 'C2H4'], color_scale=color_scale, showscale=show_scale, cutoff=cutoff, cutoff_direction=cutoff_direction, discard_zeros=discard_zeros, show_markers=show_markers, contour_n=contour_n, group_names=group_names, marker_compare=marker_compare)
 
     if len(ch4_groups) > 1:
         for g in range(1, len(ch4_groups)+1):
@@ -1045,7 +1050,7 @@ if __name__ == "__main__":
     c2h4_long2 = (np.random.random_sample(size = 100)*100).tolist()
 
 
-    figD = create_duval_2_group_density_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], axis_names=['CH4', 'C2H2', 'C2H4'], group_names=['grp1', 'grp2'], show_markers=True)
+    figD = create_duval_2_group_density_distribution_graph([ch4_long, ch4_long2], [c2h2_long, c2h2_long2], [c2h4_long, c2h4_long2], axis_names=['CH4', 'C2H2', 'C2H4'], group_names=['grp1', 'grp2'], show_markers=True, show_scale=True)
     figD.show()
 
     issue_ch4 = [1, 7, 10, 10]

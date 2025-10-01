@@ -549,6 +549,11 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
     else:
         color_scale = 'Bluered'
 
+    if 'show_scale' in kwargs:
+        show_scale = kwargs['show_scale']
+    else:
+        show_scale = False
+
     if 'show_markers' in kwargs:
         show_markers = kwargs['show_markers']
     else:
@@ -700,6 +705,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                                         ncontours=contour_n,
                                         coloring='lines',
                                         colorscale=color_scale,
+                                        showscale=show_scale,
                                         showmarkers=show_markers)
 
                 
@@ -743,7 +749,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                 for trace_data in fig_issue['data']:
                     fig.append_trace(trace_data, row=1, col=cl)
 
-            fig.update_layout(template=None, ternary_sum=100, showlegend=False)
+            fig.update_layout(ternary_sum=100, showlegend=False)
 
             fig.add_annotation(dict(x=0.5, y=0.5,
                         xref = "paper", yref = "paper",
@@ -764,6 +770,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                                         ncontours=contour_n,
                                         coloring='lines',
                                         colorscale=color_scale,
+                                        showscale=show_scale,
                                         showmarkers=False)
             
         fig_c2 = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
@@ -771,6 +778,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                                         ncontours=contour_n,
                                         coloring='lines',
                                         colorscale=color_scale,
+                                        showscale=show_scale,
                                         showmarkers=True)
             
         for fig_s1 in fig_c1['data']:
@@ -806,7 +814,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                     clicktoshow='onout'
                   ))
             
-            fig_issue.update_layout(template=None, ternary_sum=100, showlegend=False)
+            fig_issue.update_layout(ternary_sum=100, showlegend=False)
 
             return fig_issue
 
@@ -819,6 +827,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                                         ncontours=contour_n,
                                         coloring='lines',
                                         colorscale=color_scale,
+                                        showscale=show_scale,
                                         showmarkers=show_markers)
         
 
