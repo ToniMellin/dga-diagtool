@@ -1,0 +1,596 @@
+# -*- coding: utf-8 -*-
+"""duval_triangle_3_sunflower.py
+
+This module calculates duval triangle 3 (Sunflower) related diagnostics and generates duval triangle visualizations using plotly library.
+
+@Author: https://github.com/ToniMellin
+
+* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
+* You may use, distribute and modify this code under the
+* terms of the MIT license.
+*
+* See file LICENSE or go to 
+* https://github.com/ToniMellin/dga-diagtool/blob/master/LICENSE 
+* for full license details.
+"""
+
+# %%
+import numpy as np
+from pandas import isna
+import pandas as pd
+import plotly.graph_objects as go   # plotly is an interactive plotting library
+import plotly.colors as pcolors
+
+import plotly.io as pio
+import binascii
+
+# plotly custom theme as default
+pio.templates['custom_theme'] = pio.templates['plotly_white']
+pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
+pio.templates["custom_theme"].layout.annotations = [
+    dict(
+        name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
+        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        opacity=0.3,
+        font=dict(color="#FFFAFA", size=20),
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=-0.1,
+        showarrow=False,
+    )
+]
+pio.templates.default = 'custom_theme'
+
+# * Triangle 3 (Sunflower) fault area ternary coordinate constants (plotly: a, b, c) *
+TRIANGLE3_SUN_PD_A = [100, 98, 98, 100]
+TRIANGLE3_SUN_PD_B = [0, 2, 0, 0]
+TRIANGLE3_SUN_PD_C = [0, 0, 2, 0]
+
+TRIANGLE3_SUN_T1_A = [96, 44, 48, 98, 98, 96]
+TRIANGLE3_SUN_T1_B = [4, 4, 0, 0, 2, 4]
+TRIANGLE3_SUN_T1_C = [0, 52, 52, 2, 0, 0]
+
+TRIANGLE3_SUN_T2_A = [48, 44, 15, 19, 48]
+TRIANGLE3_SUN_T2_B = [0, 4, 4, 0, 0]
+TRIANGLE3_SUN_T2_C = [52, 52, 81, 81, 52]
+
+TRIANGLE3_SUN_T3_A = [19, 0, 0, 19]
+TRIANGLE3_SUN_T3_B = [0, 19, 0, 0]
+TRIANGLE3_SUN_T3_C = [81, 81, 100, 81]
+
+TRIANGLE3_SUN_DT_A = [87, 47, 31, 0, 0, 15, 96, 87]
+TRIANGLE3_SUN_DT_B = [13, 13, 29, 29, 19, 4, 4, 13]
+TRIANGLE3_SUN_DT_C = [0, 40, 40, 71, 81, 81, 0, 0]
+
+TRIANGLE3_SUN_D1_A = [0, 0, 67, 87, 0]
+TRIANGLE3_SUN_D1_B = [100, 80, 13, 13, 100]
+TRIANGLE3_SUN_D1_C = [0, 20, 20, 0, 0]
+
+TRIANGLE3_SUN_D2_A = [67, 0, 0, 31, 47, 67]
+TRIANGLE3_SUN_D2_B = [13, 80, 29, 29, 13, 13]
+TRIANGLE3_SUN_D2_C = [20, 20, 71, 40, 40, 20]
+
+
+def create_duval_3_sun_colorized(legend_show=False):
+    # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
+    # https://plotly.com/python/reference/layout/ternary/
+    fig = go.Figure(layout=dict(ternary_sum=100))
+    #PD
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_PD_A,
+                                    b= TRIANGLE3_SUN_PD_B,
+                                    c= TRIANGLE3_SUN_PD_C,
+                                    name='PD',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(178,255,228, 0.5)'
+                                    ))
+    #T1
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_T1_A,
+                                    b= TRIANGLE3_SUN_T1_B,
+                                    c= TRIANGLE3_SUN_T1_C,
+                                    name='T1',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(245, 243, 39, 0.5)'
+                                    ))
+    #T2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_T2_A,
+                                    b= TRIANGLE3_SUN_T2_B,
+                                    c= TRIANGLE3_SUN_T2_C,
+                                    name='T2',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(245, 148, 39, 0.5)'
+                                    ))
+    #T3
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_T3_A,
+                                    b= TRIANGLE3_SUN_T3_B,
+                                    c= TRIANGLE3_SUN_T3_C,
+                                    name='T3',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(245, 54, 39, 0.5)'
+                                    ))
+    #DT
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_DT_A,
+                                    b= TRIANGLE3_SUN_DT_B,
+                                    c= TRIANGLE3_SUN_DT_C,
+                                    name='DT',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(228,178,255, 0.5)'
+                                    ))
+    #D1
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_D1_A,
+                                    b= TRIANGLE3_SUN_D1_B,
+                                    c= TRIANGLE3_SUN_D1_C,
+                                    name='D1',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(178,244,255, 0.5)'
+                                    ))
+    #D2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_D2_A,
+                                    b= TRIANGLE3_SUN_D2_B,
+                                    c= TRIANGLE3_SUN_D2_C,
+                                    name='D2',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5,
+                                    fill='toself',
+                                    fillcolor='rgba(178,205,255, 0.5)'
+                                    ))
+
+    # Annotations
+    fig.add_scatterternary(a=[20, 20, 20, 7, 99, 70, 32], 
+                           b=[70, 42, 17.5, 6, 0.5, 2, 2], 
+                           c=[10, 38, 62.5, 87, 0.5, 28, 66],
+                            text=['D1', 'D2', 'DT', 'T3', 'PD', 'T1', 'T2'],
+                            name='Fault zone annotations', 
+                            mode='text', hoverinfo='none', showlegend=False)
+    
+    """
+    # https://plotly.com/python/text-and-annotations/
+    # arrow annotations
+    fig.add_annotation(x=0.50, y=0.85,
+                text="PD",
+                showarrow=True,
+                xref='paper',
+                yref='paper',
+                xanchor='center',
+                yanchor='middle',
+                ax=40,
+                ay=-10,
+                arrowhead=1)
+    fig.add_annotation(x=0.535, y=0.78,
+                text="T1",
+                showarrow=True,
+                xref='paper',
+                yref='paper',
+                xanchor='center',
+                yanchor='middle',
+                ax=40,
+                ay=-10,
+                arrowhead=1)
+    fig.add_annotation(x=0.665, y=0.60,
+                text="T2",
+                showarrow=True,
+                xref='paper',
+                yref='paper',
+                xanchor='center',
+                yanchor='middle',
+                ax=40,
+                ay=-10,
+                arrowhead=1)
+    """
+    fig.update_ternaries(bgcolor='#FFFFFF', 
+                        aaxis=dict(linecolor='#000000', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                        baxis=dict(linecolor='#000000', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                        caxis=dict(linecolor='#000000', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                        aaxis_title_text='CH4',
+                        baxis_title_text='C2H2',
+                        caxis_title_text='C2H4')
+    #fig.update_traces(hovertemplate='CH4: %{a}<br>C2H2: %{b}<br>C2H4: %{c}<extra></extra>')
+    
+    return fig
+
+def create_duval_3_sun_nocolor(legend_show=False):
+    # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
+    # https://plotly.com/python/reference/layout/ternary/
+    fig = go.Figure(layout=dict(ternary_sum=100))
+    #PD
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_PD_A,
+                                    b= TRIANGLE3_SUN_PD_B,
+                                    c= TRIANGLE3_SUN_PD_C,
+                                    name='PD',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #T1
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_T1_A,
+                                    b= TRIANGLE3_SUN_T1_B,
+                                    c= TRIANGLE3_SUN_T1_C,
+                                    name='T1',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #T2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_T2_A,
+                                    b= TRIANGLE3_SUN_T2_B,
+                                    c= TRIANGLE3_SUN_T2_C,
+                                    name='T2',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #T3
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_T3_A,
+                                    b= TRIANGLE3_SUN_T3_B,
+                                    c= TRIANGLE3_SUN_T3_C,
+                                    name='T3',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #DT
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_DT_A,
+                                    b= TRIANGLE3_SUN_DT_B,
+                                    c= TRIANGLE3_SUN_DT_C,
+                                    name='DT',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #D1
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_D1_A,
+                                    b= TRIANGLE3_SUN_D1_B,
+                                    c= TRIANGLE3_SUN_D1_C,
+                                    name='D1',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    #D2
+    fig.add_trace(go.Scatterternary(a= TRIANGLE3_SUN_D2_A,
+                                    b= TRIANGLE3_SUN_D2_B,
+                                    c= TRIANGLE3_SUN_D2_C,
+                                    name='D2',
+                                    showlegend=legend_show,
+                                    mode='lines',
+                                    line_color='black',
+                                    line_width=0.5
+                                    ))
+    
+    # Annotations
+    fig.add_scatterternary(a=[20, 20, 20, 7, 99, 70, 32], 
+                           b=[70, 42, 17.5, 6, 0.5, 2, 2], 
+                           c=[10, 38, 62.5, 87, 0.5, 28, 66],
+                            text=['D1', 'D2', 'DT', 'T3', 'PD', 'T1', 'T2'],
+                            name='Fault zone annotations', 
+                            mode='text', hoverinfo='none', showlegend=False)
+    
+    """
+    # https://plotly.com/python/text-and-annotations/
+    # arrow annotations
+    fig.add_annotation(x=0.50, y=0.99,
+                text="PD",
+                showarrow=True,
+                ax=40,
+                ay=-10,
+                arrowhead=1)
+    fig.add_annotation(x=0.525, y=0.90,
+                text="T1",
+                showarrow=True,
+                ax=40,
+                ay=-10,
+                arrowhead=1)
+    fig.add_annotation(x=0.643, y=0.65,
+                text="T2",
+                showarrow=True,
+                ax=40,
+                ay=-10,
+                arrowhead=1)
+    """
+    fig.update_ternaries(bgcolor='#FFFFFF', 
+                        aaxis=dict(linecolor='#000000', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                        baxis=dict(linecolor='#000000', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                        caxis=dict(linecolor='#000000', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                        aaxis_title_text='CH4',
+                        baxis_title_text='C2H2',
+                        caxis_title_text='C2H4')
+    #fig.update_traces(hovertemplate='CH4: %{a:.2f}<br>C2H2: %{b:.2f}<br>C2H4: %{c:.2f}<extra></extra>')
+    
+    return fig
+
+def round_half_up(n, decimals=0):
+    # rounding values
+    multiplier = 10 ** decimals
+    return np.floor(n*multiplier + 0.5) / multiplier
+
+def calculate_duval_3_sun_coordinates(ch4, c2h2, c2h4, rounding=False):
+
+    i = ch4
+    j = c2h2
+    k = c2h4
+
+    if (i == 0) and (j == 0) and (k == 0):
+        return [100/3, 100/3, 100/3]
+
+    x = (i / (i + j + k))*100
+    y = (j / (i + j + k))*100
+    z = (k / (i + j + k))*100
+
+    if rounding is False:
+       coordinates = np.array([x, y, z])
+    elif type(rounding) is int:
+        coordinates = round_half_up(np.array([x, y, z]), rounding)
+    else:
+        coordinates = round_half_up(np.array([x, y, z]), 2)
+    
+    return coordinates
+
+def calculate_duval_3_sun_result(ch4, c2h2, c2h4):
+    try:
+        if (isna(ch4) is True) or (isna(c2h2) is True) or (isna(c2h4) is True):
+            return 'N/A'
+        if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
+            return 'N/A'
+        else:
+            x, y, z = calculate_duval_3_sun_coordinates(ch4, c2h2, c2h4)
+            if x >= 98:
+                return 'PD'
+            elif z <= 20 and y >= 13:
+                return 'D1'
+            elif (z <= 40 and z > 20 and y >= 13) or (z >= 40 and y >= 29):
+                return 'D2'
+            elif x < 98 and z <= 52 and y <= 4:
+                return 'T1'
+            elif  z > 52 and z <= 81 and y <= 4:
+                return 'T2'
+            elif y <= 19 and z > 81:
+                return 'T3'
+            elif (z < 81 and y > 4 and y < 13 ) or (z > 40 and z < 81 and y > 4 and y < 29):
+                return 'DT'
+            else:
+                return 'ND'
+    except TypeError:
+        print('Duval result calculation error!')
+        print('{ch4}, {c2h2}, {c2h4}')
+        return 'N/A'
+ 
+def create_duval_3_sun_marker(ch4, c2h2, c2h4, **kwargs):
+    marker_coordinates = calculate_duval_3_sun_coordinates(ch4, c2h2, c2h4)
+    result = calculate_duval_3_sun_result(ch4, c2h2, c2h4)
+
+    # check for timestamp
+    if  'timestamp' in kwargs:
+        timestamp = kwargs['timestamp']
+        metalist = [result, ch4, c2h2, c2h4, timestamp]
+    else:
+        timestamp = None
+        metalist = [result, ch4, c2h2, c2h4]
+
+    # formulate a name for the marker if not given
+    if 'marker_name' in kwargs:
+        marker_name = kwargs['marker_name']
+    elif (timestamp is not None) and ('marker_name' not in kwargs):
+        marker_name = f'{result} {timestamp}'
+    else:
+        marker_name = result
+
+    if (timestamp is not None) and 'marker_color' in kwargs:
+        try:
+            set_color = kwargs['marker_color']
+            return go.Scatterternary(       a= [marker_coordinates[0]],
+                                            b= [marker_coordinates[1]],
+                                            c= [marker_coordinates[2]],
+                                            name= marker_name,
+                                            mode='markers',
+                                            marker_color=set_color,
+                                            marker_size=10,
+                                            meta= metalist,
+                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
+                                            )
+        except Exception as e:
+            print(e)
+            pass
+    elif (timestamp is None) and 'marker_color' in kwargs:
+        try:
+            set_color = kwargs['marker_color']
+            return go.Scatterternary(       a= [marker_coordinates[0]],
+                                            b= [marker_coordinates[1]],
+                                            c= [marker_coordinates[2]],
+                                            name= marker_name,
+                                            mode='markers',
+                                            marker_color=set_color,
+                                            marker_size=10,
+                                            meta= metalist,
+                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
+                                            )
+        except Exception as e:
+            print(e)
+            pass
+    elif (timestamp is not None) and 'marker_color' not in kwargs:
+        try:
+            return go.Scatterternary(       a= [marker_coordinates[0]],
+                                            b= [marker_coordinates[1]],
+                                            c= [marker_coordinates[2]],
+                                            name= marker_name,
+                                            mode='markers',
+                                            marker_size=10,
+                                            meta= metalist,
+                                            hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<br>%{meta[4]}<extra></extra>"
+                                            )
+        except Exception as e:
+            print(e)
+            pass
+    else:  
+        return go.Scatterternary(       a= [marker_coordinates[0]],
+                                        b= [marker_coordinates[1]],
+                                        c= [marker_coordinates[2]],
+                                        name= marker_name,
+                                        mode='markers',
+                                        marker_color='red',
+                                        marker_size=10,
+                                        meta= [result, ch4, c2h2, c2h4],
+                                        hovertemplate="Diagnosis: %{meta[0]}<br>CH4:  %{meta[1]} ppm (%{a:.2f}%)<br>C2H2: %{meta[2]} ppm (%{b:.2f}%)<br>C2H4: %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
+                                        )
+
+def create_duval_3_sun_result_graph(ch4, c2h2, c2h4):
+    fig = create_duval_3_sun_colorized()
+
+    try:
+        result_name = calculate_duval_3_sun_result(ch4, c2h2, c2h4)
+        fig.add_trace(create_duval_3_sun_marker(ch4, c2h2, c2h4, result_name))
+        return fig
+    except:
+        return fig
+
+def create_duval_3_sun_multi_results_graph(samples_df):
+    fig = create_duval_3_sun_colorized()
+
+    sample_count = len(samples_df)
+    if sample_count == 1:
+        colorscale = ['blue']
+    else:
+        colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
+
+    try:
+        sample_num = 0
+        for row in samples_df.itertuples(name=None):
+            time, ch4, c2h4, c2h2, rowcolor = row[1], row[3], row[5], row[6], colorscale[sample_num]
+            sample_num+=1
+            if (ch4 == 0) and (c2h2 == 0) and (c2h4 == 0):
+                continue
+            else:
+                duval_result = calculate_duval_3_sun_result(ch4, c2h2, c2h4)
+                mark_name = f'{duval_result} {time}'
+                fig.add_trace(create_duval_3_sun_marker(ch4, c2h2, c2h4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
+        return fig
+    except Exception as e:
+        print(e)
+        return fig
+    
+def create_duval_3_sun_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=True, **kwargs):
+    # https://plotly.com/python/marker-style/
+    marker_symbol_list = ['circle', 'diamond', 'square', 'x-thin', 'cross-thin', 
+                          'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
+                          'circle-open', 'diamond-open', 'square-open', 'star-triangle-up-open', 
+                          'star-triangle-down-open']
+    try:
+        assert len(ch4_groups) == len(c2h2_groups)
+        assert len(c2h2_groups) == len(c2h4_groups)
+        assert len(ch4_groups) == len(c2h4_groups)
+        assert len(ch4_groups) == len(group_names)
+    except Exception as e:
+        print(e)
+
+    if colorized is True:
+        fig = create_duval_3_sun_colorized()
+    else:
+        fig = create_duval_3_sun_nocolor()
+
+    if 'group_colors' in kwargs:
+        color_list = kwargs['group_colors']
+    else:
+        color_list = pcolors.qualitative.Plotly + pcolors.qualitative.Light24_r
+    
+    try:
+        for i, group_name in enumerate(group_names):
+            coord_list = []
+
+            for ch4_value, c2h2_value, c2h4_value in zip(ch4_groups[i], c2h2_groups[i], ch4_groups[i]):
+                if (ch4_value == 0) and (c2h2_value == 0) and (c2h4_value == 0):
+                    continue
+                coord_list.append(calculate_duval_3_sun_coordinates(ch4_value, c2h2_value, c2h4_value))
+
+            
+            coord_list_t = np.transpose(coord_list)
+            print(coord_list_t)
+            fig.add_trace(go.Scatterternary(a= coord_list_t[0],
+                                            b= coord_list_t[1],
+                                            c= coord_list_t[2],
+                                            name= group_name,
+                                            mode='markers',
+                                            marker_symbol=marker_symbol_list[i],
+                                            marker_color=color_list[i],
+                                            marker_size=10,
+                                            meta= [group_name],
+                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+    except Exception as e:
+        print(e)
+
+    return fig
+
+# %%
+if __name__ == "__main__":
+    '''
+    fig = create_duval_3_sun_nocolor()
+    duval_result = calculate_duval_3_sun_result(10, 26, 64)
+    fig.add_trace(create_duval_3_sun_marker(10, 26, 64, marker_name=duval_result))
+    fig.show()
+    '''
+
+    fig2 = create_duval_3_sun_colorized()
+    fig2.add_trace(create_duval_3_sun_marker(10, 26, 64))
+    fig2.add_trace(create_duval_3_sun_marker(56, 26, 64, timestamp='2021-05-11'))
+    fig2.show()
+
+    '''
+
+    #fig3 = create_duval_3_sun_result_graph(55, 8, 55)
+    #fig3.show()
+
+    df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+
+    #print(df_sample)
+
+    #fig4 = create_duval_3_sun_multi_results_graph(df_sample)
+    #fig4.show()
+
+    ch4_list= [[200, 50, 100, 200], [0, 20, 41, 60, 66, 80], [15, 60, 160]]
+    c2h2_list= [[10, 20, 30, 40], [0, 1, 2, 5, 6, 10], [100, 200, 500]]
+    c2h4_list= [[400, 500, 600, 1000], [0, 5, 50, 60, 66, 67], [60, 80, 110]]
+    groups_list= ['Group1', 'Group2', 'Group3']
+
+    fig5 = create_duval_3_sun_group_graph(ch4_list, c2h2_list, c2h4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
+    fig5.show()
+    '''
