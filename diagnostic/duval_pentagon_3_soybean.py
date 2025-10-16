@@ -1,0 +1,566 @@
+# -*- coding: utf-8 -*-
+"""duval_pentagon_3_soybean.py
+
+This module calculates duval pentagon 3 (soybean) related diagnostics and generates duval pentagon visualizations using plotly library.
+
+@Author: https://github.com/ToniMellin
+
+* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
+* You may use, distribute and modify this code under the
+* terms of the MIT license.
+*
+* See file LICENSE or go to 
+* https://github.com/ToniMellin/dga-diagtool/blob/master/LICENSE 
+* for full license details.
+"""
+
+# %%
+from math import cos, pi, sin
+
+import numpy as np
+from pandas import isna
+import pandas as pd
+import plotly.graph_objects as go   # plotly is an interactive plotting library
+import plotly.colors as pcolors
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
+
+import plotly.io as pio
+import binascii
+
+# plotly custom theme as default
+pio.templates['custom_theme'] = pio.templates['plotly_white']
+pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
+pio.templates["custom_theme"].layout.annotations = [
+    dict(
+        name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
+        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        opacity=0.3,
+        font=dict(color="#FFFAFA", size=20),
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=-0.1,
+        showarrow=False,
+    )
+]
+pio.templates.default = 'custom_theme'
+
+#TODO redefine coordinates
+## Defining Duval pentagon 3 (soybean) coordinates and areas
+
+# D2 - Discharges of high energy
+D2x = [4, 32.061, 24.204, 0, 0, 4]
+D2y = [16, -6.048, -30.229, -3, 1.5, 16]
+# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.229)
+
+D2_poly = [(D2x[i], D2y[i]) for i in range(0, len(D2x)-1)]
+D2_polygon = Polygon(D2_poly)
+
+# D1 - Discharges of low energy
+D1x = [0, 38.042, 32.061, 4, 0, 0] 
+D1y = [40, 12.361, -6.048, 16, 1.5, 40]
+# (38, 12) causes incorrect C2H2 axis angle and form of the pentagon, (38.042, 12.361) used to correct this
+
+D1_poly = [(D1x[i], D1y[i]) for i in range(0, len(D1x)-1)]
+D1_polygon = Polygon(D1_poly)
+
+# T3 - Thermal fault T3 >700C
+T3x = [0, 24.204, 23.511, 11.978, -2.5, 0]
+T3y = [-3, -30.299, -32.361, -32.361, -7, -3]
+# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.299)
+# (23.2, -32.4) or (, -32) as per TB 771 & C57.143-2019 would cause a gap, fixed by (23.511, -32.361)
+
+T3_poly = [(T3x[i], T3y[i]) for i in range(0, len(T3x)-1)]
+T3_polygon = Polygon(T3_poly)
+
+# T2 - Thermal fault T2 300C < T < 700C
+T2x = [0, 0, -2.5, 11.978, -23.511, -28.6, 0]
+T2y = [1.5, -3, -7, -32.361, -32.361, -16.7, 1.5]
+
+T2_poly = [(T2x[i], T2y[i]) for i in range(0, len(T2x)-1)]
+T2_polygon = Polygon(T2_poly)
+
+# T1 - Thermal fault T1 > 300C
+T1x = [0, -28.6, -38.042, -23.306, 0] # without -23.5 CH4 edge of pentagon differs from others and the picture
+T1y = [1.5, -16.7, 12.361, 23.067, 1.5] # without -32.4 CH4 edge of pentagon differs from others and the picture
+
+T1_poly = [(T1x[i], T1y[i]) for i in range(0, len(T1x)-1)]
+T1_polygon = Polygon(T1_poly)
+
+# S - Stray gassing
+Sx = [0, -23.306, 0, 0, -1, -1, 0, 0]
+Sy = [1.5, 23.067, 40, 33, 33, 24.5, 24.5, 1.5]
+
+S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
+S_polygon = Polygon(S_poly)
+    
+# PD - Partial discharges
+PDx = [0, -1, -1, 0, 0]
+PDy = [33, 33, 24.5, 24.5, 33]
+
+PD_poly = [(PDx[i], PDy[i]) for i in range(0, len(PDx)-1)]
+PD_polygon = Polygon(PD_poly)
+
+# point & polygon comparison accuracy
+epsilon = 1e-15
+
+def round_half_up(n, decimals=0):
+    # rounding values
+    multiplier = 10 ** decimals
+    return np.floor(n*multiplier + 0.5) / multiplier
+
+def create_duval_p1_colorized(legend_show=False):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=Sx, y=Sy, 
+                             name='S',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(170,156,192, 0.5)'
+                            ))
+    fig.add_trace(go.Scatter(x=PDx, y=PDy, 
+                             name='PD',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(178,255,228, 0.5)'
+                            ))
+    fig.add_trace(go.Scatter(x=T1x, y=T1y, 
+                             name='T1',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(245, 243, 39, 0.5)'
+                            ))
+    fig.add_trace(go.Scatter(x=T2x, y=T2y, 
+                             name='T2',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(245, 148, 39, 0.5)'
+                            ))
+    fig.add_trace(go.Scatter(x=T3x, y=T3y,
+                             name='T3',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(245, 54, 39, 0.5)'
+                            ))
+    fig.add_trace(go.Scatter(x=D2x, y=D2y, 
+                             name='D2',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(178,205,255, 0.5)'
+                            ))
+    fig.add_trace(go.Scatter(x=D1x, y=D1y, 
+                             name='D1',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5,
+                            fill="toself",
+                            fillcolor='rgba(178,244,255, 0.5)'
+                            ))
+    fig.add_scatter(x=[0, -24.5, -40, 25, 40], 
+                    y=[41, -34, 12.5, -34, 12.5],
+                    text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'], 
+                    name='Axis annotations',
+                    mode='text', 
+                    hoverinfo='skip', showlegend=False)
+    fig.add_scatter(x=[-8, -0.5, 16, 14, 10, -8, -22], 
+                    y=[20, 28.75, 16 ,-5, -20, -20, 6],
+                    text=['S', 'PD', 'D1', 'D2', 'T3', 'T2', 'T1'], 
+                    name='Fault zone annotations',
+                    mode='text', 
+                    hoverinfo='skip', showlegend=False)
+    fig.update_layout(
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        xaxis=dict(visible= False, showticklabels= False),
+                        yaxis=dict(visible= False, showticklabels= False),
+                        showlegend=True,
+  						modebar_add = ['v1hovermode', 'drawline', 'eraseshape'],
+                        )
+    # fixed aspect ratio prevents distortion of the pentagon
+    fig.update_yaxes(
+        scaleanchor = "x",
+        scaleratio = 1,
+    )
+    
+    return fig
+
+def create_duval_p1_nocolor(legend_show=False):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=Sx, y=Sy, 
+                             name='S',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_trace(go.Scatter(x=PDx, y=PDy, 
+                             name='PD',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_trace(go.Scatter(x=T1x, y=T1y, 
+                             name='T1',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_trace(go.Scatter(x=T2x, y=T2y, 
+                             name='T2',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_trace(go.Scatter(x=T3x, y=T3y, 
+                             name='T3',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_trace(go.Scatter(x=D2x, y=D2y, 
+                             name='D2',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_trace(go.Scatter(x=D1x, y=D1y, 
+                             name='D1',
+                            showlegend=legend_show,
+                            mode='lines',
+                            line_color='black',
+                            line_width=0.5
+                            ))
+    fig.add_scatter(x=[0, -24.5, -40, 25, 40], 
+                    y=[41, -34, 12.5, -34, 12.5],
+                    text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'], 
+                    name='Axis annotations',
+                    mode='text', 
+                    hoverinfo='skip', showlegend=False)
+    fig.add_scatter(x=[-8, -0.5, 16, 14, 10, -8, -22], 
+                    y=[20, 28.75, 16 ,-5, -20, -20, 6],
+                    text=['S', 'PD', 'D1', 'D2', 'T3', 'T2', 'T1'], 
+                    name='Fault zone annotations',
+                    mode='text', 
+                    hoverinfo='skip', showlegend=False)
+    fig.update_layout(
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        xaxis=dict(visible= False, showticklabels= False),
+                        yaxis=dict(visible= False, showticklabels= False),
+                        showlegend=True,
+  						modebar_add = ['v1hovermode', 'drawline', 'eraseshape'],
+                        )
+    # fixed aspect ratio prevents distortion of the pentagon
+    fig.update_yaxes(
+        scaleanchor = "x",
+        scaleratio = 1,
+    )
+
+    return fig
+
+def calculate_duval_p1_coordinates(h2, c2h6, ch4, c2h4, c2h2, rounding=False):
+
+    # change zero values to 10^(-10)
+    if h2 == 0:
+        h2 = 10**(-10)
+    if c2h6 == 0:
+        c2h6 = 10**(-10)
+    if ch4 == 0:
+        ch4 = 10**(-10)
+    if c2h4 == 0:
+        c2h4 = 10**(-10)
+    if c2h2 == 0:
+        c2h2 = 10**(-10)
+
+    gas_sum = h2 + c2h6 + ch4 + c2h4 + c2h2
+
+    h2_perc = (h2 / gas_sum)*100
+    c2h6_perc = (c2h6 / gas_sum)*100
+    ch4_perc = (ch4 / gas_sum)*100
+    c2h4_perc = (c2h4 / gas_sum)*100
+    c2h2_perc = (c2h2 / gas_sum)*100
+
+    x0 = 0 # cos(90) = 0
+    y0 = h2_perc # sin(90) = 1
+
+    x1 = c2h6_perc * cos( ((180 - 18) / 180 ) * pi)
+    y1 = c2h6_perc * sin( ((180 - 18) / 180 ) * pi)
+
+    x2 = ch4_perc * cos( ((180 + 54) / 180 ) * pi)
+    y2 = ch4_perc * sin( ((180 + 54) / 180 ) * pi)
+    
+    x3 = c2h4_perc * cos( ((180 + 54 + 72) / 180 ) * pi)
+    y3 = c2h4_perc * sin( ((180 + 54 + 72) / 180 ) * pi)
+
+    x4 = c2h2_perc * cos( ((18) / 180 ) * pi)
+    y4 = c2h2_perc * sin( ((18) / 180 ) * pi)
+
+    x_list = [x0, x1, x2, x3, x4]
+    y_list = [y0, y1, y2, y3, y4]
+    summit_list = [(x_list[i], y_list[i]) for i in range(0, len(x_list))]
+
+    # https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
+    # calculate denominator sum
+    denominator_xy = 0
+    for i in range(0, 5):
+        if i == 4:
+            denominator_xy += (3*(x_list[i] * y_list[0] - x_list[0] * y_list[i]))
+        else:
+            denominator_xy += (3*(x_list[i] * y_list[i+1] - x_list[i+1] * y_list[i]))
+
+    # x coordinate numerator sum
+    numerator_x = 0
+    for i in range(0, 5):
+        if i == 4:
+            numerator_x += ((x_list[i] + x_list[0]) * (x_list[i] * y_list[0] - x_list[0] * y_list[i]))
+        else:
+            numerator_x += ((x_list[i] + x_list[i+1]) * (x_list[i] * y_list[i+1] - x_list[i+1] * y_list[i]))
+
+    # y coordinate numerator sum
+    numerator_y = 0
+    for i in range(0, 5):
+        if i == 4:
+            numerator_y += ((y_list[i] + y_list[0]) * (x_list[i] * y_list[0] - x_list[0] * y_list[i]))
+        else:
+            numerator_y += ((y_list[i] + y_list[i+1]) * (x_list[i] * y_list[i+1] - x_list[i+1] * y_list[i]))
+
+    if rounding is False:
+        centroid_x = numerator_x / denominator_xy
+        centroid_y = numerator_y / denominator_xy
+    elif type(rounding) is int:
+        centroid_x = round_half_up((numerator_x / denominator_xy), rounding)
+        centroid_y = round_half_up((numerator_y / denominator_xy), rounding)
+    else:
+        centroid_x = round_half_up((numerator_x / denominator_xy), 2)
+        centroid_y = round_half_up((numerator_y / denominator_xy), 2)
+
+    centroid_list = [centroid_x, centroid_y]
+
+    return centroid_list, summit_list
+
+def calculate_duval_p1_result(h2, c2h6, ch4, c2h4, c2h2):
+
+    try:
+        if (isna(h2) or isna(c2h6) or isna(ch4) or isna(c2h4) or isna(c2h2)) is True:
+            return 'N/A'
+        if ((h2 == 0) and (c2h6 == 0) and (ch4 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
+            return 'N/A'
+        else:
+            centroid_list, summit_list = calculate_duval_p1_coordinates(h2, ch4, c2h6, c2h4, c2h2)
+            point = Point(centroid_list[0], centroid_list[1])
+            if (D2_polygon.contains(point) or (point.distance(D2_polygon) < epsilon)) is True:
+                return 'D2'
+            if (D1_polygon.contains(point) or (point.distance(D1_polygon) < epsilon)) is True:
+                return 'D1'
+            if (T3_polygon.contains(point) or (point.distance(T3_polygon) < epsilon)) is True:
+                return 'T3'
+            if (T2_polygon.contains(point) or (point.distance(T2_polygon) < epsilon)) is True:
+                return 'T2'
+            if (T1_polygon.contains(point) or (point.distance(T1_polygon) < epsilon)) is True:
+                return 'T1'
+            if (S_polygon.contains(point) or (point.distance(S_polygon) < epsilon)) is True:
+                return 'S'
+            if (PD_polygon.contains(point) or (point.distance(PD_polygon) < epsilon)) is True:
+                return 'PD'
+            else:
+                return 'ND'
+
+    except TypeError:
+        print('Duval result calculation error!')
+        print('{h2}, {ch4}, {c2h6}, {c2h4}, {c2h2}')
+        return 'N/A'
+
+def create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, **kwargs):
+    marker_coord, summit_list = calculate_duval_p1_coordinates(h2, c2h6, ch4, c2h4, c2h2)
+    result = calculate_duval_p1_result(h2, c2h6, ch4, c2h4, c2h2)
+
+    # check for timestamp
+    if  'timestamp' in kwargs:
+        timestamp = kwargs['timestamp']
+        metalist = [result, h2, c2h6, ch4, c2h4, c2h2, timestamp]
+    else:
+        timestamp = None
+        metalist = [result, h2, c2h6, ch4, c2h4, c2h2]
+
+    # formulate a name for the marker if not given
+    if 'marker_name' in kwargs:
+        marker_name = kwargs['marker_name']
+    elif (timestamp is not None) and ('marker_name' not in kwargs):
+        marker_name = f'{result} {timestamp}'
+    else:
+        marker_name = result
+
+    if (timestamp is not None) and 'marker_color' in kwargs:
+         try:
+            set_color = kwargs['marker_color']
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                name= marker_name,
+                                mode='markers',
+                                marker_color=set_color,
+                                marker_size=10,
+                                meta= metalist,
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[6]}<extra></extra>")
+         except Exception as e:
+            print(e)
+            pass
+    elif (timestamp is None) and 'marker_color' in kwargs:
+        try:
+            set_color = kwargs['marker_color']
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                name= marker_name,
+                                mode='markers',
+                                marker_color=set_color,
+                                marker_size=10,
+                                meta= metalist,
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>")
+        except Exception as e:
+            print(e)
+            pass
+    elif (timestamp is not None) and 'marker_color' not in kwargs:
+         try:
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                name= marker_name,
+                                mode='markers',
+                                marker_size=10,
+                                meta= metalist,
+                                hovertemplate="Diagnosis: %{meta[0]}<br>X: %{x:.2f}<br>Y: %{y:.2f}<br>%{meta[6]}<extra></extra>")
+         except Exception as e:
+            print(e)
+            pass
+    else:
+        try:  
+            return go.Scatter(x=[marker_coord[0]], y=[marker_coord[1]],
+                                    name= marker_name,
+                                    marker_color='red',
+                                    marker_size=10,
+                                    meta= marker_name,
+                                    hovertemplate="Diagnosis: %{meta}<br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>")
+        except Exception as e:
+            print(e)
+            pass
+
+def draw_duval_p1_summits(h2, c2h6, ch4, c2h4, c2h2):
+    marker_coord, summit_list = calculate_duval_p1_coordinates(h2, c2h6, ch4, c2h4, c2h2)
+
+    summit_x = [summit[0] for summit in summit_list]
+    summit_x.append(summit_list[0][0])
+
+    summit_y = [summit[1] for summit in summit_list]
+    summit_y.append(summit_list[0][1])
+
+    return go.Scatter(x=summit_x, y=summit_y, 
+                             name='summits',
+                            showlegend=False,
+                            mode='lines',
+                            line_color='blue',
+                            line_width=0.8
+                            )
+
+def create_duval_p1_result_graph(h2, c2h6, ch4, c2h4, c2h2, include_summit=False):
+    fig = create_duval_p1_colorized()
+
+    try:
+        result_name = calculate_duval_p1_result(h2, c2h6, ch4, c2h4, c2h2)
+        fig.add_trace(create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, result_name))
+        if include_summit is True:
+            fig.add_trace(draw_duval_p1_summits(h2, c2h6, ch4, c2h4, c2h2))
+        return fig
+    except:
+        return fig
+    
+def create_duval_p1_multi_results_graph(samples_df):
+    fig = create_duval_p1_colorized()
+
+    sample_count = len(samples_df)
+    colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
+
+    try:
+        sample_num = 0
+        for row in samples_df.itertuples(name=None):
+            time, h2, ch4, c2h6, c2h4, c2h2, rowcolor = row[1], row[2], row[3], row[4], row[5], row[6], colorscale[sample_num]
+            sample_num+=1
+            if ((h2 == 0) and (ch4 == 0) and (c2h6 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
+                continue
+            else:
+                duval_result = calculate_duval_p1_result(h2, c2h6, ch4, c2h4, c2h2)
+                mark_name = f'{duval_result} {time}'
+                fig.add_trace(create_duval_p1_marker(h2, c2h6, ch4, c2h4, c2h2, mark_name, timestamp=time, result=duval_result, marker_color=rowcolor))
+        return fig
+    except Exception as e:
+        print(e)
+        return fig
+
+# %%
+if __name__ == "__main__":
+    '''
+    # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> (−17.3, −9.1) [T1]
+    dp1_coord, dp1_summits = calculate_duval_p1_coordinates(31, 130, 192, 31, 0)
+    print(f'centroid_XY:\n{dp1_coord}\nsummit_coordsXY:\n{dp1_summits}')
+
+    poly1 = Polygon(dp1_summits)
+    print(f'shapely_XY:\n{list(poly1.centroid.coords)}')
+
+    dp1_result = calculate_duval_p1_result(31, 130, 192, 31, 0)
+    print(dp1_result)
+    '''
+    duvp1_fig = create_duval_p1_result_graph(31, 130, 192, 31, 0, include_summit=False)
+    duvp1_fig.show()
+    '''
+    # H2 = 50 ppm, C2H6 = 80 ppm, CH4 = 120 ppm, C2H4 = 60 ppm and C2H2 = 30 ppm  -> xo = -7.35, and yo = -5.79 (T1)
+    # 50, 120, 80, 60, 30
+    dp1_coord2, dp1_summits2 = calculate_duval_p1_coordinates(50, 80, 120, 60, 30)
+    print(f'centroid_XY:{dp1_coord2}\nsummit_coordsXY:{dp1_summits2}')
+
+    poly2 = Polygon(dp1_summits2)
+    print(f'shapely_XY:{list(poly2.centroid.coords)}')
+
+    dp1_result2 = calculate_duval_p1_result(50, 80, 120, 60, 30)
+    print(dp1_result2)
+    '''
+
+    duvp1_2_fig = create_duval_p1_result_graph(50, 80, 120, 60, 30, include_summit=True)
+    duvp1_2_fig = create_duval_p1_colorized()
+    duvp1_2_fig.add_trace(create_duval_p1_marker(50, 80, 120, 60, 30, timestamp='2021-05-11', marker_color='blue'))
+    duvp1_2_fig.add_trace(draw_duval_p1_summits(50, 80, 120, 60, 30))
+    duvp1_2_fig.show()
+
+    df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
+                        'H2': [0, 10, 50, 100, 160, 250], 
+                        'CH4': [0, 20, 41, 60, 66, 80], 
+                        'C2H6': [0, 60, 121, 172, 200, 207], 
+                        'C2H4': [0, 5, 50, 60, 66, 67], 
+                        'C2H2': [0, 1, 2, 5, 6, 10], 
+                        'CO': [0, 150, 200, 400, 500, 600], 
+                        'CO2': [0, 2211, 4200, 4500, 4561, 4603], 
+                        'O2': [0, 19000, 20005, 20100, 21000, 21010], 
+                        'N2': [0, 51000, 52500, 53780, 54900, 55620], 
+                        'Transformer age': [9, 10, 10, 10, 10, 10]}, index=[0, 1, 2, 3, 4, 5])
+
+    #print(df_sample)
+
+    #duvp1_multi_fig = create_duval_p1_multi_results_graph(df_sample)
+    #duvp1_multi_fig.show()
