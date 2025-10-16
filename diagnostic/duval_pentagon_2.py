@@ -49,43 +49,47 @@ pio.templates.default = 'custom_theme'
 ## Defining Duval pentagon 2 coordinates and areas
 
 # D2 - Discharges of high energy
-D2x = [4, 32, 24.3, 0, 0, 4]
-D2y = [16, -6.1, -30, -3, 1.5, 16]
+D2x = [4, 32.061, 24.204, 0, 0, 4]
+D2y = [16, -6.048, -30.299, -3, 1.5, 16]
+# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.299)
 
 D2_poly = [(D2x[i], D2y[i]) for i in range(0, len(D2x)-1)]
 D2_polygon = Polygon(D2_poly)
 
 # D1 - Discharges of lowenergy
-D1x = [0, 38, 32, 4, 0, 0]
-D1y = [40, 12, -6.1, 16, 1.5, 40]
+D1x = [0, 38.042, 32.061, 4, 0, 0] 
+D1y = [40, 12.361, -6.048, 16, 1.5, 40]
+# (38, 12) causes incorrect C2H2 axis angle and form of the pentagon, (38.042, 12.361) used to correct this
 
 D1_poly = [(D1x[i], D1y[i]) for i in range(0, len(D1x)-1)]
 D1_polygon = Polygon(D1_poly)
 
 # C - Carbonization of paper
-Cx = [-3.5, 2.5, -21.5, -11, -3.5]
-Cy = [-3, -32.4, -32.4, -8, -3]
+Cx = [-3.5, 2.492, -21.483, -11, -3.5]
+Cy = [-3, -32.361, -32.361, -8, -3]
 
 C_poly = [(Cx[i], Cy[i]) for i in range(0, len(Cx)-1)]
 C_polygon = Polygon(C_poly)
 
 # T3-H - Thermal fault T3 in oil only
-T3Hx = [0, 24.3, 23.5, 2.5, -3.5, 0]
-T3Hy = [-3, -30, -32.4, -32.4, -3, -3]
+T3Hx = [0, 24.204, 23.511, 2.492, -3.5, 0]
+T3Hy = [-3, -30.299, -32.361, -32.361, -3, -3]
+# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.299,)
+# (23.2, -32.4) or (, -32) as per TB 771 & C57.143-2019 would cause a gap, fixed by (23.51, -32.36)
 
 T3H_poly = [(T3Hx[i], T3Hy[i]) for i in range(0, len(T3Hx)-1)]
 T3H_polygon = Polygon(T3H_poly)
 
 # O - Overheating
-Ox = [-3.5, -11, -21.5, -23.5, -35, 0, 0, -3.5] 
-Oy = [-3, -8, -32.4, -32.4, 3.1, 1.5, -3, -3]
+Ox = [-3.5, -11, -21.483, -23.511, -35, 0, 0, -3.5] 
+Oy = [-3, -8, -32.361, -32.361, 3, 1.5, -3, -3]
 
 O_poly = [(Ox[i], Oy[i]) for i in range(0, len(Ox)-1)]
 O_polygon = Polygon(O_poly)
 
 # S - Stray gassing
-Sx = [0, -35, -38, 0, 0, -1, -1, 0, 0]
-Sy = [1.5, 3.1, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
+Sx = [0, -35, -38.042, 0, 0, -1, -1, 0, 0]
+Sy = [1.5, 3, 12.361, 40, 33, 33, 24.5, 24.5, 1.5]
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)

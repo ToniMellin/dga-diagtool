@@ -49,46 +49,53 @@ pio.templates.default = 'custom_theme'
 ## Defining Duval pentagon 1 coordinates and areas
 
 # D2 - Discharges of high energy
-D2x = [4, 32, 24.3, 0, 0, 4]
-D2y = [16, -6.1, -30, -3, 1.5, 16]
+D2x = [4, 32.061, 24.204, 0, 0, 4]
+D2y = [16, -6.048, -30.229, -3, 1.5, 16]
+# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.229)
 
 D2_poly = [(D2x[i], D2y[i]) for i in range(0, len(D2x)-1)]
 D2_polygon = Polygon(D2_poly)
 
-# D1 - Discharges of lowenergy
-D1x = [0, 38, 32, 4, 0, 0]
-D1y = [40, 12, -6.1, 16, 1.5, 40]
+# D1 - Discharges of low energy
+D1x = [0, 38.042, 32.061, 4, 0, 0] 
+D1y = [40, 12.361, -6.048, 16, 1.5, 40]
+# (38, 12) causes incorrect C2H2 axis angle and form of the pentagon, (38.042, 12.361) used to correct this
+
 
 D1_poly = [(D1x[i], D1y[i]) for i in range(0, len(D1x)-1)]
 D1_polygon = Polygon(D1_poly)
 
 # T3 - Thermal fault T3 >700C
-T3x = [0, 24.3, 23.2, 1, -6, 0] # 23.2 causes pentagon to become a hexagon
-#T3x = [0, 24.3, 23.5, 1, -6, 0] # 23.5 keeps a pentagon side C2H4-C2H2 as a straight line
-T3y = [-3, -30, -32.4, -32.4, -4, -3] #-32 as per TB 771 & C57.143-2019 would leave a gap
+T3x = [0, 24.204, 23.511, 1.09, -6, 0] #
+T3y = [-3, -30.229, -32.361, -32.361, -4, -3]
+# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.229)
+# (23.2, -32.4) or (, -32) as per TB 771 & C57.143-2019 would cause a gap, fixed by (23.511, -32.361)
+# (1, -32.36) changed -> (1.09, -32.361) to keep the base of the pentagon uniform at -32.3
 
 T3_poly = [(T3x[i], T3y[i]) for i in range(0, len(T3x)-1)]
 T3_polygon = Polygon(T3_poly)
 
 # T2 - Thermal fault T2 300C < T < 700C
-T2x = [-6, 1, -22.5, -6]
-T2y = [-4, -32.4, -32.4, -4]
+T2x = [-6, 1.09, -22.713, -6]
+T2y = [-4, -32.361, -32.361, -4]
+# (1, -32.36) changed -> (1.09, -32.361) to keep the base of the pentagon uniform at -32.36
 
 T2_poly = [(T2x[i], T2y[i]) for i in range(0, len(T2x)-1)]
 T2_polygon = Polygon(T2_poly)
 
 # T1 - Thermal fault T1 > 300C
-T1x = [-6, -22.5, -35, 0, 0, -6] # without -23.5 CH4 edge of pentagon differs from others and the picture
-#T1x = [-6, -22.5, -23.5, -35, 0, 0, -6] # -23.5 addition removes lopsideness
-T1y = [-4, -32.4, 3, 1.5, -3, -4] # without -32.4 CH4 edge of pentagon differs from others and the picture
-#T1y = [-4, -32.4, -32.4, 3, 1.5, -3, -4] # -32.4 addition removes lopsideness
+T1x = [-6, -22.713, -23.511, -35, 0, 0, -6]
+T1y = [-4, -32.361, -32.361, 3, 1.5, -3, -4]
+# (-23.51, -32.36) added to fix unevenness/lopsideness of the pentagon and the angle of CH4 axis
+# (-22.5, -32.4) changed -> (-22.713, -32.361) to keep the base of the pentagon uniform at -32.36
 
 T1_poly = [(T1x[i], T1y[i]) for i in range(0, len(T1x)-1)]
 T1_polygon = Polygon(T1_poly)
 
 # S - Stray gassing
-Sx = [0, -35, -38, 0, 0, -1, -1, 0, 0]
-Sy = [1.5, 3.0, 12.4, 40, 33, 33, 24.5, 24.5, 1.5]
+Sx = [0, -35, -38.042, 0, 0, -1, -1, 0, 0]
+Sy = [1.5, 3.0, 12.361, 40, 33, 33, 24.5, 24.5, 1.5]
+# (-38, 12.4) changed to fix the C2H6 angle and form of the pentagon, (-38.042, 12.361) used to fix this 
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)
