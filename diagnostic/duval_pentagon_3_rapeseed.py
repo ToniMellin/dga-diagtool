@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""duval_pentagon_3_soybean.py
+"""duval_pentagon_3_rapeseed.py
 
-This module calculates duval pentagon 3 (soybean) related diagnostics and generates duval pentagon visualizations using plotly library.
+This module calculates duval pentagon 3 (rapeseed) related diagnostics and generates duval pentagon visualizations using plotly library.
 
 @Author: https://github.com/ToniMellin
 
@@ -46,27 +46,25 @@ pio.templates["custom_theme"].layout.annotations = [
 ]
 pio.templates.default = 'custom_theme'
 
-## Defining Duval pentagon 3 (soybean) coordinates and areas
+## Defining Duval pentagon 3 (rapeseed) coordinates and areas
 
 # D2 - Discharges of high energy
-D2x = [4, 32.061, 24.204, 0, 0, 4]
-D2y = [16, -6.048, -30.229, -3, 1.5, 16]
-# (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.229)
+D2x = [4, 0, 0, 24.204, 32.061, 4]
+D2y = [16, 3, -3, -30.229, -6.048, 16]
 
 D2_poly = [(D2x[i], D2y[i]) for i in range(0, len(D2x)-1)]
 D2_polygon = Polygon(D2_poly)
 
-# D1 - Discharges of low energy
-D1x = [0, 38.042, 32.061, 4, 0, 0] 
-D1y = [40, 12.361, -6.048, 16, 1.5, 40]
-# (38, 12) causes incorrect C2H2 axis angle and form of the pentagon, (38.042, 12.361) used to correct this
+# D1 - Discharges of lowenergy
+D1x = [0,  0, 4, 32.061, 38.042, 0]
+D1y = [40, 3, 16, -6.048, 12.361, 40]
 
 D1_poly = [(D1x[i], D1y[i]) for i in range(0, len(D1x)-1)]
 D1_polygon = Polygon(D1_poly)
 
 # T3 - Thermal fault T3 >700C
-T3x = [0, 24.204, 23.511, 11.978, -2.5, 0]
-T3y = [-3, -30.299, -32.361, -32.361, -7, -3]
+T3x = [0, 0.010, 23.511, 24.204, 0]
+T3y = [-3, -32.361, -32.361, -30.229, -3]
 # (24.3, -30) would cause the pentagon to become a hexagon, fixed by (24.204, -30.299)
 # (23.2, -32.4) or (, -32) as per TB 771 & C57.143-2019 would cause a gap, fixed by (23.511, -32.361)
 
@@ -74,22 +72,22 @@ T3_poly = [(T3x[i], T3y[i]) for i in range(0, len(T3x)-1)]
 T3_polygon = Polygon(T3_poly)
 
 # T2 - Thermal fault T2 300C < T < 700C
-T2x = [0, 0, -2.5, 11.978, -23.511, -28.6, 0]
-T2y = [1.5, -3, -7, -32.361, -32.361, -16.7, 1.5]
+T2x = [0, -7, -22.483, 0.010, 0]
+T2y = [3, 3, -32.361, -32.361, 3]
 
 T2_poly = [(T2x[i], T2y[i]) for i in range(0, len(T2x)-1)]
 T2_polygon = Polygon(T2_poly)
 
 # T1 - Thermal fault T1 > 300C
-T1x = [0, -28.6, -38.042, -23.306, 0]
-T1y = [1.5, -16.7, 12.361, 23.067, 1.5]
+T1x = [0, -8, -37.991, -38.042, -23.511, -22.483, -7, 0]
+T1y = [3, 6, 12.398, 12.361, -32.361, -32.361, 3, 3]
 
 T1_poly = [(T1x[i], T1y[i]) for i in range(0, len(T1x)-1)]
 T1_polygon = Polygon(T1_poly)
 
 # S - Stray gassing
-Sx = [0, -23.306, 0, 0, -1, -1, 0, 0]
-Sy = [1.5, 23.067, 40, 33, 33, 24.5, 24.5, 1.5]
+Sx = [0, 0, -1, -1, 0, 0, -8, -37.991, 0]
+Sy = [40, 33, 33, 24.5, 24.5, 3, 6, 12.398, 40]
 
 S_poly = [(Sx[i], Sy[i]) for i in range(0, len(Sx)-1)]
 S_polygon = Polygon(S_poly)
@@ -109,7 +107,7 @@ def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
 
-def create_duval_p3_soybean_colorized(legend_show=False):
+def create_duval_p3_rapeseed_colorized(legend_show=False):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=Sx, y=Sy, 
                              name='S',
@@ -174,15 +172,14 @@ def create_duval_p3_soybean_colorized(legend_show=False):
                             fill="toself",
                             fillcolor='rgba(178,244,255, 0.5)'
                             ))
-    fig.add_scatter(x=[0, -24.5, -40, 25, 40], 
-                    y=[41, -34, 12.5, -34, 12.5],
-                    text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'], 
-                    name='Axis annotations',
-                    mode='text', 
+    fig.add_scatter(x=[0, -24.5, -40, 25, 40], y=[41, -34, 12.5, -34, 12.5],
+                     text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'],
+                     name='Axis annotations', 
+                     mode='text',
                     hoverinfo='skip', showlegend=False)
-    fig.add_scatter(x=[-8, -0.5, 16, 14, 10, -8, -22], 
-                    y=[20, 28.75, 16 ,-5, -20, -20, 6],
-                    text=['S', 'PD', 'D1', 'D2', 'T3', 'T2', 'T1'], 
+    fig.add_scatter(x=[-16, -0.5, 16, 14, 7, -8, -21], 
+                    y=[16, 28.75, 16 ,-5, -20, -20, -5],
+                    text=['S', 'PD', 'D1', 'D2', 'T3', 'T2', 'T1'],
                     name='Fault zone annotations',
                     mode='text', 
                     hoverinfo='skip', showlegend=False)
@@ -202,7 +199,7 @@ def create_duval_p3_soybean_colorized(legend_show=False):
     
     return fig
 
-def create_duval_p3_soybean_nocolor(legend_show=False):
+def create_duval_p3_rapeseed_nocolor(legend_show=False):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=Sx, y=Sy, 
                              name='S',
@@ -253,17 +250,16 @@ def create_duval_p3_soybean_nocolor(legend_show=False):
                             line_color='black',
                             line_width=0.5
                             ))
-    fig.add_scatter(x=[0, -24.5, -40, 25, 40], 
-                    y=[41, -34, 12.5, -34, 12.5],
-                    text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'], 
+    fig.add_scatter(x=[0, -24.5, -40, 25, 40], y=[41, -34, 12.5, -34, 12.5],
+                    text=['H2', 'CH4', 'C2H6', 'C2H4', 'C2H2'],
                     name='Axis annotations',
-                    mode='text', 
+                    mode='text',
                     hoverinfo='skip', showlegend=False)
-    fig.add_scatter(x=[-8, -0.5, 16, 14, 10, -8, -22], 
-                    y=[20, 28.75, 16 ,-5, -20, -20, 6],
-                    text=['S', 'PD', 'D1', 'D2', 'T3', 'T2', 'T1'], 
+    fig.add_scatter(x=[-16, -0.5, 16, 14, 7, -8, -21], 
+                    y=[16, 28.75, 16 ,-5, -20, -20, -5],
+                    text=['S', 'PD', 'D1', 'D2', 'T3', 'T2', 'T1'],
                     name='Fault zone annotations',
-                    mode='text', 
+                    mode='text',
                     hoverinfo='skip', showlegend=False)
     fig.update_layout(
                         paper_bgcolor='rgba(0,0,0,0)',
@@ -281,7 +277,7 @@ def create_duval_p3_soybean_nocolor(legend_show=False):
 
     return fig
 
-def calculate_duval_p3_soybean_coordinates(h2, c2h6, ch4, c2h4, c2h2, rounding=False):
+def calculate_duval_p3_rapeseed_coordinates(h2, c2h6, ch4, c2h4, c2h2, rounding=False):
 
     # change zero values to 10^(-10)
     if h2 == 0:
@@ -361,7 +357,7 @@ def calculate_duval_p3_soybean_coordinates(h2, c2h6, ch4, c2h4, c2h2, rounding=F
 
     return centroid_list, summit_list
 
-def calculate_duval_p3_soybean_result(h2, c2h6, ch4, c2h4, c2h2):
+def calculate_duval_p3_rapeseed_result(h2, c2h6, ch4, c2h4, c2h2):
 
     try:
         if (isna(h2) or isna(c2h6) or isna(ch4) or isna(c2h4) or isna(c2h2)) is True:
@@ -369,7 +365,7 @@ def calculate_duval_p3_soybean_result(h2, c2h6, ch4, c2h4, c2h2):
         if ((h2 == 0) and (c2h6 == 0) and (ch4 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
             return 'N/A'
         else:
-            centroid_list, summit_list = calculate_duval_p3_soybean_coordinates(h2, ch4, c2h6, c2h4, c2h2)
+            centroid_list, summit_list = calculate_duval_p3_rapeseed_coordinates(h2, ch4, c2h6, c2h4, c2h2)
             point = Point(centroid_list[0], centroid_list[1])
             if (D2_polygon.contains(point) or (point.distance(D2_polygon) < epsilon)) is True:
                 return 'D2'
@@ -393,9 +389,9 @@ def calculate_duval_p3_soybean_result(h2, c2h6, ch4, c2h4, c2h2):
         print('{h2}, {ch4}, {c2h6}, {c2h4}, {c2h2}')
         return 'N/A'
 
-def create_duval_p3_soybean_marker(h2, c2h6, ch4, c2h4, c2h2, **kwargs):
-    marker_coord, summit_list = calculate_duval_p3_soybean_coordinates(h2, c2h6, ch4, c2h4, c2h2)
-    result = calculate_duval_p3_soybean_result(h2, c2h6, ch4, c2h4, c2h2)
+def create_duval_p3_rapeseed_marker(h2, c2h6, ch4, c2h4, c2h2, **kwargs):
+    marker_coord, summit_list = calculate_duval_p3_rapeseed_coordinates(h2, c2h6, ch4, c2h4, c2h2)
+    result = calculate_duval_p3_rapeseed_result(h2, c2h6, ch4, c2h4, c2h2)
 
     # check for timestamp
     if  'timestamp' in kwargs:
@@ -462,8 +458,8 @@ def create_duval_p3_soybean_marker(h2, c2h6, ch4, c2h4, c2h2, **kwargs):
             print(e)
             pass
 
-def draw_duval_p3_soybean_summits(h2, c2h6, ch4, c2h4, c2h2):
-    marker_coord, summit_list = calculate_duval_p3_soybean_coordinates(h2, c2h6, ch4, c2h4, c2h2)
+def draw_duval_p3_rapeseed_summits(h2, c2h6, ch4, c2h4, c2h2):
+    marker_coord, summit_list = calculate_duval_p3_rapeseed_coordinates(h2, c2h6, ch4, c2h4, c2h2)
 
     summit_x = [summit[0] for summit in summit_list]
     summit_x.append(summit_list[0][0])
@@ -479,20 +475,20 @@ def draw_duval_p3_soybean_summits(h2, c2h6, ch4, c2h4, c2h2):
                             line_width=0.8
                             )
 
-def create_duval_p3_soybean_result_graph(h2, c2h6, ch4, c2h4, c2h2, include_summit=False):
-    fig = create_duval_p3_soybean_colorized()
+def create_duval_p3_rapeseed_result_graph(h2, c2h6, ch4, c2h4, c2h2, include_summit=False):
+    fig = create_duval_p3_rapeseed_colorized()
 
     try:
-        result_name = calculate_duval_p3_soybean_result(h2, c2h6, ch4, c2h4, c2h2)
-        fig.add_trace(create_duval_p3_soybean_marker(h2, c2h6, ch4, c2h4, c2h2, result_name))
+        result_name = calculate_duval_p3_rapeseed_result(h2, c2h6, ch4, c2h4, c2h2)
+        fig.add_trace(create_duval_p3_rapeseed_marker(h2, c2h6, ch4, c2h4, c2h2, result_name))
         if include_summit is True:
-            fig.add_trace(draw_duval_p3_soybean_summits(h2, c2h6, ch4, c2h4, c2h2))
+            fig.add_trace(draw_duval_p3_rapeseed_summits(h2, c2h6, ch4, c2h4, c2h2))
         return fig
     except:
         return fig
     
-def create_duval_p3_soybean_multi_results_graph(samples_df):
-    fig = create_duval_p3_soybean_colorized()
+def create_duval_p3_rapeseed_multi_results_graph(samples_df):
+    fig = create_duval_p3_rapeseed_colorized()
 
     sample_count = len(samples_df)
     colorscale = pcolors.sample_colorscale('Bluered', sample_count, low=0.0, high=1.0, colortype='rgb')
@@ -505,9 +501,9 @@ def create_duval_p3_soybean_multi_results_graph(samples_df):
             if ((h2 == 0) and (ch4 == 0) and (c2h6 == 0) and (c2h4 == 0) and (c2h2 == 0)) is True:
                 continue
             else:
-                duval_result = calculate_duval_p3_soybean_result(h2, c2h6, ch4, c2h4, c2h2)
+                duval_result = calculate_duval_p3_rapeseed_result(h2, c2h6, ch4, c2h4, c2h2)
                 mark_name = f'{duval_result} {time}'
-                fig.add_trace(create_duval_p3_soybean_marker(h2, c2h6, ch4, c2h4, c2h2, mark_name, timestamp=time, result=duval_result, marker_color=rowcolor))
+                fig.add_trace(create_duval_p3_rapeseed_marker(h2, c2h6, ch4, c2h4, c2h2, mark_name, timestamp=time, result=duval_result, marker_color=rowcolor))
         return fig
     except Exception as e:
         print(e)
@@ -517,35 +513,35 @@ def create_duval_p3_soybean_multi_results_graph(samples_df):
 if __name__ == "__main__":
     '''
     # H2 = 31 ppm, C2H6 = 130 ppm, CH4 = 192 ppm, C2H4 = 31 ppm, and C2H2 = 0 ppm -> (−17.3, −9.1) [T1]
-    dp3_soybean_coord, dp3_soybean_summits = calculate_duval_p3_soybean_coordinates(31, 130, 192, 31, 0)
-    print(f'centroid_XY:\n{dp3_soybean_coord}\nsummit_coordsXY:\n{dp3_soybean_summits}')
+    dp3_rapeseed_coord, dp3_rapeseed_summits = calculate_duval_p3_rapeseed_coordinates(31, 130, 192, 31, 0)
+    print(f'centroid_XY:\n{dp3_rapeseed_coord}\nsummit_coordsXY:\n{dp3_rapeseed_summits}')
 
-    poly1 = Polygon(dp3_soybean_summits)
+    poly1 = Polygon(dp3_rapeseed_summits)
     print(f'shapely_XY:\n{list(poly1.centroid.coords)}')
 
-    dp3_soybean_result = calculate_duval_p3_soybean_result(31, 130, 192, 31, 0)
-    print(dp3_soybean_result)
+    dp3_rapeseed_result = calculate_duval_p3_rapeseed_result(31, 130, 192, 31, 0)
+    print(dp3_rapeseed_result)
     '''
-    duvp3_soybean_fig = create_duval_p3_soybean_result_graph(31, 130, 192, 31, 0, include_summit=False)
-    duvp3_soybean_fig.show()
+    duvp3_rapeseed_fig = create_duval_p3_rapeseed_result_graph(31, 130, 192, 31, 0, include_summit=False)
+    duvp3_rapeseed_fig.show()
     '''
     # H2 = 50 ppm, C2H6 = 80 ppm, CH4 = 120 ppm, C2H4 = 60 ppm and C2H2 = 30 ppm  -> xo = -7.35, and yo = -5.79 (T1)
     # 50, 120, 80, 60, 30
-    dp3_soybean_coord2, dp3_soybean_summits2 = calculate_duval_p3_soybean_coordinates(50, 80, 120, 60, 30)
-    print(f'centroid_XY:{dp3_soybean_coord2}\nsummit_coordsXY:{dp3_soybean_summits2}')
+    dp3_rapeseed_coord2, dp3_rapeseed_summits2 = calculate_duval_p3_rapeseed_coordinates(50, 80, 120, 60, 30)
+    print(f'centroid_XY:{dp3_rapeseed_coord2}\nsummit_coordsXY:{dp3_rapeseed_summits2}')
 
-    poly2 = Polygon(dp3_soybean_summits2)
+    poly2 = Polygon(dp3_rapeseed_summits2)
     print(f'shapely_XY:{list(poly2.centroid.coords)}')
 
-    dp3_soybean_result2 = calculate_duval_p3_soybean_result(50, 80, 120, 60, 30)
-    print(dp3_soybean_result2)
+    dp3_rapeseed_result2 = calculate_duval_p3_rapeseed_result(50, 80, 120, 60, 30)
+    print(dp3_rapeseed_result2)
     '''
 
-    duvp3_soybean_2_fig = create_duval_p3_soybean_result_graph(50, 80, 120, 60, 30, include_summit=False)
-    duvp3_soybean_2_fig = create_duval_p3_soybean_nocolor()
-    duvp3_soybean_2_fig.add_trace(create_duval_p3_soybean_marker(50, 80, 120, 60, 30, timestamp='2021-05-11', marker_color='blue'))
-    #duvp3_soybean_2_fig.add_trace(draw_duval_p3_soybean_summits(50, 80, 120, 60, 30))
-    duvp3_soybean_2_fig.show()
+    duvp3_rapeseed_2_fig = create_duval_p3_rapeseed_result_graph(50, 80, 120, 60, 30, include_summit=False)
+    duvp3_rapeseed_2_fig = create_duval_p3_rapeseed_nocolor()
+    duvp3_rapeseed_2_fig.add_trace(create_duval_p3_rapeseed_marker(50, 80, 120, 60, 30, timestamp='2021-05-11', marker_color='blue'))
+    #duvp3_rapeseed_2_fig.add_trace(draw_duval_p3_rapeseed_summits(50, 80, 120, 60, 30))
+    duvp3_rapeseed_2_fig.show()
 
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
                         'H2': [0, 10, 50, 100, 160, 250], 
@@ -561,5 +557,5 @@ if __name__ == "__main__":
 
     #print(df_sample)
 
-    #duvp3_soybean_multi_fig = create_duval_p3_soybean_multi_results_graph(df_sample)
-    #duvp3_soybean_multi_fig.show()
+    #duvp3_rapeseed_multi_fig = create_duval_p3_rapeseed_multi_results_graph(df_sample)
+    #duvp3_rapeseed_multi_fig.show()
