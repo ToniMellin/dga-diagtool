@@ -5,7 +5,7 @@ This module calculates duval pentagon u (unified pentagon of pentagon 1-2) relat
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
+* Copyright (c) 2022-2026 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
@@ -34,7 +34,7 @@ pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
 pio.templates["custom_theme"].layout.annotations = [
     dict(
         name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
-        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        text=binascii.unhexlify(b'436f707972696768742028632920323032322d3230323620546f6e69204d656c6c696e').decode('utf-8'),
         opacity=0.3,
         font=dict(color="#FFFAFA", size=20),
         xref="paper",

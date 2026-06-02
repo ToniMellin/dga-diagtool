@@ -5,7 +5,7 @@ This module calculates duval triangle 2 (LTC) related diagnostics and generates 
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
+* Copyright (c) 2022-2026 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *
@@ -33,7 +33,7 @@ pio.templates['custom_theme'].layout.colorway = pcolors.qualitative.D3
 pio.templates["custom_theme"].layout.annotations = [
     dict(
         name=binascii.unhexlify(b'77617465726d61726b').decode('utf-8'),
-        text=binascii.unhexlify(b'436f7079726967687420286329203230323520546f6e69204d656c6c696e').decode('utf-8'),
+        text=binascii.unhexlify(b'436f707972696768742028632920323032322d3230323620546f6e69204d656c6c696e').decode('utf-8'),
         opacity=0.3,
         font=dict(color="#FFFAFA", size=20),
         xref="paper",
@@ -613,8 +613,8 @@ def create_duval_2_group_distance_distribution_graph(ch4_groups, c2h2_groups, c2
     else:
         fig = create_duval_2_nocolor()
 
-    if 'invertered_percentiles' in kwargs:
-        dist_perc = kwargs['invertered_percentiles']
+    if 'inverted_percentiles' in kwargs:
+        dist_perc = kwargs['inverted_percentiles']
     else:
         dist_perc = [100, 75, 50, 25, 0]
 

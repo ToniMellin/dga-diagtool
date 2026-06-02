@@ -5,7 +5,7 @@ This module makes the calculations of rate-of-change (ROC) for gas readings.
 
 @Author: https://github.com/ToniMellin
 
-* Copyright (C) 2023-2025 Toni Mellin - All Rights Reserved
+* Copyright (c) 2022-2026 Toni Mellin - All Rights Reserved
 * You may use, distribute and modify this code under the
 * terms of the MIT license.
 *

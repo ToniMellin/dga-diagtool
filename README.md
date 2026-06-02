@@ -1,6 +1,6 @@
 # DGA diagtool
 
-A dash based transformer oil dissolved gas analysis (DGA) diagnostic tool. When given DGA gas values, the tool calculates ratios, compares values against typical values and provides diagnostic method analysis results (Rogers ratio, Doernenburg, IEC ratios, Duval triangles).
+A dash based transformer oil dissolved gas analysis (DGA) diagnostic multi tool. When given DGA gas values, the tool calculates and provides diagnostic method analysis results.
 
 **Use at your own caution.** **The author assumes no liability for the usage of the tool.** **Always consult a transformer expert when diagnosing a possible fault in a transformer.**
 
