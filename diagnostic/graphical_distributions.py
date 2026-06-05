@@ -810,7 +810,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                     xref = "paper", yref = "paper",
                     textangle=-30,
                     font=dict(size=50, color='red'), 
-                    text= f"Incompatible data",
+                    text= f"INSUFFICIENT DATA",
                     clicktoshow='onout'
                   ))
             
@@ -838,7 +838,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                     xref = "paper", yref = "paper",
                     textangle=-30,
                     font=dict(size=50, color='red'), 
-                    text= f"Incompatible data",
+                    text= f"INSUFFICIENT DATA",
                     clicktoshow='onout'
                   ))
         
