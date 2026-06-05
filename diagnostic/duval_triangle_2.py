@@ -562,6 +562,11 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
     else:
         cutoff = False
     
+    if 'show_axis_details' in kwargs:
+        show_axis_details = kwargs['show_axis_details']
+    else:
+        show_axis_details = False
+
     try:
         for i, group_name in enumerate(group_names):
             coord_list = []
@@ -588,6 +593,27 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
                                             hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
     except Exception as e:
         print(e)
+
+    if show_axis_details == True:
+        fig.update_ternaries(
+                    aaxis_title=dict(text=''), 
+                    aaxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                    baxis_title=dict(text=''),
+                    baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                    caxis_title=dict(text=''), 
+                    caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
+        fig.add_annotation(x=0.3, y=0.5, xref='paper', yref='paper',
+            text="CH4", textangle=300,
+            showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
+        fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
+            text="C2H4", textangle=60,
+            showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
+        fig.add_annotation(x=0.5, y=-0.07, xref='paper', yref='paper',
+            text="C2H2", textangle=0,
+            showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
+        fig.update_layout(autosize=False,
+                      width=1280,
+                      height=800)
 
     return fig
 
@@ -990,15 +1016,18 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
                     baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
                     caxis_title=dict(text=''), 
                     caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
-        fig.add_annotation(x=0.3, y=0.6, xref='paper', yref='paper',
+        fig.add_annotation(x=0.3, y=0.5, xref='paper', yref='paper',
             text="CH4", textangle=300,
             showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
         fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
             text="C2H4", textangle=60,
             showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
-        fig.add_annotation(x=0.4, y=-0.07, xref='paper', yref='paper',
+        fig.add_annotation(x=0.5, y=-0.07, xref='paper', yref='paper',
             text="C2H2", textangle=0,
             showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
+        fig.update_layout(autosize=False,
+                      width=1280,
+                      height=800)
     else:
         fig.update_ternaries(bgcolor='#FFFFFF', 
                 aaxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
@@ -1007,6 +1036,8 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
                 aaxis_title_text='CH4',
                 baxis_title_text='C2H2',
                 caxis_title_text='C2H4')
+        
+
 
     return fig
 
