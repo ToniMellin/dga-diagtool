@@ -764,24 +764,6 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
 
     fig = ternary_density_distribution_graph(ch4_groups, c2h2_groups, c2h4_groups, axis_names=['CH4', 'C2H2', 'C2H4'], color_scale=color_scale, showscale=show_scale, cutoff=cutoff, cutoff_direction=cutoff_direction, discard_zeros=discard_zeros, show_markers=show_markers, contour_n=contour_n, group_names=group_names, marker_compare=marker_compare)
 
-    if show_axis_details == True:
-        fig.update_ternaries(
-                    aaxis_title=dict(text=''), 
-                    aaxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
-                    baxis_title=dict(text=''),
-                    baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
-                    caxis_title=dict(text=''), 
-                    caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
-        fig.add_annotation(x=0.3, y=0.6, xref='paper', yref='paper',
-            text="CH4", textangle=300,
-            showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
-        fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
-            text="C2H4", textangle=60,
-            showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
-        fig.add_annotation(x=0.4, y=-0.07, xref='paper', yref='paper',
-            text="C2H2", textangle=0,
-            showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
-
     if len(ch4_groups) > 1:
         for g in range(1, len(ch4_groups)+1):
             row_n = int(round_up(g/2, 0)) 
@@ -998,13 +980,33 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
                                 mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                                 showlegend=False)
     
-    fig.update_ternaries(bgcolor='#FFFFFF', 
-                    aaxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
-                    baxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
-                    caxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
-                    aaxis_title_text='CH4',
-                    baxis_title_text='C2H2',
-                    caxis_title_text='C2H4')
+
+    
+    if show_axis_details == True:
+        fig.update_ternaries(
+                    aaxis_title=dict(text=''), 
+                    aaxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                    baxis_title=dict(text=''),
+                    baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                    caxis_title=dict(text=''), 
+                    caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
+        fig.add_annotation(x=0.3, y=0.6, xref='paper', yref='paper',
+            text="CH4", textangle=300,
+            showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
+        fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
+            text="C2H4", textangle=60,
+            showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
+        fig.add_annotation(x=0.4, y=-0.07, xref='paper', yref='paper',
+            text="C2H2", textangle=0,
+            showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
+    else:
+        fig.update_ternaries(bgcolor='#FFFFFF', 
+                aaxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                baxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                caxis=dict(linecolor='#000000', showgrid=False, gridcolor='#FFFFFF', ticks='', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                aaxis_title_text='CH4',
+                baxis_title_text='C2H2',
+                caxis_title_text='C2H4')
 
     return fig
 
