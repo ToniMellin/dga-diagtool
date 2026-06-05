@@ -531,6 +531,20 @@ def create_duval_2_multi_results_graph(samples_df, values_pos=[0, 2, 5, 4], colo
         print(e)
         return fig
     
+def create_duval_2_issue_graph():
+    fig_issue = create_duval_2_nocolor
+    fig_issue.add_annotation(dict(x=0.5, y=0.5,
+            xref = "paper", yref = "paper",
+            textangle=-30,
+            font=dict(size=50, color='red'), 
+            text= f"INSUFFICIENT DATA",
+            clicktoshow='onout'
+            ))
+    
+    fig_issue.update_layout(ternary_sum=100, showlegend=False)
+
+    return fig_issue
+    
 def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=False, **kwargs):
     # https://plotly.com/python/marker-style/
     marker_symbol_list = ['circle', 'diamond', 'square', 'x-thin', 'cross-thin', 
