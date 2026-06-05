@@ -532,7 +532,7 @@ def create_duval_2_multi_results_graph(samples_df, values_pos=[0, 2, 5, 4], colo
         return fig
     
 def create_duval_2_issue_graph():
-    fig_issue = create_duval_2_nocolor
+    fig_issue = create_duval_2_nocolor()
     fig_issue.add_annotation(dict(x=0.5, y=0.5,
             xref = "paper", yref = "paper",
             textangle=-30,
