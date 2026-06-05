@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-"""duval_triangle_4.py
+"""duval_triangle_6_soybean_ltf.py
 
-This module calculates duval triangle 4 related diagnostics and generates duval triangle visualizations using plotly library.
+This module calculates duval triangle 6 (Soybean LTF) related diagnostics and generates duval triangle visualizations using plotly library.
+
+Only use triangle 6 when triangle 3 (soybean) result is PD, T1, T2 or DT.
 
 @Author: https://github.com/ToniMellin
 
@@ -42,38 +44,37 @@ pio.templates["custom_theme"].layout.annotations = [
 ]
 pio.templates.default = 'custom_theme'
 
-# * Triangle 4 fault area ternary coordinate constants (plotly: a, b, c) *
+# * Triangle 6 (soybean ltf) fault area ternary coordinate constants (plotly: a, b, c) *
+TRIANGLE6_SOY_PD_A = [98, 97, 87, 88, 98]
+TRIANGLE6_SOY_PD_B = [0, 1, 1, 0, 0]
+TRIANGLE6_SOY_PD_C = [2, 2, 12, 12, 2]
 
-TRIANGLE4_PD_A = [98, 97, 84, 85, 98]
-TRIANGLE4_PD_B = [0, 1, 1, 0, 0]
-TRIANGLE4_PD_C = [2, 2, 15, 15, 2]
+TRIANGLE6_SOY_S_A = [100, 0, 0, 87, 97, 98, 100]
+TRIANGLE6_SOY_S_B = [0, 100, 88, 1, 1, 0, 0]
+TRIANGLE6_SOY_S_C = [0, 0, 12, 12, 2, 2,  0]
 
-TRIANGLE4_S_A = [100, 54, 9, 9, 15, 15, 40, 64, 85, 84, 97, 98, 100]
-TRIANGLE4_S_B = [0, 46, 46, 30, 30, 24, 24, 0, 0, 1, 1, 0, 0]
-TRIANGLE4_S_C = [0, 0, 45, 61, 55, 61,  36, 36, 15, 15, 2, 2, 0]
+TRIANGLE6_SOY_O_A = [0, 0, 9, 9, 0]
+TRIANGLE6_SOY_O_B = [88, 24, 24, 79, 88]
+TRIANGLE6_SOY_O_C = [12, 76, 67, 12, 12]
 
-TRIANGLE4_O_A = [0, 0, 9, 9, 0]
-TRIANGLE4_O_B = [100, 30, 30, 91, 100]
-TRIANGLE4_O_C = [0, 70, 61, 0, 0]
+TRIANGLE6_SOY_C_A = [64, 40, 0, 0, 64]
+TRIANGLE6_SOY_C_B = [0, 24, 24, 0, 0]
+TRIANGLE6_SOY_C_C = [36, 36, 76, 100, 36]
 
-TRIANGLE4_C_A = [0, 0, 64, 40, 15, 15, 0]
-TRIANGLE4_C_B = [30, 0, 0, 24, 24, 30, 30]
-TRIANGLE4_C_C = [70, 100, 36, 36, 61, 55, 70]
-
-TRIANGLE4_ND_A = [54, 9, 9, 54]
-TRIANGLE4_ND_B = [46, 91, 46, 46]
-TRIANGLE4_ND_C = [0, 0, 45, 0]
+TRIANGLE6_SOY_ND_A = [88, 9, 9, 40, 64]
+TRIANGLE6_SOY_ND_B = [0, 79, 24, 24, 0]
+TRIANGLE6_SOY_ND_C = [12, 12, 67, 36, 36]
 
 
-def create_duval_4_colorized(legend_show=False):
+def create_duval_6_soy_colorized(legend_show=False):
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
     # https://plotly.com/python/reference/layout/ternary/
     fig = go.Figure(layout=dict(ternary_sum=100))
 
     #PD
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_PD_A,
-                                    b= TRIANGLE4_PD_B,
-                                    c= TRIANGLE4_PD_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_PD_A,
+                                    b= TRIANGLE6_SOY_PD_B,
+                                    c= TRIANGLE6_SOY_PD_C,
                                     name='PD',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -83,9 +84,9 @@ def create_duval_4_colorized(legend_show=False):
                                     fillcolor='rgba(178,255,228, 0.5)'
                                     ))
     #S
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_S_A,
-                                    b= TRIANGLE4_S_B,
-                                    c= TRIANGLE4_S_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_S_A,
+                                    b= TRIANGLE6_SOY_S_B,
+                                    c= TRIANGLE6_SOY_S_C,
                                     name='S',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -95,9 +96,9 @@ def create_duval_4_colorized(legend_show=False):
                                     fillcolor='rgba(170,156,192, 0.5)'
                                     ))
     #O
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_O_A,
-                                    b= TRIANGLE4_O_B,
-                                    c= TRIANGLE4_O_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_O_A,
+                                    b= TRIANGLE6_SOY_O_B,
+                                    c= TRIANGLE6_SOY_O_C,
                                     name='O',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -107,9 +108,9 @@ def create_duval_4_colorized(legend_show=False):
                                     fillcolor='rgba(255,211,37, 0.5)'
                                     ))
     #C
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_C_A,
-                                    b= TRIANGLE4_C_B,
-                                    c= TRIANGLE4_C_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_C_A,
+                                    b= TRIANGLE6_SOY_C_B,
+                                    c= TRIANGLE6_SOY_C_C,
                                     name='C',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -119,9 +120,9 @@ def create_duval_4_colorized(legend_show=False):
                                     fillcolor='rgba(92,81,75, 0.6)'
                                     ))
     #ND
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_ND_A,
-                                    b= TRIANGLE4_ND_B,
-                                    c= TRIANGLE4_ND_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_ND_A,
+                                    b= TRIANGLE6_SOY_ND_B,
+                                    c= TRIANGLE6_SOY_ND_C,
                                     name='ND',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -130,10 +131,12 @@ def create_duval_4_colorized(legend_show=False):
                                     ))
 
     # Annotations
-    fig.add_scatterternary(a=[26, 4.5, 64, 28], b=[62, 62, 18, 12], c=[14, 33.5, 18, 60],
-                            mode='text', text=['ND', 'O', 'S', 'C'], hoverinfo='none', showlegend=legend_show)
-    fig.add_scatterternary(a=[91], b=[0.5], c=[8.5],
-                            mode='text', text=['PD'], hoverinfo='none',
+    fig.add_scatterternary(a=[92.5, 40, 4.5, 50, 28], 
+                           b=[0.5, 33, 56, 44, 12], 
+                           c=[7, 27, 39.5, 6, 60],
+                            text=['PD', 'ND', 'O', 'S', 'C'], 
+                            name='Fault zone annotations',
+                            mode='text', hoverinfo='skip',
                             showlegend=legend_show)
     
     """
@@ -181,15 +184,15 @@ def create_duval_4_colorized(legend_show=False):
     
     return fig
 
-def create_duval_4_nocolor(legend_show=False):
+def create_duval_6_soy_nocolor(legend_show=False):
     # https://community.plotly.com/t/shapes-in-ternary-plot/38566/10
     # https://plotly.com/python/reference/layout/ternary/
     fig = go.Figure(layout=dict(ternary_sum=100))
 
     #PD
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_PD_A,
-                                    b= TRIANGLE4_PD_B,
-                                    c= TRIANGLE4_PD_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_PD_A,
+                                    b= TRIANGLE6_SOY_PD_B,
+                                    c= TRIANGLE6_SOY_PD_C,
                                     name='PD',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -197,9 +200,9 @@ def create_duval_4_nocolor(legend_show=False):
                                     line_width=0.5
                                     ))
     #S
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_S_A,
-                                    b= TRIANGLE4_S_B,
-                                    c= TRIANGLE4_S_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_S_A,
+                                    b= TRIANGLE6_SOY_S_B,
+                                    c= TRIANGLE6_SOY_S_C,
                                     name='S',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -207,9 +210,9 @@ def create_duval_4_nocolor(legend_show=False):
                                     line_width=0.5
                                     ))
     #O
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_O_A,
-                                    b= TRIANGLE4_O_B,
-                                    c= TRIANGLE4_O_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_O_A,
+                                    b= TRIANGLE6_SOY_O_B,
+                                    c= TRIANGLE6_SOY_O_C,
                                     name='O',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -217,9 +220,9 @@ def create_duval_4_nocolor(legend_show=False):
                                     line_width=0.5
                                     ))
     #C
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_C_A,
-                                    b= TRIANGLE4_C_B,
-                                    c= TRIANGLE4_C_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_C_A,
+                                    b= TRIANGLE6_SOY_C_B,
+                                    c= TRIANGLE6_SOY_C_C,
                                     name='C',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -227,9 +230,9 @@ def create_duval_4_nocolor(legend_show=False):
                                     line_width=0.5
                                     ))
     #ND
-    fig.add_trace(go.Scatterternary(a= TRIANGLE4_ND_A,
-                                    b= TRIANGLE4_ND_B,
-                                    c= TRIANGLE4_ND_C,
+    fig.add_trace(go.Scatterternary(a= TRIANGLE6_SOY_ND_A,
+                                    b= TRIANGLE6_SOY_ND_B,
+                                    c= TRIANGLE6_SOY_ND_C,
                                     name='ND',
                                     showlegend=legend_show,
                                     mode='lines',
@@ -238,11 +241,12 @@ def create_duval_4_nocolor(legend_show=False):
                                     ))
 
     # Annotations
-    fig.add_scatterternary(a=[26, 4.5, 64, 28], b=[62, 62, 18, 12], c=[14, 33.5, 18, 60],
-                            mode='text', text=['ND', 'O', 'S', 'C'], hoverinfo='skip',
-                            showlegend=legend_show)
-    fig.add_scatterternary(a=[91], b=[0.5], c=[8.5],
-                            mode='text', text=['PD'], hoverinfo='skip',
+    fig.add_scatterternary(a=[92.5, 40, 4.5, 50, 28], 
+                           b=[0.5, 33, 56, 44, 12], 
+                           c=[7, 27, 39.5, 6, 60],
+                            text=['PD', 'ND', 'O', 'S', 'C'], 
+                            name='Fault zone annotations',
+                            mode='text', hoverinfo='skip',
                             showlegend=legend_show)
     
     """
@@ -271,7 +275,7 @@ def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
     return np.floor(n*multiplier + 0.5) / multiplier
 
-def calculate_duval_4_coordinates(h2, c2h6, ch4, rounding=False):
+def calculate_duval_6_soy_coordinates(h2, c2h6, ch4, rounding=False):
 
     i = h2
     j = c2h6
@@ -293,21 +297,21 @@ def calculate_duval_4_coordinates(h2, c2h6, ch4, rounding=False):
     
     return coordinates
 
-def calculate_duval_4_result(h2, c2h6, ch4):
+def calculate_duval_6_soy_result(h2, c2h6, ch4):
     try:
         if (isna(h2) is True) or (isna(c2h6) is True) or (isna(ch4) is True):
             return 'N/A'
         else:
-            x, y, z = calculate_duval_4_coordinates(h2, c2h6, ch4)
-            if z >= 2 and z <= 15 and y <= 1:
+            x, y, z = calculate_duval_6_soy_coordinates(h2, c2h6, ch4)
+            if z >= 2 and z <= 12 and y <= 1:
                 return 'PD'
-            elif (x > 9 and y > 30 and y < 46) or (x > 15 and y > 24 and y < 30) or (z < 36 and y >= 1 and y <= 24) or (z < 36 and z > 15 and y < 1) or (z < 2 and y < 1):
+            elif (z <= 12 and y > 1) or (y <= 1 and z < 2):
                 return 'S'
-            elif (z >= 36 and y <= 24) or (x <= 15 and y >= 24 and y <= 30):
+            elif (z >= 36 and y <= 24 and x > 9) or (x <= 9 and y < 24):
                 return 'C'
-            elif x <= 9 and y >= 30:
+            elif x <= 9 and y >= 24 and z > 12:
                 return 'O'
-            elif (x >= 9 and y >= 46):
+            elif (x > 9 and y > 24 and z > 12) or (z > 12 and z < 36 and y > 24):
                 return 'ND'
             else:
                 return 'ND'
@@ -316,9 +320,9 @@ def calculate_duval_4_result(h2, c2h6, ch4):
         print('{h2}, {c2h6}, {ch4}')
         return 'N/A'
     
-def create_duval_4_marker(h2, c2h6, ch4, **kwargs):
-    marker_coordinates = calculate_duval_4_coordinates(h2, c2h6, ch4)
-    result = calculate_duval_4_result(h2, c2h6, ch4)
+def create_duval_6_soy_marker(h2, c2h6, ch4, **kwargs):
+    marker_coordinates = calculate_duval_6_soy_coordinates(h2, c2h6, ch4)
+    result = calculate_duval_6_soy_result(h2, c2h6, ch4)
 
     # check for timestamp
     if  'timestamp' in kwargs:
@@ -399,18 +403,18 @@ def create_duval_4_marker(h2, c2h6, ch4, **kwargs):
                                         hovertemplate="Diagnosis: %{meta[0]}<br>H2:   %{meta[1]} ppm (%{a:.2f}%)<br>C2H6: %{meta[2]} ppm (%{b:.2f}%)<br>CH4:  %{meta[3]} ppm (%{c:.2f}%)<extra></extra>"
                                         )
     
-def create_duval_4_result_graph(h2, c2h6, ch4):
-    fig = create_duval_4_colorized()
+def create_duval_6_soy_result_graph(h2, c2h6, ch4):
+    fig = create_duval_6_soy_colorized()
 
     try:
-        result_name = calculate_duval_4_result(h2, c2h6, ch4)
-        fig.add_trace(create_duval_4_marker(h2, c2h6, ch4, result_name))
+        result_name = calculate_duval_6_soy_result(h2, c2h6, ch4)
+        fig.add_trace(create_duval_6_soy_marker(h2, c2h6, ch4, result_name))
         return fig
     except:
         return fig
 
-def create_duval_4_multi_results_graph(samples_df):
-    fig = create_duval_4_colorized()
+def create_duval_6_soy_multi_results_graph(samples_df):
+    fig = create_duval_6_soy_colorized()
     
     sample_count = len(samples_df)
     if sample_count == 1:
@@ -426,15 +430,15 @@ def create_duval_4_multi_results_graph(samples_df):
             if (h2 == 0) and (c2h6 == 0) and (ch4 == 0):
                 continue
             else:
-                duval_result = calculate_duval_4_result(h2, c2h6, ch4)
+                duval_result = calculate_duval_6_soy_result(h2, c2h6, ch4)
                 mark_name = f'{duval_result} {time}'
-                fig.add_trace(create_duval_4_marker(h2, c2h6, ch4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
+                fig.add_trace(create_duval_6_soy_marker(h2, c2h6, ch4, marker_name=mark_name, timestamp=time, marker_color=rowcolor))
         return fig
     except Exception as e:
         print(e)
         return fig
     
-def create_duval_4_group_graph(h2_groups, c2h6_groups, ch4_groups, group_names, colorized=True, **kwargs):
+def create_duval_6_soy_group_graph(h2_groups, c2h6_groups, ch4_groups, group_names, colorized=True, **kwargs):
     # https://plotly.com/python/marker-style/
     marker_symbol_list = ['circle', 'diamond', 'square', 'x-thin', 'cross-thin', 
                           'asterisk', 'y-up', 'star-triangle-up', 'star-triangle-down', 
@@ -449,9 +453,9 @@ def create_duval_4_group_graph(h2_groups, c2h6_groups, ch4_groups, group_names, 
         print(e)
 
     if colorized is True:
-        fig = create_duval_4_colorized()
+        fig = create_duval_6_soy_colorized()
     else:
-        fig = create_duval_4_nocolor()
+        fig = create_duval_6_soy_nocolor()
 
     if 'group_colors' in kwargs:
         color_list = kwargs['group_colors']
@@ -465,7 +469,7 @@ def create_duval_4_group_graph(h2_groups, c2h6_groups, ch4_groups, group_names, 
             for h2_value, c2h6_value, ch4_value in zip(h2_groups[i], c2h6_groups[i], ch4_groups[i]):
                 if (h2_value == 0) and (c2h6_value == 0) and (ch4_value == 0):
                     continue
-                coord_list.append(calculate_duval_4_coordinates(h2_value, c2h6_value, ch4_value))
+                coord_list.append(calculate_duval_6_soy_coordinates(h2_value, c2h6_value, ch4_value))
 
             
             coord_list_t = np.transpose(coord_list)
@@ -488,12 +492,12 @@ def create_duval_4_group_graph(h2_groups, c2h6_groups, ch4_groups, group_names, 
 # %%
 if __name__ == "__main__":
     
-    fig = create_duval_4_nocolor()
-    fig.add_trace(create_duval_4_marker(56, 24, 20))
+    fig = create_duval_6_soy_nocolor()
+    fig.add_trace(create_duval_6_soy_marker(56, 24, 20))
     fig.show()
 
-    fig2 = create_duval_4_colorized()
-    fig2.add_trace(create_duval_4_marker(9, 46, 45, marker_name='test'))
+    fig2 = create_duval_6_soy_colorized()
+    fig2.add_trace(create_duval_6_soy_marker(9, 46, 45, marker_name='test'))
     fig2.show()
     '''
     df_sample = pd.DataFrame({'Timestamp': [pd.to_datetime('2021-05-11'), pd.to_datetime('2021-06-02'), pd.to_datetime('2022-05-02 15:02'), pd.to_datetime('2022-05-24 06:02'), pd.to_datetime('2022-06-01 06:02'), pd.to_datetime('2022-06-01 23:34')],  
@@ -510,7 +514,7 @@ if __name__ == "__main__":
 
     print(df_sample)
 
-    fig4 = create_duval_4_multi_results_graph(df_sample)
+    fig4 = create_duval_6_soy_multi_results_graph(df_sample)
     fig4.show()
 
     #h2_list= [[200, 300, 400, 500], [0, 10, 50, 100, 160, 250], [1000, 1100, 1200]]
@@ -518,6 +522,6 @@ if __name__ == "__main__":
     #ch4_list= [[400, 500, 600, 1000], [0, 20, 41, 60, 66, 80], [60, 80, 110]]
     #groups_list= ['Group1', 'Group2', 'Group3']
 
-    #fig5 = create_duval_4_group_graph(h2_list, c2h6_list, ch4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
+    #fig5 = create_duval_6_soy_group_graph(h2_list, c2h6_list, ch4_list, groups_list, colorized=False, group_colors=['rgb(136, 204, 238)', 'rgb(204, 102, 119)', 'rgb(221, 204, 119)', 'rgb(17, 119, 51)'])
     #fig5.show()
     '''
