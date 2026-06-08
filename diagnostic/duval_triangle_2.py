@@ -537,14 +537,196 @@ def create_duval_2_issue_graph():
             xref = "paper", yref = "paper",
             textangle=-30,
             font=dict(size=50, color='red'), 
-            text= f"INSUFFICIENT DATA",
+            text= f"INCOMPATIBLE DATA",
             clicktoshow='onout'
             ))
-    
+    fig_issue.add_trace(go.Scatterternary(a=[34], b=[33], c=[33],
+                                                    mode='text', text=['INCOMPATIBLE DATA'], textfont=dict(size=25, color='red'),  hoverinfo='skip',
+                                                    showlegend=False))
     fig_issue.update_layout(ternary_sum=100, showlegend=False)
 
     return fig_issue
-    
+
+def add_duval2_areas(figure, **kwargs):
+
+    fig = figure
+
+    if 'figure_count' in kwargs:
+        figure_count = kwargs['figure_count']
+    else:
+        figure_count = False
+
+    if 'row_count' in kwargs:
+        row_count = kwargs['row_count']
+    else:
+        row_count = False
+
+    if 'column_count' in kwargs:
+        column_count = kwargs['column_count']
+    else:
+        column_count = False
+
+    if (figure_count is not False) and ((row_count is not False) or (column_count is not False)):
+        determine_positions = True
+        subplots = True
+    elif (row_count is not False) and (column_count is not False):
+        determine_positions = False
+        subplots = True
+    else:
+        subplots = False
+
+    if subplots is False:
+        #N
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
+                                            b= TRIANGLE2_N_B,
+                                            c= TRIANGLE2_N_C,
+                                            name='N',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ))
+            #T2
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_T2_A,
+                                            b= TRIANGLE2_T2_B,
+                                            c= TRIANGLE2_T2_C,
+                                            name='T2',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ))
+            #T3
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_T3_A,
+                                            b= TRIANGLE2_T3_B,
+                                            c= TRIANGLE2_T3_C,
+                                            name='T3',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ))
+            #X1
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_X1_A,
+                                            b= TRIANGLE2_X1_B,
+                                            c= TRIANGLE2_X1_C,
+                                            name='X1',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ))
+            #D1
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_D1_A,
+                                            b= TRIANGLE2_D1_B,
+                                            c= TRIANGLE2_D1_C,
+                                            name='D1',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ))
+            #X3
+            fig.add_trace(go.Scatterternary(a= TRIANGLE2_X3_A,
+                                            b= TRIANGLE2_X3_B,
+                                            c= TRIANGLE2_X3_C,
+                                            name='X3',
+                                            showlegend=False,
+                                            mode='lines',
+                                            line_color='black',
+                                            line_width=0.5
+                                            ))
+            
+            # Annotations
+            fig.add_trace(go.Scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
+                                    mode='text', text=['D1', 'N'], hoverinfo='skip',
+                                    showlegend=False))
+            fig.add_trace(go.Scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
+                                    mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
+                                    showlegend=False))
+
+    else:
+        if determine_positions is True:
+            if (figure_count is not False) and (column_count is not False):
+                row_count = int(np.ceil(figure_count / column_count))
+            
+            elif (figure_count is not False) and (row_count is not False):
+                column_count = int(np.ceil(figure_count / row_count))
+
+
+        for row_n in range(1, row_count+1):
+            for col_n in range(1, column_count+1):
+                #N
+                fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
+                                                b= TRIANGLE2_N_B,
+                                                c= TRIANGLE2_N_C,
+                                                name='N',
+                                                showlegend=False,
+                                                mode='lines',
+                                                line_color='black',
+                                                line_width=0.5
+                                                ), row=row_n, col=col_n)
+                #T2
+                fig.add_trace(go.Scatterternary(a= TRIANGLE2_T2_A,
+                                                b= TRIANGLE2_T2_B,
+                                                c= TRIANGLE2_T2_C,
+                                                name='T2',
+                                                showlegend=False,
+                                                mode='lines',
+                                                line_color='black',
+                                                line_width=0.5
+                                                ), row=row_n, col=col_n)
+                #T3
+                fig.add_trace(go.Scatterternary(a= TRIANGLE2_T3_A,
+                                                b= TRIANGLE2_T3_B,
+                                                c= TRIANGLE2_T3_C,
+                                                name='T3',
+                                                showlegend=False,
+                                                mode='lines',
+                                                line_color='black',
+                                                line_width=0.5
+                                                ), row=row_n, col=col_n)
+                #X1
+                fig.add_trace(go.Scatterternary(a= TRIANGLE2_X1_A,
+                                                b= TRIANGLE2_X1_B,
+                                                c= TRIANGLE2_X1_C,
+                                                name='X1',
+                                                showlegend=False,
+                                                mode='lines',
+                                                line_color='black',
+                                                line_width=0.5
+                                                ), row=row_n, col=col_n)
+                #D1
+                fig.add_trace(go.Scatterternary(a= TRIANGLE2_D1_A,
+                                                b= TRIANGLE2_D1_B,
+                                                c= TRIANGLE2_D1_C,
+                                                name='D1',
+                                                showlegend=False,
+                                                mode='lines',
+                                                line_color='black',
+                                                line_width=0.5
+                                                ), row=row_n, col=col_n)
+                #X3
+                fig.add_trace(go.Scatterternary(a= TRIANGLE2_X3_A,
+                                                b= TRIANGLE2_X3_B,
+                                                c= TRIANGLE2_X3_C,
+                                                name='X3',
+                                                showlegend=False,
+                                                mode='lines',
+                                                line_color='black',
+                                                line_width=0.5
+                                                ), row=row_n, col=col_n)
+                
+                # Annotations
+                fig.add_trace(go.Scatterternary(a=[10, 10], b=[87, 76], c=[3, 14],
+                                        mode='text', text=['D1', 'N'], hoverinfo='skip',
+                                        showlegend=False), row=row_n, col=col_n)
+                fig.add_trace(go.Scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
+                                        mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
+                                        showlegend=False), row=row_n, col=col_n)
+        
+    return fig
+
 def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names, colorized=False, **kwargs):
     # https://plotly.com/python/marker-style/
     marker_symbol_list = ['circle', 'diamond', 'square', 'x-thin', 'cross-thin', 
@@ -616,18 +798,21 @@ def create_duval_2_group_graph(ch4_groups, c2h2_groups, c2h4_groups, group_names
                     baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
                     caxis_title=dict(text=''), 
                     caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
+
+
+        fig.update_layout(autosize=False,
+                      width=1280,
+                      height=800)
+        
         fig.add_annotation(x=0.3, y=0.5, xref='paper', yref='paper',
-            text="CH4", textangle=300,
-            showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
+                text="CH4", textangle=300,
+                showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
         fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
             text="C2H4", textangle=60,
             showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
         fig.add_annotation(x=0.5, y=-0.07, xref='paper', yref='paper',
             text="C2H2", textangle=0,
             showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
-        fig.update_layout(autosize=False,
-                      width=1280,
-                      height=800)
 
     return fig
 
@@ -807,7 +992,7 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
     if len(ch4_groups) > 1:
         for g in range(1, len(ch4_groups)+1):
             row_n = int(round_up(g/2, 0)) 
-            col_n = 1 + (g % 2)
+            col_n = (g + 1) % 2 + 1
             #N
             fig.add_trace(go.Scatterternary(a= TRIANGLE2_N_A,
                                             b= TRIANGLE2_N_B,
@@ -876,6 +1061,16 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
             fig.add_trace(go.Scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                                     mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                                     showlegend=False), row=row_n, col=col_n)
+            
+            if show_axis_details == True:
+                fig.update_ternaries(
+                            aaxis_title=dict(text='CH4'), 
+                            aaxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                            baxis_title=dict(text='C2H2'),
+                            baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                            caxis_title=dict(text='C2H4'), 
+                            caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), row=row_n, col=col_n)
+
 
     elif marker_compare is True:
         for c in range(1, 3):
@@ -1019,26 +1214,43 @@ def create_duval_2_group_density_distribution_graph(ch4_groups, c2h2_groups, c2h
         fig.add_scatterternary(a=[50, 22, 55, 20], b=[38, 35, 8, 7.5], c=[12, 43, 37, 72.5],
                                 mode='text', text=['X1', 'X3', 'T2', 'T3'], hoverinfo='skip',
                                 showlegend=False)
+        
+        if show_axis_details == True:
+            fig.update_ternaries(
+                        aaxis_title=dict(text=''), 
+                        aaxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
+                        baxis_title=dict(text=''),
+                        baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
+                        caxis_title=dict(text=''), 
+                        caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
+            fig.add_annotation(x=0.3, y=0.5, xref='paper', yref='paper',
+                text="CH4", textangle=300,
+                showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
+            fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
+                text="C2H4", textangle=60,
+                showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
+            fig.add_annotation(x=0.5, y=-0.07, xref='paper', yref='paper',
+                text="C2H2", textangle=0,
+                showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
+            fig.update_layout(autosize=False,
+                        width=1280,
+                        height=800)
     
 
     
     if show_axis_details == True:
-        fig.update_ternaries(
-                    aaxis_title=dict(text=''), 
+        shared_ternary_style = dict(
+                    aaxis_title=dict(text='CH4'), 
                     aaxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'), 
-                    baxis_title=dict(text=''),
+                    baxis_title=dict(text='C2H2'),
                     baxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'),
-                    caxis_title=dict(text=''), 
+                    caxis_title=dict(text='C2H4'), 
                     caxis=dict(linecolor='#000000', showgrid=True, gridcolor='lightgrey', tickmode='linear', dtick=10, tick0=0, ticklabelstep=2, griddash='solid', ticksuffix=' %', hoverformat='CH4=%%{a}<br>C2H2=%%{b}<br>C2H4=%%{b}<extra></extra>'))
-        fig.add_annotation(x=0.3, y=0.5, xref='paper', yref='paper',
-            text="CH4", textangle=300,
-            showarrow=True, arrowhead=1, ax=-15, ay=30, axref='x', ayref='y')
-        fig.add_annotation(x=0.7, y=0.5, xref='paper', yref='paper',
-            text="C2H4", textangle=60,
-            showarrow=True, arrowhead=1, ax=-15, ay=-30, axref='x', ayref='y')
-        fig.add_annotation(x=0.5, y=-0.07, xref='paper', yref='paper',
-            text="C2H2", textangle=0,
-            showarrow=True, arrowhead=1, ax=35, ay=0, axref='x', ayref='y')
+        layout_updates = {}
+        for i in range(1, len(ch4_groups) + 1):
+            key = "ternary" if i == 1 else f"ternary{i}"
+            layout_updates[key] = shared_ternary_style
+        fig.update_layout(**layout_updates)
         fig.update_layout(autosize=False,
                       width=1280,
                       height=800)
