@@ -698,6 +698,24 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
 
             except Exception as e:
                 print(e)
+                print(f'Incompatible data for density calculation! {cartesian_group[g-1]}')
+                no_issues_with_data = False
+
+                fig_issue = go.Figure(layout=dict(ternary_sum=100, template=None))
+                fig_issue.add_trace(go.Scatterternary(a=group_data[:, 0],
+                                            b=group_data[:, 1],
+                                            c=group_data[:, 2],
+                                            name= f'{group_name}',
+                                            mode='markers',
+                                            marker_color='blue',
+                                            marker_size=10,
+                                            meta= [f'{group_name}'],
+                                            hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+                fig_issue.add_trace(go.Scatterternary(a=[34], b=[33], c=[33],
+                                                    mode='text', text=['INCOMPATIBLE DATA'], textfont=dict(size=30, color='red'),  hoverinfo='skip',
+                                                    showlegend=False))
+                for trace_data in fig_issue['data']:
+                    fig.append_trace(trace_data, row=row_n, col=col_n)
                 return
 
             fig_c = ff.create_ternary_contour(np.array([group_data[:, 0], group_data[:, 1], group_data[:, 2]]), z_data,
@@ -755,7 +773,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                         xref = "paper", yref = "paper",
                         textangle=-30,
                         font=dict(size=50, color='red'), 
-                        text= f"Incompatible data",
+                        text= f"INCOMPATIBLE DATA",
                         clicktoshow='onout'
                     ))
                 
@@ -810,7 +828,7 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                     xref = "paper", yref = "paper",
                     textangle=-30,
                     font=dict(size=50, color='red'), 
-                    text= f"INSUFFICIENT DATA",
+                    text= f"INCOMPATIBLE DATA",
                     clicktoshow='onout'
                   ))
             
@@ -820,7 +838,30 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
 
         except Exception as e:
             print(e)
-            return
+            no_issues_with_data = False
+
+            fig_issue = go.Figure(layout=dict(ternary_sum=100, template=None))
+            fig_issue.add_trace(go.Scatterternary(a=group_ternary_coords[0][:, 0],
+                                        b=group_ternary_coords[0][:, 1],
+                                        c=group_ternary_coords[0][:, 2],
+                                        name= f'Data',
+                                        mode='markers',
+                                        marker_color='blue',
+                                        marker_size=10,
+                                        meta= [f'Data'],
+                                        hovertemplate="%{meta[0]}<br>CH4:  %{a:.2f}%<br>C2H2: %{b:.2f}%<br>C2H4: %{c:.2f}%<extra></extra>"))
+        
+            fig_issue.add_annotation(dict(x=0.5, y=0.5,
+                    xref = "paper", yref = "paper",
+                    textangle=-30,
+                    font=dict(size=50, color='red'), 
+                    text= f"INCOMPATIBLE DATA",
+                    clicktoshow='onout'
+                  ))
+            
+            fig_issue.update_layout(ternary_sum=100, showlegend=False)
+
+            return fig_issue
 
         fig = ff.create_ternary_contour(np.array([group_ternary_coords[0][:, 0], group_ternary_coords[0][:, 1], group_ternary_coords[0][:, 2]]), z_data,
                                         pole_labels=axis_names,
@@ -831,14 +872,14 @@ def create_ternary_density_distribution_graph(a_groups, b_groups, c_groups, axis
                                         showmarkers=show_markers)
         
 
-    fig.update_layout(template=None, ternary_sum=100, showlegend=False)
+    fig.update_layout(ternary_sum=100, showlegend=False)
 
     if no_issues_with_data is False:
         fig.add_annotation(dict(x=0.5, y=0.5,
                     xref = "paper", yref = "paper",
                     textangle=-30,
                     font=dict(size=50, color='red'), 
-                    text= f"INSUFFICIENT DATA",
+                    text= f"INCOMPATIBLE DATA",
                     clicktoshow='onout'
                   ))
         
